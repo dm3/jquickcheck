@@ -8,12 +8,12 @@ import org.junit.runners.model.Statement;
 
 public final class QuickCheckStatement extends Statement {
 
-    private final FrameworkMethod method;
-    private final Object target;
+    private final ArgumentProvider argumentProvider;
+    private final QuickCheckExecution execution;
 
     private QuickCheckStatement(FrameworkMethod method, Object target) {
-        this.method = method;
-        this.target = target;
+        this.execution = new QuickCheckExecution(method, target);
+        this.argumentProvider = new ArgumentProvider(method);
     }
 
     public static Statement newStatement(FrameworkMethod method, Object test) {
@@ -26,8 +26,7 @@ public final class QuickCheckStatement extends Statement {
 
     @Override
     public void evaluate() throws Throwable {
-        // TODO Auto-generated method stub
-
+        execution.execute();
     }
 
 }

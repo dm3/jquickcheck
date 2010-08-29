@@ -27,3 +27,9 @@ been passed the test method, but not if it has actually invoked it.
 
 Is a shortcut for creating a runner and invoking it with a custom `RunNotifier`
 containing a possibly custom `RunListener`.
+
+## Dispatching on primitive types
+To tell if a `java.lang.reflect.Type` (usually an instance of
+`java.lang.Class`) represents a primitive, you need to compare it with a
+special static `TYPE` variable on the respective primitive wrapper class
+(`Double.TYPE`, ...).

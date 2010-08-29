@@ -1,5 +1,6 @@
 package lt.dm3.jquickcheck.junit.runners;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.junit.Test;
@@ -29,7 +30,15 @@ public class QuickCheckRunner extends BlockJUnit4ClassRunner {
         List<FrameworkMethod> methods = getTestClass().getAnnotatedMethods(Test.class);
 
         for (FrameworkMethod eachTestMethod : methods) {
-            eachTestMethod.validatePublicVoid(false, errors);
+            if (!Modifier.isPublic(eachTestMethod.getMethod().getDeclaringClass().getModifiers())) {
+                errors.add(new Exception("Class " + eachTestMethod.getMethod().getDeclaringClass().getName() + " should be public"));
+            }
+            if (!Modifier.isPublic(eachTestMethod.getMethod().getModifiers())) {
+                errors.add(new Exception("Method " + eachTestMethod.getMethod().getName() + "() should be public"));
+            }
+            if (eachTestMethod.getMethod().getReturnType() != Boolean.TYPE) {
+                errors.add(new Exception("Method " + eachTestMethod.getMethod().getName() + "() should be boolean"));
+            }
         }
     }
 

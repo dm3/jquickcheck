@@ -2,9 +2,6 @@ package lt.dm3.jquickcheck.junit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
 import lt.dm3.jquickcheck.junit.runners.QuickCheckRunner;
 
 import org.junit.Test;
@@ -12,27 +9,44 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.TestClass;
 
 public class QuickCheckRunnerTest {
 
-    private static AtomicInteger count = new AtomicInteger(0);
-
     @RunWith(QuickCheckRunner.class)
-    public static class SimpleTest {
+    public static class ActualTest {
         @Test
-        public void shouldRunTheTestWithNoArguments() throws InitializationError {
-            count.incrementAndGet();
+        public boolean shouldRunTheTestWithNoArguments() {
+            return true;
         }
 
+        @Test
+        public boolean shouldRunTheTestWithPrimitiveIntArgument(int arg) {
+            return true;
+        }
+
+        @Test
+        public boolean shouldRunTheTestWithPrimitiveDoubleArgument(double arg) {
+            return true;
+        }
+
+        @Test
+        public boolean shouldRunTheTestWithPrimitiveLongArgument(long arg) {
+            return true;
+        }
+
+        @Test
+        public boolean shouldRunTheTestWithPrimitiveShortArgument(short arg) {
+            return true;
+        }
     }
 
     @Test
     public void runSimpleTest() throws InitializationError {
-        Result result = JUnitCore.runClasses(SimpleTest.class);
+        Result result = JUnitCore.runClasses(ActualTest.class);
+        int totalTests = new TestClass(ActualTest.class).getAnnotatedMethods(Test.class).size();
 
         assertThat(result.getFailureCount(), equalTo(0));
-        assertThat(result.getRunCount(), equalTo(1));
-        // we need to check if the test method body was actually run by our runner
-        assertThat(count.get(), equalTo(1));
+        assertThat(result.getRunCount(), equalTo(totalTests));
     }
 }
