@@ -8,12 +8,10 @@ import org.junit.runners.model.Statement;
 
 public final class QuickCheckStatement extends Statement {
 
-    private final ArgumentProvider argumentProvider;
     private final QuickCheckExecution execution;
 
     private QuickCheckStatement(FrameworkMethod method, Object target) {
         this.execution = new QuickCheckExecution(method, target);
-        this.argumentProvider = new ArgumentProvider(method);
     }
 
     public static Statement newStatement(FrameworkMethod method, Object test) {

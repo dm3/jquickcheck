@@ -19,7 +19,10 @@ public class QuickCheckRunnerTest {
         public boolean shouldRunTheTestWithNoArguments() {
             return true;
         }
+    }
 
+    @RunWith(QuickCheckRunner.class)
+    public static class PrimitiveTest {
         @Test
         public boolean shouldRunTheTestWithPrimitiveIntArgument(int arg) {
             return true;
@@ -42,9 +45,18 @@ public class QuickCheckRunnerTest {
     }
 
     @Test
-    public void runSimpleTest() throws InitializationError {
+    public void runActualTest() throws InitializationError {
         Result result = JUnitCore.runClasses(ActualTest.class);
         int totalTests = new TestClass(ActualTest.class).getAnnotatedMethods(Test.class).size();
+
+        assertThat(result.getFailureCount(), equalTo(0));
+        assertThat(result.getRunCount(), equalTo(totalTests));
+    }
+
+    @Test
+    public void runPrimitiveTest() throws InitializationError {
+        Result result = JUnitCore.runClasses(PrimitiveTest.class);
+        int totalTests = new TestClass(PrimitiveTest.class).getAnnotatedMethods(Test.class).size();
 
         assertThat(result.getFailureCount(), equalTo(0));
         assertThat(result.getRunCount(), equalTo(totalTests));
