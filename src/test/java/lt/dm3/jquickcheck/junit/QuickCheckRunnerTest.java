@@ -2,6 +2,7 @@ package lt.dm3.jquickcheck.junit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import lt.dm3.jquickcheck.junit.runners.Arb;
 import lt.dm3.jquickcheck.junit.runners.QuickCheckRunner;
 
 import org.junit.Test;
@@ -44,6 +45,14 @@ public class QuickCheckRunnerTest {
         }
     }
 
+    @RunWith(QuickCheckRunner.class)
+    public static class CustomGeneratorTest {
+        @Test
+        public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(PositiveIntGen.class) int arg) {
+            return arg > 0;
+        }
+    }
+
     @Test
     public void runActualTest() throws InitializationError {
         Result result = JUnitCore.runClasses(ActualTest.class);
@@ -57,6 +66,15 @@ public class QuickCheckRunnerTest {
     public void runPrimitiveTest() throws InitializationError {
         Result result = JUnitCore.runClasses(PrimitiveTest.class);
         int totalTests = new TestClass(PrimitiveTest.class).getAnnotatedMethods(Test.class).size();
+
+        assertThat(result.getFailureCount(), equalTo(0));
+        assertThat(result.getRunCount(), equalTo(totalTests));
+    }
+
+    @Test
+    public void runCustomGeneratorTest() throws InitializationError {
+        Result result = JUnitCore.runClasses(CustomGeneratorTest.class);
+        int totalTests = new TestClass(CustomGeneratorTest.class).getAnnotatedMethods(Test.class).size();
 
         assertThat(result.getFailureCount(), equalTo(0));
         assertThat(result.getRunCount(), equalTo(totalTests));

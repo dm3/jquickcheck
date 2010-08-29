@@ -1,11 +1,14 @@
 package lt.dm3.jquickcheck.junit.runners;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import org.junit.runners.model.FrameworkMethod;
 
 import fj.F;
+import fj.test.Arbitrary;
 import fj.test.CheckResult;
+import fj.test.Gen;
 import fj.test.Property;
 
 public class QuickCheckExecution {
@@ -18,12 +21,28 @@ public class QuickCheckExecution {
         this.target = target;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void execute() {
         Type[] args = method.getMethod().getGenericParameterTypes();
+        Annotation[][] annotations = method.getMethod().getParameterAnnotations();
         if (args.length == 1) {
             final Type t = args[0];
-            CheckResult result = Property.property(ArgumentFactory.argumentFor(t), ShrinkFactory.shrinkFor(t), new F<Object, Property>() {
+            Arbitrary arb = null;
+            if (annotations[0].length == 1) {
+                Annotation ann = annotations[0][0];
+                try {
+                    Gen gen = Gen.gen(new FJGenAdapter(((Arb) ann).value().newInstance()).adapt());
+                    arb = Arbitrary.arbitrary(gen);
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (arb == null) {
+                arb = ArgumentFactory.argumentFor(t);
+            }
+            CheckResult result = Property.property(arb, ShrinkFactory.shrinkFor(t), new F<Object, Property>() {
                 @Override
                 public Property f(Object param) {
                     try {
