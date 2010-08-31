@@ -3,6 +3,7 @@ package lt.dm3.jquickcheck.junit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import lt.dm3.jquickcheck.junit.runners.Arb;
+import lt.dm3.jquickcheck.junit.runners.Generator;
 import lt.dm3.jquickcheck.junit.runners.QuickCheckRunner;
 
 import org.junit.Test;
@@ -46,37 +47,82 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    public static class CustomGeneratorTest {
+    public static class CustomParameterGeneratorTest {
         @Test
-        public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(PositiveIntGen.class) int arg) {
+        public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(gen = PositiveIntGen.class) int arg) {
+            return arg > 0;
+        }
+    }
+
+    @RunWith(QuickCheckRunner.class)
+    public static class CustomPrivateFinalFieldGeneratorTest {
+        @Arb
+        private final Generator<Integer> positiveIntGen = new PositiveIntGen();
+
+        @Test
+        public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
+            return arg > 0;
+        }
+    }
+
+    @RunWith(QuickCheckRunner.class)
+    public static class CustomPrivateFinalStaticFieldGeneratorTest {
+        @Arb
+        private final static Generator<Integer> positiveIntGen = new PositiveIntGen();
+
+        @Test
+        public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
+            return arg > 0;
+        }
+    }
+
+    @RunWith(QuickCheckRunner.class)
+    public static class CustomPrivateFieldGeneratorTest {
+        @Arb
+        private final Generator<Integer> positiveIntGen = new PositiveIntGen();
+
+        @Test
+        public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
             return arg > 0;
         }
     }
 
     @Test
     public void runActualTest() throws InitializationError {
-        Result result = JUnitCore.runClasses(ActualTest.class);
-        int totalTests = new TestClass(ActualTest.class).getAnnotatedMethods(Test.class).size();
-
-        assertThat(result.getFailureCount(), equalTo(0));
-        assertThat(result.getRunCount(), equalTo(totalTests));
+        doTest(ActualTest.class);
     }
 
     @Test
     public void runPrimitiveTest() throws InitializationError {
-        Result result = JUnitCore.runClasses(PrimitiveTest.class);
-        int totalTests = new TestClass(PrimitiveTest.class).getAnnotatedMethods(Test.class).size();
-
-        assertThat(result.getFailureCount(), equalTo(0));
-        assertThat(result.getRunCount(), equalTo(totalTests));
+        doTest(PrimitiveTest.class);
     }
 
     @Test
-    public void runCustomGeneratorTest() throws InitializationError {
-        Result result = JUnitCore.runClasses(CustomGeneratorTest.class);
-        int totalTests = new TestClass(CustomGeneratorTest.class).getAnnotatedMethods(Test.class).size();
+    public void runCustomParameterGeneratorTest() throws InitializationError {
+        doTest(CustomParameterGeneratorTest.class);
+    }
+
+    @Test
+    public void runCustomPrivateFinalFieldGeneratorTest() throws InitializationError {
+        doTest(CustomPrivateFinalFieldGeneratorTest.class);
+    }
+
+    @Test
+    public void runCustomPrivateFinalStaticFieldGeneratorTest() throws InitializationError {
+        doTest(CustomPrivateFinalStaticFieldGeneratorTest.class);
+    }
+
+    @Test
+    public void runCustomPrivateFieldGeneratorTest() throws InitializationError {
+        doTest(CustomPrivateFieldGeneratorTest.class);
+    }
+
+    private static void doTest(Class<?> testClass) {
+        Result result = JUnitCore.runClasses(testClass);
+        int totalTests = new TestClass(testClass).getAnnotatedMethods(Test.class).size();
 
         assertThat(result.getFailureCount(), equalTo(0));
         assertThat(result.getRunCount(), equalTo(totalTests));
     }
+
 }
