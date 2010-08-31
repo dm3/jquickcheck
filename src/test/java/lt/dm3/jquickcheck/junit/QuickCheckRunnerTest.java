@@ -47,9 +47,20 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    public static class CustomParameterGeneratorTest {
+    public static class CustomParameterGeneratorClassTest {
         @Test
-        public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(gen = PositiveIntGen.class) int arg) {
+        public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(genClass = PositiveIntGen.class) int arg) {
+            return arg > 0;
+        }
+    }
+
+    @RunWith(QuickCheckRunner.class)
+    public static class CustomParameterGeneratorInstanceTest {
+        @Arb
+        private static final Generator<Integer> positiveIntGen = new PositiveIntGen();
+
+        @Test
+        public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(gen = "positiveIntGen") int arg) {
             return arg > 0;
         }
     }
@@ -79,7 +90,11 @@ public class QuickCheckRunnerTest {
     @RunWith(QuickCheckRunner.class)
     public static class CustomPrivateFieldGeneratorTest {
         @Arb
-        private final Generator<Integer> positiveIntGen = new PositiveIntGen();
+        private final Generator<Integer> positiveIntGen;
+
+        public CustomPrivateFieldGeneratorTest() {
+            positiveIntGen = new PositiveIntGen();
+        }
 
         @Test
         public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
@@ -98,8 +113,13 @@ public class QuickCheckRunnerTest {
     }
 
     @Test
-    public void runCustomParameterGeneratorTest() throws InitializationError {
-        doTest(CustomParameterGeneratorTest.class);
+    public void runCustomParameterGeneratorClassTest() throws InitializationError {
+        doTest(CustomParameterGeneratorClassTest.class);
+    }
+
+    @Test
+    public void runCustomParameterGeneratorInstanceTest() throws InitializationError {
+        doTest(CustomParameterGeneratorInstanceTest.class);
     }
 
     @Test
@@ -113,7 +133,7 @@ public class QuickCheckRunnerTest {
     }
 
     @Test
-    public void runCustomPrivateFieldGeneratorTest() throws InitializationError {
+    public void runCustomPrivateFieldGeneratorTestIfInitializedInConstructor() throws InitializationError {
         doTest(CustomPrivateFieldGeneratorTest.class);
     }
 

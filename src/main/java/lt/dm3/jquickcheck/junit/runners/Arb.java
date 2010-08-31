@@ -8,5 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.FIELD })
 public @interface Arb {
-    Class<? extends Generator<?>> gen() default DefaultGenerator.class;
+    Class<? extends Generator<?>> genClass() default ExceptionalGenerator.class;
+
+    String gen() default "";
 }

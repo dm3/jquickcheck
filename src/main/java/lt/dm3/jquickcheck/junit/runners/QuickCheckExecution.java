@@ -34,13 +34,20 @@ public class QuickCheckExecution {
             Arbitrary arb = null;
             if (annotations[0].length == 1) {
                 Annotation ann = annotations[0][0];
-                try {
-                    Gen gen = Gen.gen(new FJGenAdapter(((Arb) ann).gen().newInstance()).adapt());
-                    arb = Arbitrary.arbitrary(gen);
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                if (ann instanceof Arb) {
+                    Arb arbAnnotation = (Arb) ann;
+                    if (arbAnnotation.gen().isEmpty() || !generators.hasGeneratorFor(arbAnnotation.gen())) {
+                        try {
+                            Gen gen = Gen.gen(new FJGenAdapter(((Arb) ann).genClass().newInstance()).adapt());
+                            arb = Arbitrary.arbitrary(gen);
+                        } catch (InstantiationException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        arb = Arbitrary.arbitrary(Gen.gen(new FJGenAdapter(generators.getGeneratorFor(arbAnnotation.gen())).adapt()));
+                    }
                 }
             } else if (generators.hasGeneratorFor(t)) {
                 arb = Arbitrary.arbitrary(Gen.gen(new FJGenAdapter(generators.getGeneratorFor(t)).adapt()));

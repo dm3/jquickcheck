@@ -4,7 +4,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fj.data.Option;
 
@@ -13,22 +15,36 @@ public final class Generators {
     public interface GeneratorsForTestCase {
         boolean hasGeneratorFor(Type t);
 
+        boolean hasGeneratorFor(String fieldName);
+
         Generator<?> getGeneratorFor(Type t);
+
+        Generator<?> getGeneratorFor(String fieldName);
     }
 
     private static class AllGeneratorsForTestCase implements GeneratorsForTestCase {
-        private final List<Generator<?>> generators = new ArrayList<Generator<?>>();
+        private final Map<String, Generator<?>> generators = new HashMap<String, Generator<?>>();
 
         AllGeneratorsForTestCase(Iterable<Field> fields, Object test) {
             for (Field field : fields) {
                 try {
-                    generators.add((Generator<?>) field.get(test));
+                    generators.put(field.getName(), (Generator<?>) field.get(test));
                 } catch (IllegalArgumentException e) {
                     System.err.println(e);
                 } catch (IllegalAccessException e) {
                     System.err.println(e);
                 }
             }
+        }
+
+        @Override
+        public boolean hasGeneratorFor(String fieldName) {
+            return generators.containsKey(fieldName);
+        }
+
+        @Override
+        public Generator<?> getGeneratorFor(String fieldName) {
+            return generators.get(fieldName);
         }
 
         @Override
@@ -42,7 +58,7 @@ public final class Generators {
         }
 
         private Option<Generator<?>> findGeneratorFor(Type t) {
-            for (Generator<?> g : generators) {
+            for (Generator<?> g : generators.values()) {
                 Type[] interfaces = g.getClass().getGenericInterfaces();
                 for (Type i : interfaces) {
                     if (i instanceof ParameterizedType) { // i.equals(Generator.class) or Generator.class.isAssignableFrom(i) doesn't work
