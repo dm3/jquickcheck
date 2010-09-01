@@ -12,7 +12,7 @@ import fj.data.Option;
 
 public final class Generators {
 
-    public interface GeneratorsForTestCase {
+    public interface GeneratorRepository {
         boolean hasGeneratorFor(Type t);
 
         boolean hasGeneratorFor(String fieldName);
@@ -20,9 +20,11 @@ public final class Generators {
         Generator<?> getGeneratorFor(Type t);
 
         Generator<?> getGeneratorFor(String fieldName);
+
+        Generator<?> getDefaultGeneratorFor(Type t);
     }
 
-    private static class AllGeneratorsForTestCase implements GeneratorsForTestCase {
+    public static class AllGeneratorsForTestCase implements GeneratorRepository {
         private final Map<String, Generator<?>> generators = new HashMap<String, Generator<?>>();
 
         AllGeneratorsForTestCase(Iterable<Field> fields, Object test) {
@@ -35,6 +37,11 @@ public final class Generators {
                     System.err.println(e);
                 }
             }
+        }
+
+        @Override
+        public Generator<?> getDefaultGeneratorFor(Type t) {
+            return new ExceptionalGenerator();
         }
 
         @Override
@@ -85,7 +92,7 @@ public final class Generators {
 
     private final List<Field> generatorFields = new ArrayList<Field>();
 
-    public GeneratorsForTestCase forTest(Object test) {
+    public GeneratorRepository forTest(Object test) {
         return new AllGeneratorsForTestCase(generatorFields, test);
     }
 

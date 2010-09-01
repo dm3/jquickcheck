@@ -3,68 +3,65 @@ package lt.dm3.jquickcheck.junit.runners;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import lt.dm3.jquickcheck.junit.runners.Generators.GeneratorsForTestCase;
+import lt.dm3.jquickcheck.Invocation;
+import lt.dm3.jquickcheck.QuickCheckAdapter;
+import lt.dm3.jquickcheck.QuickCheckResult;
+import lt.dm3.jquickcheck.fj.FJQuickCheckAdapter;
+import lt.dm3.jquickcheck.junit.runners.Generators.GeneratorRepository;
 
 import org.junit.runners.model.FrameworkMethod;
 
-import fj.F;
-import fj.test.Arbitrary;
-import fj.test.CheckResult;
-import fj.test.Gen;
-import fj.test.Property;
-
 public class QuickCheckExecution {
 
-    private final GeneratorsForTestCase generators;
+    private final QuickCheckAdapter adapter = new FJQuickCheckAdapter();
+    private final GeneratorRepository generators;
     private final FrameworkMethod method;
     private final Object target;
 
-    public QuickCheckExecution(GeneratorsForTestCase generators, FrameworkMethod method, Object target) {
+    public QuickCheckExecution(GeneratorRepository generators, FrameworkMethod method, Object target) {
         this.generators = generators;
         this.method = method;
         this.target = target;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void execute() {
         Type[] args = method.getMethod().getGenericParameterTypes();
         Annotation[][] annotations = method.getMethod().getParameterAnnotations();
         if (args.length == 1) {
             final Type t = args[0];
-            Arbitrary arb = null;
+            Generator<?> gen = null;
             if (annotations[0].length == 1) {
                 Annotation ann = annotations[0][0];
                 if (ann instanceof Arb) {
                     Arb arbAnnotation = (Arb) ann;
                     if (arbAnnotation.gen().isEmpty() || !generators.hasGeneratorFor(arbAnnotation.gen())) {
                         try {
-                            Gen gen = Gen.gen(new FJGenAdapter(((Arb) ann).genClass().newInstance()).adapt());
-                            arb = Arbitrary.arbitrary(gen);
+                            gen = ((Arb) ann).genClass().newInstance();
                         } catch (InstantiationException e) {
                             e.printStackTrace();
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
                     } else {
-                        arb = Arbitrary.arbitrary(Gen.gen(new FJGenAdapter(generators.getGeneratorFor(arbAnnotation.gen())).adapt()));
+                        gen = generators.getGeneratorFor(arbAnnotation.gen());
                     }
                 }
             } else if (generators.hasGeneratorFor(t)) {
-                arb = Arbitrary.arbitrary(Gen.gen(new FJGenAdapter(generators.getGeneratorFor(t)).adapt()));
+                gen = generators.getGeneratorFor(t);
             }
-            if (arb == null) {
-                arb = ArgumentFactory.argumentFor(t);
+            if (gen == null) {
+                gen = generators.getDefaultGeneratorFor(t);
             }
-            CheckResult result = Property.property(arb, ShrinkFactory.shrinkFor(t), new F<Object, Property>() {
+            QuickCheckResult result = adapter.check(new Generator[] { gen }, new Invocation() {
                 @Override
-                public Property f(Object param) {
+                public boolean invoke(Object param) {
                     try {
-                        return Property.prop((Boolean) method.invokeExplosively(target, param));
+                        return (Boolean) method.invokeExplosively(target, param);
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }
                 }
-            }).check();
+            });
             if (!result.isPassed() && !result.isProven()) {
                 throw new QuickCheckException(result);
             }

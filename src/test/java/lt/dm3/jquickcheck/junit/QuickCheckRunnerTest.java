@@ -29,21 +29,6 @@ public class QuickCheckRunnerTest {
         public boolean shouldRunTheTestWithPrimitiveIntArgument(int arg) {
             return true;
         }
-
-        @Test
-        public boolean shouldRunTheTestWithPrimitiveDoubleArgument(double arg) {
-            return true;
-        }
-
-        @Test
-        public boolean shouldRunTheTestWithPrimitiveLongArgument(long arg) {
-            return true;
-        }
-
-        @Test
-        public boolean shouldRunTheTestWithPrimitiveShortArgument(short arg) {
-            return true;
-        }
     }
 
     @RunWith(QuickCheckRunner.class)

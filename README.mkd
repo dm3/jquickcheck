@@ -33,3 +33,8 @@ To tell if a `java.lang.reflect.Type` (usually an instance of
 `java.lang.Class`) represents a primitive, you need to compare it with a
 special static `TYPE` variable on the respective primitive wrapper class
 (`Double.TYPE`, ...).
+
+## Features TODO
+1. Generator instances in @Before and @BeforeClass blocks
+2. Generator API - what we have in fj-test currently won't work as it's not really extensible
+3. Dependencies between tests (ala JExample/jBehave/TestNG)

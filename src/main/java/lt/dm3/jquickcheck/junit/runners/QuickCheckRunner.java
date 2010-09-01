@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import lt.dm3.jquickcheck.fj.FJGeneratorRepository;
+
 import org.junit.Test;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -41,7 +43,7 @@ public class QuickCheckRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        return QuickCheckStatement.newStatement(generators.forTest(test), method, test);
+        return QuickCheckStatement.newStatement(new FJGeneratorRepository(generators.forTest(test)), method, test);
     }
 
     /**

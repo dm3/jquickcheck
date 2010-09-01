@@ -2,7 +2,7 @@ package lt.dm3.jquickcheck.junit.runners;
 
 import java.lang.reflect.Type;
 
-import lt.dm3.jquickcheck.junit.runners.Generators.GeneratorsForTestCase;
+import lt.dm3.jquickcheck.junit.runners.Generators.GeneratorRepository;
 
 import org.junit.internal.runners.statements.InvokeMethod;
 import org.junit.runners.model.FrameworkMethod;
@@ -12,11 +12,11 @@ public final class QuickCheckStatement extends Statement {
 
     private final QuickCheckExecution execution;
 
-    private QuickCheckStatement(GeneratorsForTestCase generators, FrameworkMethod method, Object target) {
+    private QuickCheckStatement(GeneratorRepository generators, FrameworkMethod method, Object target) {
         this.execution = new QuickCheckExecution(generators, method, target);
     }
 
-    public static Statement newStatement(GeneratorsForTestCase generators, FrameworkMethod method, Object test) {
+    public static Statement newStatement(GeneratorRepository generators, FrameworkMethod method, Object test) {
         Type[] parameters = method.getMethod().getGenericParameterTypes();
         if (parameters.length == 0) {
             return new InvokeMethod(method, test);
