@@ -37,4 +37,14 @@ special static `TYPE` variable on the respective primitive wrapper class
 ## Features TODO
 1. Generator instances in @Before and @BeforeClass blocks
 2. Generator API - what we have in fj-test currently won't work as it's not really extensible
+    * Use quickcheck from quickcheck.java.net
+    * Ideally specifying generators should look like this:
+
+    @Arb
+    Generator<Integer> sizedInt = of(integer(), from(1), to(10))
+
+    @Arb
+    Generator<List<String>> listOfStrings = list(of(string(), alphanumeric()))
+
 3. Dependencies between tests (ala JExample/jBehave/TestNG)
+4. Automatic generator resolution according to types. Sensible defaults and generator registry.
