@@ -2,15 +2,15 @@ package lt.dm3.jquickcheck.fj;
 
 import java.lang.reflect.Type;
 
+import lt.dm3.jquickcheck.GeneratorRepository;
 import lt.dm3.jquickcheck.junit.runners.Generator;
-import lt.dm3.jquickcheck.junit.runners.Generators.GeneratorRepository;
 import fj.test.Arbitrary;
 
-public class FJGeneratorRepository implements GeneratorRepository {
+public class FJGeneratorRepository implements GeneratorRepository<Generator<?>> {
 
-    private final GeneratorRepository generatorRepository;
+    private final GeneratorRepository<Generator<?>> generatorRepository;
 
-    public FJGeneratorRepository(GeneratorRepository generatorRepository) {
+    public FJGeneratorRepository(GeneratorRepository<Generator<?>> generatorRepository) {
         this.generatorRepository = generatorRepository;
     }
 

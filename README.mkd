@@ -48,3 +48,4 @@ special static `TYPE` variable on the respective primitive wrapper class
 
 3. Dependencies between tests (ala JExample/jBehave/TestNG)
 4. Automatic generator resolution according to types. Sensible defaults and generator registry.
+5. Integrate with makeiteasy
