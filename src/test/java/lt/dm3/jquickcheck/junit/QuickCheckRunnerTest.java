@@ -2,6 +2,7 @@ package lt.dm3.jquickcheck.junit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.junit.runners.Arb;
 import lt.dm3.jquickcheck.junit.runners.Generator;
 import lt.dm3.jquickcheck.junit.runners.QuickCheckRunner;
@@ -17,7 +18,7 @@ public class QuickCheckRunnerTest {
 
     @RunWith(QuickCheckRunner.class)
     public static class ActualTest {
-        @Test
+        @Property
         public boolean shouldRunTheTestWithNoArguments() {
             return true;
         }
@@ -25,7 +26,7 @@ public class QuickCheckRunnerTest {
 
     @RunWith(QuickCheckRunner.class)
     public static class PrimitiveTest {
-        @Test
+        @Property
         public boolean shouldRunTheTestWithPrimitiveIntArgument(int arg) {
             return true;
         }
@@ -33,7 +34,7 @@ public class QuickCheckRunnerTest {
 
     @RunWith(QuickCheckRunner.class)
     public static class CustomParameterGeneratorClassTest {
-        @Test
+        @Property
         public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(genClass = PositiveIntGen.class) int arg) {
             return arg > 0;
         }
@@ -44,7 +45,7 @@ public class QuickCheckRunnerTest {
         @Arb
         private static final Generator<Integer> positiveIntGen = new PositiveIntGen();
 
-        @Test
+        @Property
         public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(gen = "positiveIntGen") int arg) {
             return arg > 0;
         }
@@ -55,7 +56,7 @@ public class QuickCheckRunnerTest {
         @Arb
         private final Generator<Integer> positiveIntGen = new PositiveIntGen();
 
-        @Test
+        @Property
         public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
             return arg > 0;
         }
@@ -66,7 +67,7 @@ public class QuickCheckRunnerTest {
         @Arb
         private final static Generator<Integer> positiveIntGen = new PositiveIntGen();
 
-        @Test
+        @Property
         public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
             return arg > 0;
         }
@@ -81,7 +82,7 @@ public class QuickCheckRunnerTest {
             positiveIntGen = new PositiveIntGen();
         }
 
-        @Test
+        @Property
         public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
             return arg > 0;
         }
@@ -124,7 +125,7 @@ public class QuickCheckRunnerTest {
 
     private static void doTest(Class<?> testClass) {
         Result result = JUnitCore.runClasses(testClass);
-        int totalTests = new TestClass(testClass).getAnnotatedMethods(Test.class).size();
+        int totalTests = new TestClass(testClass).getAnnotatedMethods(Property.class).size();
 
         assertThat(result.getFailureCount(), equalTo(0));
         assertThat(result.getRunCount(), equalTo(totalTests));

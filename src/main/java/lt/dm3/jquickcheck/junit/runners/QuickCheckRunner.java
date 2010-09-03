@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.fj.FJGeneratorRepository;
 
 import org.junit.Test;
@@ -42,6 +43,11 @@ public class QuickCheckRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
+    protected List<FrameworkMethod> computeTestMethods() {
+        return getTestClass().getAnnotatedMethods(Property.class);
+    }
+
+    @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
         return QuickCheckStatement.newStatement(new FJGeneratorRepository(generators.forTest(test)), method, test);
     }
@@ -57,7 +63,8 @@ public class QuickCheckRunner extends BlockJUnit4ClassRunner {
 
         for (FrameworkMethod eachTestMethod : methods) {
             if (!Modifier.isPublic(eachTestMethod.getMethod().getDeclaringClass().getModifiers())) {
-                errors.add(new Exception("Class " + eachTestMethod.getMethod().getDeclaringClass().getName() + " should be public"));
+                errors.add(new Exception("Class " + eachTestMethod.getMethod().getDeclaringClass().getName()
+                        + " should be public"));
             }
             if (!Modifier.isPublic(eachTestMethod.getMethod().getModifiers())) {
                 errors.add(new Exception("Method " + eachTestMethod.getMethod().getName() + "() should be public"));
