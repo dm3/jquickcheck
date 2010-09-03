@@ -3,6 +3,8 @@ package lt.dm3.jquickcheck.junit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import lt.dm3.jquickcheck.Property;
+import lt.dm3.jquickcheck.QuickCheck;
+import lt.dm3.jquickcheck.fj.FJGeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.junit.runners.Arb;
 import lt.dm3.jquickcheck.junit.runners.Generator;
 import lt.dm3.jquickcheck.junit.runners.QuickCheckRunner;
@@ -17,6 +19,7 @@ import org.junit.runners.model.TestClass;
 public class QuickCheckRunnerTest {
 
     @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
     public static class ActualTest {
         @Property
         public boolean shouldRunTheTestWithNoArguments() {
@@ -25,6 +28,7 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
     public static class PrimitiveTest {
         @Property
         public boolean shouldRunTheTestWithPrimitiveIntArgument(int arg) {
@@ -33,6 +37,7 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
     public static class CustomParameterGeneratorClassTest {
         @Property
         public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@Arb(genClass = PositiveIntGen.class) int arg) {
@@ -41,6 +46,7 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
     public static class CustomParameterGeneratorInstanceTest {
         @Arb
         private static final Generator<Integer> positiveIntGen = new PositiveIntGen();
@@ -52,6 +58,18 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
+    public static class OneCustomParameterGeneratorInstanceTest {
+        private static final Generator<Integer> positiveIntGen = new PositiveIntGen();
+
+        @Property
+        public boolean shouldRunTestWithCustomPrimitiveIntGenerator(int arg) {
+            return arg > 0;
+        }
+    }
+
+    @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
     public static class CustomPrivateFinalFieldGeneratorTest {
         @Arb
         private final Generator<Integer> positiveIntGen = new PositiveIntGen();
@@ -63,6 +81,7 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
     public static class CustomPrivateFinalStaticFieldGeneratorTest {
         @Arb
         private final static Generator<Integer> positiveIntGen = new PositiveIntGen();
@@ -74,6 +93,7 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
     public static class CustomPrivateFieldGeneratorTest {
         @Arb
         private final Generator<Integer> positiveIntGen;
@@ -106,6 +126,11 @@ public class QuickCheckRunnerTest {
     @Test
     public void runCustomParameterGeneratorInstanceTest() throws InitializationError {
         doTest(CustomParameterGeneratorInstanceTest.class);
+    }
+
+    @Test
+    public void runOneCustomParameterGeneratorInstanceTest() throws InitializationError {
+        doTest(OneCustomParameterGeneratorInstanceTest.class);
     }
 
     @Test

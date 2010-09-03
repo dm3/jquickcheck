@@ -1,11 +1,11 @@
 package lt.dm3.jquickcheck.junit.runners;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import lt.dm3.jquickcheck.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.Property;
-import lt.dm3.jquickcheck.fj.FJGeneratorRepository;
+import lt.dm3.jquickcheck.QuickCheck;
 
 import org.junit.Test;
 import org.junit.runner.notification.RunNotifier;
@@ -13,33 +13,35 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
-import org.junit.runners.model.TestClass;
 
 public class QuickCheckRunner extends BlockJUnit4ClassRunner {
 
-    private Generators generators;
+    private GeneratorResolutionStrategy<Generator<?>> strategy;
 
     public QuickCheckRunner(Class<?> klass) throws InitializationError {
         super(klass);
+        initializeResolutionStrategy(klass);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private void initializeResolutionStrategy(Class<?> klass) {
+        QuickCheck ann = klass.getAnnotation(QuickCheck.class);
+        if (ann == null) {
+            throw new IllegalStateException("Generator resolution strategy isn't specified!");
+        }
+        try {
+            this.strategy = (GeneratorResolutionStrategy) ann.resolutionStrategy().newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected Statement classBlock(RunNotifier notifier) {
         Statement result = super.classBlock(notifier);
-        generators = collectGenerators(getTestClass());
         return result;
-    }
-
-    private Generators collectGenerators(TestClass testClass) {
-        Field[] fields = testClass.getJavaClass().getDeclaredFields();
-        Generators gens = new Generators();
-        for (Field field : fields) {
-            if (field.getAnnotation(Arb.class) != null && Generator.class.isAssignableFrom(field.getType())) {
-                field.setAccessible(true);
-                gens.add(field);
-            }
-        }
-        return gens;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class QuickCheckRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        return QuickCheckStatement.newStatement(new FJGeneratorRepository(generators.forTest(test)), method, test);
+        return QuickCheckStatement.newStatement(strategy.resolve(test), method, test);
     }
 
     /**
