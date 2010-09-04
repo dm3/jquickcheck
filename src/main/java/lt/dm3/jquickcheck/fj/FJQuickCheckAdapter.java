@@ -3,7 +3,7 @@ package lt.dm3.jquickcheck.fj;
 import lt.dm3.jquickcheck.Invocation;
 import lt.dm3.jquickcheck.QuickCheckAdapter;
 import lt.dm3.jquickcheck.QuickCheckResult;
-import lt.dm3.jquickcheck.junit.runners.Generator;
+import lt.dm3.jquickcheck.junit4.Generator;
 import fj.F;
 import fj.test.Arbitrary;
 import fj.test.CheckResult;

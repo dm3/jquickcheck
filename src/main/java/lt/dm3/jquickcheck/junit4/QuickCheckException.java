@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.junit.runners;
+package lt.dm3.jquickcheck.junit4;
 
 import lt.dm3.jquickcheck.QuickCheckResult;
 

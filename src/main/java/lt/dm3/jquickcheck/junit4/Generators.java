@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.junit.runners;
+package lt.dm3.jquickcheck.junit4;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import lt.dm3.jquickcheck.GeneratorRepository;
+import lt.dm3.jquickcheck.internal.ExceptionalGenerator;
+import lt.dm3.jquickcheck.internal.Primitives;
 import fj.data.Option;
 
 public final class Generators {

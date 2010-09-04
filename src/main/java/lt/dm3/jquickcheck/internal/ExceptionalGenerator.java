@@ -1,4 +1,6 @@
-package lt.dm3.jquickcheck.junit.runners;
+package lt.dm3.jquickcheck.internal;
+
+import lt.dm3.jquickcheck.junit4.Generator;
 
 
 public class ExceptionalGenerator implements Generator<Object> {

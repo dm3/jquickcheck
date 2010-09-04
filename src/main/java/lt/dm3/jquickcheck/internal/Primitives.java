@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.junit.runners;
+package lt.dm3.jquickcheck.internal;
 
 import java.lang.reflect.Type;
 import java.util.Collections;

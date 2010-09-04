@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 
-import lt.dm3.jquickcheck.junit.runners.Primitives;
+import lt.dm3.jquickcheck.internal.Primitives;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

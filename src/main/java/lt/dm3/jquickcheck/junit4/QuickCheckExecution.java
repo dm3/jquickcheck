@@ -1,8 +1,9 @@
-package lt.dm3.jquickcheck.junit.runners;
+package lt.dm3.jquickcheck.junit4;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.GeneratorRepository;
 import lt.dm3.jquickcheck.Invocation;
 import lt.dm3.jquickcheck.QuickCheckAdapter;
@@ -32,11 +33,11 @@ public class QuickCheckExecution {
             Generator<?> gen = null;
             if (annotations[0].length == 1) {
                 Annotation ann = annotations[0][0];
-                if (ann instanceof Arb) {
-                    Arb arbAnnotation = (Arb) ann;
+                if (ann instanceof G) {
+                    G arbAnnotation = (G) ann;
                     if (arbAnnotation.gen().isEmpty() || !generators.hasGeneratorFor(arbAnnotation.gen())) {
                         try {
-                            gen = ((Arb) ann).genClass().newInstance();
+                            gen = ((G) ann).genClass().newInstance();
                         } catch (InstantiationException e) {
                             e.printStackTrace();
                         } catch (IllegalAccessException e) {

@@ -1,6 +1,6 @@
 package lt.dm3.jquickcheck.junit;
 
-import lt.dm3.jquickcheck.junit.runners.Generator;
+import lt.dm3.jquickcheck.junit4.Generator;
 import fj.test.Gen;
 import fj.test.Rand;
 

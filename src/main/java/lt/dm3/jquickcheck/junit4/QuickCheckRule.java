@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.junit.runners;
+package lt.dm3.jquickcheck.junit4;
 
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;

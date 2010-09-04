@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 
 import lt.dm3.jquickcheck.GeneratorRepository;
 import lt.dm3.jquickcheck.GeneratorResolutionStrategy;
-import lt.dm3.jquickcheck.junit.runners.Generator;
-import lt.dm3.jquickcheck.junit.runners.Generators;
+import lt.dm3.jquickcheck.junit4.Generator;
+import lt.dm3.jquickcheck.junit4.Generators;
 
 public class FJGeneratorResolutionStrategy implements GeneratorResolutionStrategy<Generator<?>> {
 

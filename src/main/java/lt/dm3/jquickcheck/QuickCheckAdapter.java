@@ -1,6 +1,6 @@
 package lt.dm3.jquickcheck;
 
-import lt.dm3.jquickcheck.junit.runners.Generator;
+import lt.dm3.jquickcheck.junit4.Generator;
 
 public interface QuickCheckAdapter {
 

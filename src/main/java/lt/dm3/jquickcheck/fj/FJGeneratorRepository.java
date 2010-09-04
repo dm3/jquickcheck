@@ -3,7 +3,7 @@ package lt.dm3.jquickcheck.fj;
 import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.GeneratorRepository;
-import lt.dm3.jquickcheck.junit.runners.Generator;
+import lt.dm3.jquickcheck.junit4.Generator;
 import fj.test.Arbitrary;
 
 public class FJGeneratorRepository implements GeneratorRepository<Generator<?>> {
