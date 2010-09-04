@@ -5,15 +5,14 @@ import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.api.GeneratorTypeResolver;
 
-public class TypeFromInstanceResolver<T> implements GeneratorTypeResolver<T> {
+public class TypeFromClassResolver implements GeneratorTypeResolver<Class<?>> {
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Type resolveFrom(T context) {
-        return getGenericTypeFor((Class<T>) context.getClass());
+    public Type resolveFrom(Class<?> context) {
+        return getGenericTypeFor(context);
     }
 
-    private Type getGenericTypeFor(Class<? super T> clazz) {
+    private Type getGenericTypeFor(Class<?> clazz) {
         if (clazz == null) {
             return null;
         }
@@ -31,7 +30,7 @@ public class TypeFromInstanceResolver<T> implements GeneratorTypeResolver<T> {
                 }
             }
             if (parameter == null) {
-                parameter = getGenericTypeFor(clazz.getGenericSuperclass());
+                parameter = getGenericTypeForType(clazz.getGenericSuperclass());
             }
         } else if (parameters.length == 1) {
             parameter = parameters[0];
@@ -40,12 +39,11 @@ public class TypeFromInstanceResolver<T> implements GeneratorTypeResolver<T> {
         return parameter;
     }
 
-    @SuppressWarnings("unchecked")
-    private Type getGenericTypeFor(Type superclass) {
+    private Type getGenericTypeForType(Type superclass) {
         if (superclass instanceof ParameterizedType) {
             return ((ParameterizedType) superclass).getActualTypeArguments()[0];
         } else if (superclass instanceof Class) {
-            return getGenericTypeFor((Class<? super T>) superclass);
+            return getGenericTypeFor((Class<?>) superclass);
         }
         return null;
     }

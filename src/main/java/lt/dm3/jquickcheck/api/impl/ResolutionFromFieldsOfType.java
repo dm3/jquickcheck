@@ -1,7 +1,6 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -10,8 +9,11 @@ import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
+import lt.dm3.jquickcheck.api.GeneratorTypeResolver;
 
 public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolutionStrategy<GEN> {
+
+    private static final GeneratorTypeResolver<Object> resolver = new DefaultTypeResolvers();
 
     private static final class GeneratorFromField<GEN> implements NamedAndTypedGenerator<GEN> {
         private final String name;
@@ -23,16 +25,11 @@ public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolu
             try {
                 this.generator = (GEN) field.get(context);
                 this.name = field.getName();
-
-                final Type type = field.getGenericType();
-                Type result = null;
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType pType = (ParameterizedType) type;
-                    if (pType.getActualTypeArguments().length == 1) {
-                        result = pType.getActualTypeArguments()[0];
-                    }
+                Type type = ResolutionFromFieldsOfType.resolver.resolveFrom(field);
+                if (type == null) {
+                    type = ResolutionFromFieldsOfType.resolver.resolveFrom(generator);
                 }
-                this.type = result;
+                this.type = type;
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Cannot resolve the value of the generator!", e);
             } catch (IllegalAccessException e) {
@@ -82,5 +79,6 @@ public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolu
 
     protected abstract boolean holdsGeneratorInstance(Field field);
 
-    protected abstract GeneratorRepository<GEN> createRepository(Iterable<NamedAndTypedGenerator<GEN>> generators, Object context);
+    protected abstract GeneratorRepository<GEN> createRepository(Iterable<NamedAndTypedGenerator<GEN>> generators,
+            Object context);
 }

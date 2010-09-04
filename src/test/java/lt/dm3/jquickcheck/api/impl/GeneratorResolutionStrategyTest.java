@@ -11,7 +11,7 @@ import lt.dm3.jquickcheck.sample.SampleResolutionFromFields;
 
 import org.junit.Test;
 
-public class TestData {
+public class GeneratorResolutionStrategyTest {
 
     private final GeneratorResolutionStrategy<Generator<?>> strategy = new SampleResolutionFromFields();
 

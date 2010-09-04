@@ -16,9 +16,9 @@ import org.junit.Test;
 
 public class TypeFromInstanceResolverTest {
 
-    private final GeneratorTypeResolver<Generator<?>> resolver = new TypeFromInstanceResolver<Generator<?>>();
+    private final GeneratorTypeResolver<Class<?>> resolver = new TypeFromClassResolver();
 
-    public static class FieldTestWithGenField extends TestData.FieldTest {
+    public static class FieldTestWithGenField extends GeneratorResolutionStrategyTest.FieldTest {
         public Generator<Sample> gen;
 
     }
@@ -90,35 +90,35 @@ public class TypeFromInstanceResolverTest {
 
     @Test
     public void shouldResolveTypeFromSuperclassTypeParameter() {
-        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheSuperclass().gen);
+        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheSuperclass().gen.getClass());
 
         assertThat(result, sameTypeAs(Sample.class));
     }
 
     @Test
     public void shouldResolveTypeFromSuperclassInterfaceTypeParameter() {
-        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheInterfaceOfSuperclass().gen);
+        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheInterfaceOfSuperclass().gen.getClass());
 
         assertThat(result, sameTypeAs(Sample.class));
     }
 
     @Test
     public void shouldResolveTypeFromSuperInterfaceTypeParameter() {
-        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheSuperInterface().gen);
+        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheSuperInterface().gen.getClass());
 
         assertThat(result, sameTypeAs(Sample.class));
     }
 
     @Test
     public void shouldResolveTypeFromAnonymousClassWithTypeParameter() {
-        Type result = resolver.resolveFrom(new AnonymousGeneratorWithTypeParameter().gen);
+        Type result = resolver.resolveFrom(new AnonymousGeneratorWithTypeParameter().gen.getClass());
 
         assertThat(result, sameTypeAs(Sample.class));
     }
 
     @Test
     public void shouldReturnNullIfGeneratorHasNoTypeParameters() {
-        Type result = resolver.resolveFrom(new GeneratorWithNoTypeParameters().gen);
+        Type result = resolver.resolveFrom(new GeneratorWithNoTypeParameters().gen.getClass());
 
         assertThat(result, is(nullValue()));
     }

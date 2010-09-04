@@ -20,18 +20,18 @@ public class TypeFromFieldResolverTest {
 
     private final GeneratorTypeResolver<Field> resolver = new TypeFromFieldResolver();
 
-    public static class FieldWithTypeParameter extends TestData.FieldTest {
+    public static class FieldWithTypeParameter extends GeneratorResolutionStrategyTest.FieldTest {
         public Generator<Sample> gen = new SampleGenerator();
     }
 
-    public static class FieldWithNoTypeParameters extends TestData.FieldTest {
+    public static class FieldWithNoTypeParameters extends GeneratorResolutionStrategyTest.FieldTest {
         @SuppressWarnings("rawtypes")
         public Generator gen = new SampleGenerator();
     }
 
     public static class Pair<A, B> { }
 
-    public static class FieldWithTwoTypeParameters extends TestData.FieldTest {
+    public static class FieldWithTwoTypeParameters extends GeneratorResolutionStrategyTest.FieldTest {
         public Pair<String, Integer> gen = new Pair<String, Integer>() { };
     }
 
