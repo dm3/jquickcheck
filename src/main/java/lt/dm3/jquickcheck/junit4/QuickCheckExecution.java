@@ -4,11 +4,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.G;
-import lt.dm3.jquickcheck.GeneratorRepository;
-import lt.dm3.jquickcheck.Invocation;
-import lt.dm3.jquickcheck.QuickCheckAdapter;
-import lt.dm3.jquickcheck.QuickCheckException;
-import lt.dm3.jquickcheck.QuickCheckResult;
+import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.api.Invocation;
+import lt.dm3.jquickcheck.api.QuickCheckAdapter;
+import lt.dm3.jquickcheck.api.QuickCheckException;
+import lt.dm3.jquickcheck.api.QuickCheckResult;
 import lt.dm3.jquickcheck.fj.FJQuickCheckAdapter;
 
 import org.junit.runners.model.FrameworkMethod;
@@ -32,7 +32,7 @@ public class QuickCheckExecution {
         if (args.length == 0) {
             boolean successful = false;
             try {
-                successful = (Boolean) method.invokeExplosively(target, null);
+                successful = (Boolean) method.invokeExplosively(target, (Object[]) null);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }

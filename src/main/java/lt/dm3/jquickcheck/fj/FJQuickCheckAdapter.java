@@ -1,8 +1,8 @@
 package lt.dm3.jquickcheck.fj;
 
-import lt.dm3.jquickcheck.Invocation;
-import lt.dm3.jquickcheck.QuickCheckAdapter;
-import lt.dm3.jquickcheck.QuickCheckResult;
+import lt.dm3.jquickcheck.api.Invocation;
+import lt.dm3.jquickcheck.api.QuickCheckAdapter;
+import lt.dm3.jquickcheck.api.QuickCheckResult;
 import lt.dm3.jquickcheck.junit4.Generator;
 import fj.F;
 import fj.test.Arbitrary;

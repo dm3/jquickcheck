@@ -1,5 +1,8 @@
 package lt.dm3.jquickcheck;
 
+import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
+import lt.dm3.jquickcheck.api.QuickCheckAdapter;
+
 public class Configuration<G> {
 
     private QuickCheckAdapter adapter;

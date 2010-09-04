@@ -1,6 +1,6 @@
 package lt.dm3.jquickcheck.junit4;
 
-import lt.dm3.jquickcheck.GeneratorRepository;
+import lt.dm3.jquickcheck.api.GeneratorRepository;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;

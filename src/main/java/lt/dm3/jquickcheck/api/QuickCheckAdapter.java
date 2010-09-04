@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck;
+package lt.dm3.jquickcheck.api;
 
 import lt.dm3.jquickcheck.junit4.Generator;
 

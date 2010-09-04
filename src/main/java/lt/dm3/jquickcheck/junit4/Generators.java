@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lt.dm3.jquickcheck.GeneratorRepository;
+import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.internal.ExceptionalGenerator;
 import lt.dm3.jquickcheck.internal.Primitives;
 import fj.data.Option;

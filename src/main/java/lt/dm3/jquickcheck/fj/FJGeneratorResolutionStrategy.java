@@ -2,8 +2,8 @@ package lt.dm3.jquickcheck.fj;
 
 import java.lang.reflect.Field;
 
-import lt.dm3.jquickcheck.GeneratorRepository;
-import lt.dm3.jquickcheck.GeneratorResolutionStrategy;
+import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.junit4.Generator;
 import lt.dm3.jquickcheck.junit4.Generators;
 

@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck;
+package lt.dm3.jquickcheck.api;
 
 public class QuickCheckException extends RuntimeException {
 

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
-import lt.dm3.jquickcheck.QuickCheckException;
+import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.fj.FJGeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.junit4.Generator;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;

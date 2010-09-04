@@ -3,9 +3,9 @@ package lt.dm3.jquickcheck.junit4;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import lt.dm3.jquickcheck.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
+import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 
 import org.junit.Test;
 import org.junit.runner.notification.RunNotifier;
