@@ -16,7 +16,7 @@ class SameTypeMatcher extends TypeSafeMatcher<Type> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("type < ").appendText(type.toString());
+        description.appendText("type = ").appendText(type.toString());
     }
 
     @Override
