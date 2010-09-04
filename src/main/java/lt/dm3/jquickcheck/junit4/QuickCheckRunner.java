@@ -4,8 +4,10 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import lt.dm3.jquickcheck.Property;
+import lt.dm3.jquickcheck.Provider;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
+import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 
 import org.junit.Test;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -15,7 +17,9 @@ import org.junit.runners.model.Statement;
 
 public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
 
-    private GeneratorResolutionStrategy<?> strategy;
+    private Provider<GEN> provider;
+    private GeneratorResolutionStrategy<GEN> strategy;
+    private QuickCheckAdapter<GEN> adapter;
 
     public QuickCheckRunner(Class<?> klass) throws InitializationError {
         super(klass);
@@ -28,12 +32,19 @@ public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
             throw new IllegalStateException("Generator resolution strategy isn't specified!");
         }
         try {
-            this.strategy = ann.resolutionStrategy().newInstance();
+            this.provider = createProvider(ann);
+            this.strategy = provider.resolutionStrategy();
+            this.adapter = provider.adapter();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Provider<GEN> createProvider(QuickCheck ann) throws InstantiationException, IllegalAccessException {
+        return (Provider<GEN>) ann.provider().newInstance();
     }
 
     @Override
@@ -43,7 +54,7 @@ public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
 
     @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        return new QuickCheckStatement(strategy.resolve(test), method, test);
+        return new QuickCheckStatement(strategy.resolve(test), adapter, method, test);
     }
 
     /**
