@@ -17,7 +17,7 @@ public class FJGeneratorResolutionStrategy extends ResolutionFromFieldsOfType<Ar
     @Override
     protected GeneratorRepository<Arbitrary<?>> createRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators,
             Object context) {
-        return new FJGeneratorRepository(generators, context);
+        return new FJGeneratorRepository(generators);
     }
 
 }

@@ -2,7 +2,7 @@ package lt.dm3.jquickcheck.fj;
 
 import java.util.List;
 
-import lt.dm3.jquickcheck.api.Invocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
 import fj.F;
@@ -41,9 +41,9 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
     }
 
     private static final class PropertyF extends F<Object, Property> {
-        private final Invocation invocation;
+        private final PropertyInvocation invocation;
 
-        PropertyF(Invocation invocation) {
+        PropertyF(PropertyInvocation invocation) {
             this.invocation = invocation;
         }
 
@@ -59,7 +59,7 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public QuickCheckResult check(List<Arbitrary<?>> generators, final Invocation invocation) {
+    public QuickCheckResult check(List<Arbitrary<?>> generators, final PropertyInvocation invocation) {
         if (generators.size() == 1) {
             return new FJQuickCheckResult(Property.property((Arbitrary) generators.get(0), 
                                           new PropertyF(invocation)).check());

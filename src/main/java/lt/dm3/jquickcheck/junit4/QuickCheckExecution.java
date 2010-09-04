@@ -6,7 +6,7 @@ import java.util.AbstractList;
 
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
-import lt.dm3.jquickcheck.api.Invocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
@@ -77,7 +77,7 @@ public class QuickCheckExecution<GEN> {
                 gen = generators.getDefaultGeneratorFor(t);
             }
             @SuppressWarnings("unchecked")
-            QuickCheckResult result = adapter.check(new Generators(gen), new Invocation() {
+            QuickCheckResult result = adapter.check(new Generators(gen), new PropertyInvocation() {
                 @Override
                 public boolean invoke(Object param) {
                     try {

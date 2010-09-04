@@ -9,6 +9,6 @@ public interface QuickCheckAdapter<GEN> {
      * @param invocation
      * @return
      */
-    QuickCheckResult check(List<GEN> generators, Invocation invocation);
+    QuickCheckResult check(List<GEN> generators, PropertyInvocation invocation);
 
 }

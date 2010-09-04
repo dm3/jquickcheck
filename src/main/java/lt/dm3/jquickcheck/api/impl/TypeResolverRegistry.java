@@ -5,13 +5,12 @@ import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.api.GeneratorTypeResolver;
 
-public class DefaultTypeResolvers implements GeneratorTypeResolver<Object> {
+public class TypeResolverRegistry {
 
     private static final GeneratorTypeResolver<Field> fieldResolver = new TypeFromFieldResolver();
     private static final GeneratorTypeResolver<Class<?>> classResolver = new TypeFromClassResolver();
 
-    @Override
-    public Type resolveFrom(Object context) {
+    public static Type resolveFrom(Object context) {
         if (context instanceof Field) {
             return fieldResolver.resolveFrom((Field) context);
         }

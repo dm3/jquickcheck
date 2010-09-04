@@ -8,7 +8,7 @@ import fj.test.Arbitrary;
 
 public class FJGeneratorRepository extends DefaultGeneratorRepository<Arbitrary<?>> {
 
-    public FJGeneratorRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators, Object context) {
+    public FJGeneratorRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators) {
         super(generators);
     }
 

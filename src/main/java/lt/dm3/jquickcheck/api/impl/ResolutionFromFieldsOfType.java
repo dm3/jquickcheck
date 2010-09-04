@@ -9,11 +9,8 @@ import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
-import lt.dm3.jquickcheck.api.GeneratorTypeResolver;
 
 public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolutionStrategy<GEN> {
-
-    private static final GeneratorTypeResolver<Object> resolver = new DefaultTypeResolvers();
 
     private static final class GeneratorFromField<GEN> implements NamedAndTypedGenerator<GEN> {
         private final String name;
@@ -25,9 +22,9 @@ public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolu
             try {
                 this.generator = (GEN) field.get(context);
                 this.name = field.getName();
-                Type type = ResolutionFromFieldsOfType.resolver.resolveFrom(field);
+                Type type = TypeResolverRegistry.resolveFrom(field);
                 if (type == null) {
-                    type = ResolutionFromFieldsOfType.resolver.resolveFrom(generator);
+                    type = TypeResolverRegistry.resolveFrom(generator);
                 }
                 this.type = type;
             } catch (IllegalArgumentException e) {
