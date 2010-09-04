@@ -11,13 +11,16 @@ import lt.dm3.jquickcheck.sample.SampleResolutionFromFields;
 
 import org.junit.Test;
 
-public class ResolutionFromFieldsTest {
+public class TestData {
 
     private final GeneratorResolutionStrategy<Generator<?>> strategy = new SampleResolutionFromFields();
 
-    private abstract static class FieldTest {
+    public abstract static class FieldTest {
         // getter only needed for test
-        abstract Generator<Sample> gen();
+        Generator<Sample> gen() {
+            throw new UnsupportedOperationException("No field found!");
+        }
+
     }
 
     public static class WithOneDefaultField extends FieldTest {
