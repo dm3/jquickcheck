@@ -8,7 +8,6 @@ import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 
 import org.junit.Test;
-import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -35,12 +34,6 @@ public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected Statement classBlock(RunNotifier notifier) {
-        Statement result = super.classBlock(notifier);
-        return result;
     }
 
     @Override

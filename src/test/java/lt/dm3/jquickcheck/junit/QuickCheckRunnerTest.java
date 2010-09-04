@@ -11,6 +11,8 @@ import lt.dm3.jquickcheck.fj.FJGeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.fj.Gens;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -104,6 +106,38 @@ public class QuickCheckRunnerTest {
         }
     }
 
+    @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
+    public static class CustomPrivateFieldSetInBeforeClassGeneratorTest {
+        private static Arbitrary<Integer> positiveIntGen;
+
+        @BeforeClass
+        public static void beforeClass() {
+            positiveIntGen = Gens.POSITIVE_INTEGERS;
+        }
+
+        @Property
+        public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
+            return arg > 0;
+        }
+    }
+
+    @RunWith(QuickCheckRunner.class)
+    @QuickCheck(resolutionStrategy = FJGeneratorResolutionStrategy.class)
+    public static class CustomPrivateFieldSetInBeforeGeneratorTest {
+        private Arbitrary<Integer> positiveIntGen;
+
+        @Before
+        public void before() {
+            positiveIntGen = Gens.POSITIVE_INTEGERS;
+        }
+
+        @Property
+        public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
+            return arg > 0;
+        }
+    }
+
     @Test
     public void runActualTest() throws InitializationError {
         Result result = JUnitCore.runClasses(ActualTest.class);
@@ -142,6 +176,26 @@ public class QuickCheckRunnerTest {
     @Test
     public void runCustomPrivateFieldGeneratorTestIfInitializedInConstructor() throws InitializationError {
         doTest(CustomPrivateFieldGeneratorTest.class);
+    }
+
+    @Test
+    public void runCustomPrivateFieldGeneratorTestIfInitializedInBeforeClass() throws InitializationError {
+        doTest(CustomPrivateFieldSetInBeforeClassGeneratorTest.class);
+    }
+
+    /**
+     * Setting generators in @Before doesn't work.
+     * 
+     * @throws InitializationError
+     */
+    @Test
+    public void runCustomPrivateFieldGeneratorTestIfInitializedInBeforeShouldFail() throws InitializationError {
+        Result result = JUnitCore.runClasses(CustomPrivateFieldSetInBeforeGeneratorTest.class);
+        int totalTests = new TestClass(CustomPrivateFieldSetInBeforeGeneratorTest.class).getAnnotatedMethods(
+                Property.class).size();
+
+        assertThat(result.getFailureCount(), equalTo(totalTests));
+        assertThat(result.getRunCount(), equalTo(totalTests));
     }
 
     private static void doTest(Class<?> testClass) {
