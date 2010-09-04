@@ -1,16 +1,16 @@
 package lt.dm3.jquickcheck.fj;
 
+import java.util.List;
+
 import lt.dm3.jquickcheck.api.Invocation;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
-import lt.dm3.jquickcheck.junit4.Generator;
 import fj.F;
 import fj.test.Arbitrary;
 import fj.test.CheckResult;
-import fj.test.Gen;
 import fj.test.Property;
 
-public class FJQuickCheckAdapter implements QuickCheckAdapter {
+public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
 
     private static final class FJQuickCheckResult implements QuickCheckResult {
         private final CheckResult result;
@@ -59,12 +59,11 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public QuickCheckResult check(Generator<?>[] generators, final Invocation invocation) {
-        if (generators.length == 1) {
-            Gen gen = Gen.gen(new FJGenAdapter(generators[0]).toFJ());
-            return new FJQuickCheckResult(Property.property(Arbitrary.arbitrary(gen), new PropertyF(invocation))
-                    .check());
+    public QuickCheckResult check(List<Arbitrary<?>> generators, final Invocation invocation) {
+        if (generators.size() == 1) {
+            return new FJQuickCheckResult(Property.property((Arbitrary) generators.get(0), 
+                                          new PropertyF(invocation)).check());
         }
-        throw new IllegalArgumentException("Unsupported number of generators: " + generators.length);
+        throw new IllegalArgumentException("Unsupported number of generators: " + generators.size());
     }
 }

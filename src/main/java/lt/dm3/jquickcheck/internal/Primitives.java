@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Initialization blatantly copied from Guava-primitives (Primitives.java). Sad thing Guava Primitives operate on classes (not on {@link Type}).
+ * Initialization blatantly copied from Guava-primitives (Primitives.java). Sad thing Guava Primitives operate on
+ * classes (not on {@link Type}).
  * 
  * @author dm3
  * 
@@ -41,7 +42,8 @@ public abstract class Primitives {
         WRAPPER_TO_PRIMITIVE_TYPE = Collections.unmodifiableMap(wrapToPrim);
     }
 
-    private static void add(Map<Class<?>, Class<?>> forward, Map<Class<?>, Class<?>> backward, Class<?> key, Class<?> value) {
+    private static void add(Map<Class<?>, Class<?>> forward, Map<Class<?>, Class<?>> backward, Class<?> key,
+            Class<?> value) {
         forward.put(key, value);
         backward.put(value, key);
     }
@@ -55,5 +57,23 @@ public abstract class Primitives {
             return WRAPPER_TO_PRIMITIVE_TYPE.get(a).equals(b);
         }
         return false;
+    }
+
+    public static boolean isPrimitiveOrWrapper(Type t) {
+        return isPrimitive(t) || WRAPPER_TO_PRIMITIVE_TYPE.containsKey(t);
+    }
+
+    public static Type oppositeOf(Type t) {
+        if (!isPrimitiveOrWrapper(t)) {
+            throw new IllegalArgumentException("Expected a primitive or a primitive wrapper. Got: " + t);
+        }
+        if (isPrimitive(t)) {
+            return PRIMITIVE_TO_WRAPPER_TYPE.get(t);
+        }
+        return WRAPPER_TO_PRIMITIVE_TYPE.get(t);
+    }
+
+    private static boolean isPrimitive(Type t) {
+        return PRIMITIVE_TO_WRAPPER_TYPE.containsKey(t);
     }
 }

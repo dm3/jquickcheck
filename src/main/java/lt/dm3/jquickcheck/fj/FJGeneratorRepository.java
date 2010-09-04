@@ -1,30 +1,40 @@
 package lt.dm3.jquickcheck.fj;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.api.impl.GeneratorsFromFields;
-import lt.dm3.jquickcheck.junit4.Generator;
 import fj.test.Arbitrary;
 
-public class FJGeneratorRepository extends GeneratorsFromFields<Generator<?>> {
+public class FJGeneratorRepository extends GeneratorsFromFields<Arbitrary<?>> {
 
     public FJGeneratorRepository(Iterable<Field> gens, Object context) {
         super(gens, context);
     }
 
     @Override
-    public Generator<?> getDefaultGeneratorFor(Type t) {
+    public Arbitrary<?> getDefaultGeneratorFor(Type t) {
         if (t.equals(Integer.TYPE)) {
-            return new FJGenAdapter<Integer>(Arbitrary.arbInteger.gen, 10).toGenerator();
+            return Arbitrary.arbInteger;
         }
         return null;
     }
 
+    /**
+     * Java makes it impossible to determine the runtime type parameter of a parameterized type. {@code Arbitrary} is
+     * final, thus subclassing with specifying exact parameter type is impossible. If we were to
+     * 
+     * <pre>
+     * return object.getClass().getTypeParameters()[0];
+     * </pre>
+     * 
+     * Type returned by this method would never match the type requested from {@code GeneratorRepository}.
+     * 
+     * @see lt.dm3.jquickcheck.api.impl.GeneratorsFromFields#getGeneratorTypeFor(java.lang.Object)
+     */
     @Override
-    protected boolean isGenerator(ParameterizedType pType) {
-        return pType.getRawType().equals(Generator.class);
+    protected Type getGeneratorTypeFor(Arbitrary<?> object) {
+        throw new UnsupportedOperationException("Impossible to determine parameter type for arbitrary: " + object);
     }
 
 }

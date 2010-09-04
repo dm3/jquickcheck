@@ -10,13 +10,26 @@ import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.internal.Primitives;
 
 public abstract class GeneratorsFromFields<G> implements GeneratorRepository<G> {
-    private final Map<String, G> generators = new HashMap<String, G>();
+    private final Map<String, G> nameToGenerator = new HashMap<String, G>();
+    private final Map<Type, G> typeToGenerator = new HashMap<Type, G>();
 
     @SuppressWarnings("unchecked")
     protected GeneratorsFromFields(Iterable<Field> fields, Object context) {
         for (Field field : fields) {
             try {
-                generators.put(field.getName(), (G) field.get(context));
+                G fieldValue = (G) field.get(context);
+                Type type = field.getGenericType();
+                if (type instanceof ParameterizedType) {
+                    ParameterizedType pType = (ParameterizedType) type;
+                    if (pType.getActualTypeArguments().length == 1) {
+                        Type generatorType = pType.getActualTypeArguments()[0];
+                        if (Primitives.isPrimitiveOrWrapper(generatorType)) {
+                            typeToGenerator.put(Primitives.oppositeOf(generatorType), fieldValue);
+                        }
+                        typeToGenerator.put(generatorType, fieldValue);
+                    }
+                }
+                nameToGenerator.put(field.getName(), fieldValue);
             } catch (IllegalArgumentException e) {
                 System.err.println(e);
             } catch (IllegalAccessException e) {
@@ -27,12 +40,12 @@ public abstract class GeneratorsFromFields<G> implements GeneratorRepository<G> 
 
     @Override
     public boolean hasGeneratorFor(String fieldName) {
-        return generators.containsKey(fieldName);
+        return nameToGenerator.containsKey(fieldName);
     }
 
     @Override
     public G getGeneratorFor(String fieldName) {
-        return generators.get(fieldName);
+        return nameToGenerator.get(fieldName);
     }
 
     @Override
@@ -53,32 +66,59 @@ public abstract class GeneratorsFromFields<G> implements GeneratorRepository<G> 
     public abstract G getDefaultGeneratorFor(Type t);
 
     private G findGeneratorFor(Type t) {
-        for (G g : generators.values()) {
-            Type[] interfaces = g.getClass().getGenericInterfaces();
-            for (Type i : interfaces) {
-                if (i instanceof ParameterizedType) { // i.equals(Generator.class) or Generator.class.isAssignableFrom(i) doesn't work
-                    ParameterizedType pType = (ParameterizedType) i;
-                    if (isGenerator(pType)) {
-                        Type[] args = pType.getActualTypeArguments();
-                        if (args.length != 1) {
-                            throw new IllegalArgumentException("Cannot determine the type of the generator: " + g
-                                    + " for argument of type " + t);
-                        }
-                        if (suitableFor(t, args[0])) {
-                            return g;
-                        }
-                    }
-                }
+        if (typeToGenerator.containsKey(t)) {
+            return typeToGenerator.get(t);
+        }
+        for (G g : nameToGenerator.values()) {
+            Type generatorType = getGeneratorTypeFor(g);
+            if (suitableFor(t, generatorType)) {
+                return g;
             }
         }
         return null;
     }
 
-    /**
-     * @param pType
-     * @return true if the given type represents a generator
-     */
-    protected abstract boolean isGenerator(ParameterizedType pType);
+    @SuppressWarnings("unchecked")
+    protected Type getGeneratorTypeFor(G object) {
+        Type result = getGenericTypeFor((Class<G>) object.getClass());
+        if (result == null) {
+            throw impossibleToResolveGeneratorFor(object.getClass());
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Type getGenericTypeFor(Class<? super G> clazz) {
+        if (clazz == null) {
+            return null;
+        }
+
+        Type[] parameters = clazz.getTypeParameters();
+        Type parameter = null;
+        if (parameters.length == 0) { // type must be in the interface or a superclass
+            Type[] interfaces = clazz.getGenericInterfaces();
+            for (Type inter : interfaces) {
+                if (inter instanceof ParameterizedType) {
+                    ParameterizedType pType = (ParameterizedType) inter;
+                    if (pType.getActualTypeArguments().length == 1) {
+                        parameter = pType.getActualTypeArguments()[0];
+                    }
+                }
+            }
+            if (parameter == null) {
+                parameter = getGenericTypeFor((Class<? super G>) clazz.getGenericSuperclass());
+            }
+        } else if (parameters.length == 1) {
+            parameter = parameters[0];
+        }
+
+        return parameter;
+    }
+
+    private IllegalArgumentException impossibleToResolveGeneratorFor(Class<?> clazz) {
+        return new IllegalArgumentException(String.format("Class %s must have exactly one type parameter or "
+                + "have a super class or interface with exactly one type parameter!", clazz.getName()));
+    }
 
     /**
      * @param required

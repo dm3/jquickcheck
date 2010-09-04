@@ -2,6 +2,7 @@ package lt.dm3.jquickcheck.junit4;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.AbstractList;
 
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
@@ -9,18 +10,39 @@ import lt.dm3.jquickcheck.api.Invocation;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
-import lt.dm3.jquickcheck.fj.FJQuickCheckAdapter;
 
 import org.junit.runners.model.FrameworkMethod;
 
-public class QuickCheckExecution {
+public class QuickCheckExecution<GEN> {
 
-    private final QuickCheckAdapter adapter = new FJQuickCheckAdapter();
-    private final GeneratorRepository<Generator<?>> generators;
+    final class Generators extends AbstractList<GEN> {
+        private final Object[] generators;
+
+        public Generators(GEN... gens) {
+            this.generators = gens;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public GEN get(int index) {
+            return (GEN) generators[index];
+        }
+
+        @Override
+        public int size() {
+            return generators.length;
+        }
+
+    }
+
+    private final QuickCheckAdapter<GEN> adapter;
+    private final GeneratorRepository<GEN> generators;
     private final FrameworkMethod method;
     private final Object target;
 
-    public QuickCheckExecution(GeneratorRepository<Generator<?>> generators, FrameworkMethod method, Object target) {
+    public QuickCheckExecution(QuickCheckAdapter<GEN> adapter, GeneratorRepository<GEN> generators,
+            FrameworkMethod method, Object target) {
+        this.adapter = adapter;
         this.generators = generators;
         this.method = method;
         this.target = target;
@@ -41,22 +63,12 @@ public class QuickCheckExecution {
             }
         } else if (args.length == 1) {
             final Type t = args[0];
-            Generator<?> gen = null;
+            GEN gen = null;
             if (annotations[0].length == 1) {
                 Annotation ann = annotations[0][0];
                 if (ann instanceof G) {
                     G arbAnnotation = (G) ann;
-                    if (arbAnnotation.gen().isEmpty() || !generators.hasGeneratorFor(arbAnnotation.gen())) {
-                        try {
-                            gen = ((G) ann).genClass().newInstance();
-                        } catch (InstantiationException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        gen = generators.getGeneratorFor(arbAnnotation.gen());
-                    }
+                    gen = generators.getGeneratorFor(arbAnnotation.gen());
                 }
             } else if (generators.hasGeneratorFor(t)) {
                 gen = generators.getGeneratorFor(t);
@@ -64,7 +76,8 @@ public class QuickCheckExecution {
             if (gen == null) {
                 gen = generators.getDefaultGeneratorFor(t);
             }
-            QuickCheckResult result = adapter.check(new Generator[] { gen }, new Invocation() {
+            @SuppressWarnings("unchecked")
+            QuickCheckResult result = adapter.check(new Generators(gen), new Invocation() {
                 @Override
                 public boolean invoke(Object param) {
                     try {

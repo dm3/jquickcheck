@@ -56,3 +56,4 @@ special static `TYPE` variable on the respective primitive wrapper class
     - java.net.QuickCheck
     - core
 7. Add default generator resolution strategy discovery
+8. FJ - allow both Gen and Arbitrary as generators?

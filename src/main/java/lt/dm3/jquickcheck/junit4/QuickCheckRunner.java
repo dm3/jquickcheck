@@ -14,23 +14,22 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
-public class QuickCheckRunner extends BlockJUnit4ClassRunner {
+public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
 
-    private GeneratorResolutionStrategy<Generator<?>> strategy;
+    private GeneratorResolutionStrategy<?> strategy;
 
     public QuickCheckRunner(Class<?> klass) throws InitializationError {
         super(klass);
         initializeResolutionStrategy(klass);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void initializeResolutionStrategy(Class<?> klass) {
         QuickCheck ann = klass.getAnnotation(QuickCheck.class);
         if (ann == null) {
             throw new IllegalStateException("Generator resolution strategy isn't specified!");
         }
         try {
-            this.strategy = (GeneratorResolutionStrategy) ann.resolutionStrategy().newInstance();
+            this.strategy = ann.resolutionStrategy().newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
