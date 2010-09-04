@@ -1,14 +1,14 @@
 package lt.dm3.jquickcheck.sample;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.api.impl.GeneratorsFromFields;
+import lt.dm3.jquickcheck.api.impl.HasGenerator;
 
 public class NoDefaultGeneratorRepository extends GeneratorsFromFields<Generator<?>> {
 
-    public NoDefaultGeneratorRepository(Iterable<Field> fields, Object context) {
-        super(fields, context);
+    public NoDefaultGeneratorRepository(Iterable<HasGenerator<Generator<?>>> generators, Object context) {
+        super(generators, context);
     }
 
     @Override

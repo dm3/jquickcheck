@@ -1,6 +1,5 @@
 package lt.dm3.jquickcheck.api.impl;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -13,27 +12,14 @@ public abstract class GeneratorsFromFields<G> implements GeneratorRepository<G> 
     private final Map<String, G> nameToGenerator = new HashMap<String, G>();
     private final Map<Type, G> typeToGenerator = new HashMap<Type, G>();
 
-    @SuppressWarnings("unchecked")
-    protected GeneratorsFromFields(Iterable<Field> fields, Object context) {
-        for (Field field : fields) {
-            try {
-                G fieldValue = (G) field.get(context);
-                Type type = field.getGenericType();
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType pType = (ParameterizedType) type;
-                    if (pType.getActualTypeArguments().length == 1) {
-                        Type generatorType = pType.getActualTypeArguments()[0];
-                        if (Primitives.isPrimitiveOrWrapper(generatorType)) {
-                            typeToGenerator.put(Primitives.oppositeOf(generatorType), fieldValue);
-                        }
-                        typeToGenerator.put(generatorType, fieldValue);
-                    }
+    protected GeneratorsFromFields(Iterable<HasGenerator<G>> generators, Object context) {
+        for (HasGenerator<G> gen : generators) {
+            nameToGenerator.put(gen.getName(), gen.getGenerator());
+            if (gen.getType() != null) {
+                if (Primitives.isPrimitiveOrWrapper(gen.getType())) {
+                    typeToGenerator.put(Primitives.oppositeOf(gen.getType()), gen.getGenerator());
                 }
-                nameToGenerator.put(field.getName(), fieldValue);
-            } catch (IllegalArgumentException e) {
-                System.err.println(e);
-            } catch (IllegalAccessException e) {
-                System.err.println(e);
+                typeToGenerator.put(gen.getType(), gen.getGenerator());
             }
         }
     }
