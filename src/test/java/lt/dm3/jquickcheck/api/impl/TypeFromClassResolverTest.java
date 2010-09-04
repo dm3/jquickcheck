@@ -14,19 +14,13 @@ import lt.dm3.jquickcheck.sample.SampleGenerator;
 
 import org.junit.Test;
 
-public class TypeFromInstanceResolverTest {
+public class TypeFromClassResolverTest {
 
     private final GeneratorTypeResolver<Class<?>> resolver = new TypeFromClassResolver();
 
     public static class FieldTestWithGenField extends GeneratorResolutionStrategyTest.FieldTest {
         public Generator<Sample> gen;
 
-    }
-
-    public static class GeneratorWithTypeParameterInTheSuperInterface extends FieldTestWithGenField {
-        {
-            gen = new SampleGenerator();
-        }
     }
 
     public static class AnonymousGeneratorWithTypeParameter extends FieldTestWithGenField {
@@ -52,13 +46,6 @@ public class TypeFromInstanceResolverTest {
     public static class GeneratorWithSuperHavingType extends GeneratorSuper<Sample> {
     }
 
-    @SuppressWarnings("unchecked")
-    public static class GeneratorWithTypeParameterInTheSuperclass extends FieldTestWithGenField {
-        {
-            gen = new GeneratorWithSuperHavingType();
-        }
-    }
-
     // super class with no type + interface with type
     public static class GeneratorSuperWithNoType implements Generator<Sample> {
         @Override
@@ -70,10 +57,11 @@ public class TypeFromInstanceResolverTest {
     public static class GeneratorWithSuperHavingNoType extends GeneratorSuperWithNoType {
     }
 
-    public static class GeneratorWithTypeParameterInTheInterfaceOfSuperclass extends FieldTestWithGenField {
-        {
-            gen = new GeneratorWithSuperHavingNoType();
-        }
+    // interface with > 1 type parameters
+    private interface Pair<A, B> {
+    }
+
+    public static class GeneratorWithTwoTypeParametersInTheSuperInterface implements Pair<Integer, String> {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -90,21 +78,21 @@ public class TypeFromInstanceResolverTest {
 
     @Test
     public void shouldResolveTypeFromSuperclassTypeParameter() {
-        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheSuperclass().gen.getClass());
+        Type result = resolver.resolveFrom(GeneratorWithSuperHavingType.class);
 
         assertThat(result, sameTypeAs(Sample.class));
     }
 
     @Test
     public void shouldResolveTypeFromSuperclassInterfaceTypeParameter() {
-        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheInterfaceOfSuperclass().gen.getClass());
+        Type result = resolver.resolveFrom(GeneratorWithSuperHavingNoType.class);
 
         assertThat(result, sameTypeAs(Sample.class));
     }
 
     @Test
     public void shouldResolveTypeFromSuperInterfaceTypeParameter() {
-        Type result = resolver.resolveFrom(new GeneratorWithTypeParameterInTheSuperInterface().gen.getClass());
+        Type result = resolver.resolveFrom(SampleGenerator.class);
 
         assertThat(result, sameTypeAs(Sample.class));
     }
@@ -114,6 +102,13 @@ public class TypeFromInstanceResolverTest {
         Type result = resolver.resolveFrom(new AnonymousGeneratorWithTypeParameter().gen.getClass());
 
         assertThat(result, sameTypeAs(Sample.class));
+    }
+
+    @Test
+    public void shouldReturnNullIfSuperInterfaceHasMoreThanOneTypeParameter() {
+        Type result = resolver.resolveFrom(GeneratorWithTwoTypeParametersInTheSuperInterface.class);
+
+        assertThat(result, is(nullValue()));
     }
 
     @Test

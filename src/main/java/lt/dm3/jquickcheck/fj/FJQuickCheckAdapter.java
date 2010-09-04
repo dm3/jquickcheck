@@ -115,6 +115,7 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
                     return FJQuickCheckResult.proven();
                 }
             } catch (RuntimeException e) {
+                return FJQuickCheckResult.falsified();
             }
             return FJQuickCheckResult.falsified();
         }

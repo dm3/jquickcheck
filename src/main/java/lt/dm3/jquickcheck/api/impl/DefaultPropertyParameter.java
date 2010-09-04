@@ -28,10 +28,8 @@ class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
                 }
             }
         }
-        if (gen == null) {
-            if (repo.hasGeneratorFor(type)) {
-                gen = repo.getGeneratorFor(type);
-            }
+        if (gen == null && repo.hasGeneratorFor(type)) {
+            gen = repo.getGeneratorFor(type);
         }
         if (gen == null) {
             gen = repo.getDefaultGeneratorFor(type);
