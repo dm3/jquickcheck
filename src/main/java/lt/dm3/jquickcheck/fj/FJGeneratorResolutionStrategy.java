@@ -3,7 +3,7 @@ package lt.dm3.jquickcheck.fj;
 import java.lang.reflect.Field;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
-import lt.dm3.jquickcheck.api.impl.HasGenerator;
+import lt.dm3.jquickcheck.api.impl.NamedAndTypedGenerator;
 import lt.dm3.jquickcheck.api.impl.ResolutionFromFieldsOfType;
 import fj.test.Arbitrary;
 
@@ -15,7 +15,7 @@ public class FJGeneratorResolutionStrategy extends ResolutionFromFieldsOfType<Ar
     }
 
     @Override
-    protected GeneratorRepository<Arbitrary<?>> createRepository(Iterable<HasGenerator<Arbitrary<?>>> generators,
+    protected GeneratorRepository<Arbitrary<?>> createRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators,
             Object context) {
         return new FJGeneratorRepository(generators, context);
     }

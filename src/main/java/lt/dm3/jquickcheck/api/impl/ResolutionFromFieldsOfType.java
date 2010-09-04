@@ -13,7 +13,7 @@ import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 
 public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolutionStrategy<GEN> {
 
-    private static final class GeneratorFromField<GEN> implements HasGenerator<GEN> {
+    private static final class GeneratorFromField<GEN> implements NamedAndTypedGenerator<GEN> {
         private final String name;
         private final Type type;
         private final GEN generator;
@@ -64,7 +64,7 @@ public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolu
     @Override
     public final <T> GeneratorRepository<GEN> resolve(final T context) {
         Field[] fields = context.getClass().getDeclaredFields();
-        final List<HasGenerator<GEN>> gens = new ArrayList<HasGenerator<GEN>>(fields.length);
+        final List<NamedAndTypedGenerator<GEN>> gens = new ArrayList<NamedAndTypedGenerator<GEN>>(fields.length);
         for (final Field field : fields) {
             if (holdsGeneratorInstance(field)) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
@@ -82,5 +82,5 @@ public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolu
 
     protected abstract boolean holdsGeneratorInstance(Field field);
 
-    protected abstract GeneratorRepository<GEN> createRepository(Iterable<HasGenerator<GEN>> generators, Object context);
+    protected abstract GeneratorRepository<GEN> createRepository(Iterable<NamedAndTypedGenerator<GEN>> generators, Object context);
 }

@@ -56,6 +56,43 @@ public class ResolutionFromFieldsTest {
         }
     }
 
+    public static class WithOneFieldHavingNoTypeParameter extends FieldTest {
+        private static final Generator gen = new SampleGenerator();
+
+        @Override
+        Generator<Sample> gen() {
+            return gen;
+        }
+    }
+
+    public static class WithOneFieldHavingNoTypeParameterAndAnonymousGenerator extends FieldTest {
+        private static final Generator gen = new Generator<Sample>() {
+            @Override
+            public Sample generate() {
+                return new Sample();
+            }
+        };
+
+        @Override
+        Generator<Sample> gen() {
+            return gen;
+        }
+    }
+
+    public static class WithOneFieldHavingNoTypeParameterAndAnonymousGeneratorWithNoTypeParameter extends FieldTest {
+        private static final Generator gen = new Generator() {
+            @Override
+            public Object generate() {
+                return new Sample();
+            }
+        };
+
+        @Override
+        Generator<Sample> gen() {
+            return gen;
+        }
+    }
+
     @Test
     public void shouldResolveAllOfTheSpecifiedGenerators() {
         checkAccessible(new WithOneDefaultField());
@@ -64,13 +101,53 @@ public class ResolutionFromFieldsTest {
         checkAccessible(new WithOnePrivateStaticField());
     }
 
+    @Test
+    public void shouldResolveGeneratorsWithDifferentTypingOptions() {
+        checkAccessible(new WithOneFieldHavingNoTypeParameter());
+        checkAccessible(new WithOneFieldHavingNoTypeParameterAndAnonymousGenerator());
+    }
+
+    @Test
+    public void shouldNotResolveGeneratorWithNoTypes() {
+        checkNotAccessibleByType(new WithOneFieldHavingNoTypeParameterAndAnonymousGeneratorWithNoTypeParameter());
+        checkAccessibleByName(new WithOneFieldHavingNoTypeParameterAndAnonymousGeneratorWithNoTypeParameter());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenGettingUnaccessibleGenerator() {
+        GeneratorRepository<Generator<?>> repo = strategy
+                .resolve(new WithOneFieldHavingNoTypeParameterAndAnonymousGeneratorWithNoTypeParameter());
+
+        repo.getGeneratorFor(Sample.class);
+    }
+
+    private void checkNotAccessibleByType(FieldTest instance) {
+        GeneratorRepository<Generator<?>> repo = strategy.resolve(instance);
+
+        assertThat(repo.hasGeneratorFor(Sample.class), is(false));
+    }
+
     @SuppressWarnings("rawtypes")
     private void checkAccessible(FieldTest instance) {
         GeneratorRepository<Generator<?>> repo = strategy.resolve(instance);
 
         Generator gen = instance.gen();
+        checkAccessibleByName(repo, gen);
+        checkAccessibleByType(repo, gen);
+    }
+
+    private void checkAccessibleByName(FieldTest instance) {
+        checkAccessibleByName(strategy.resolve(instance), instance.gen());
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void checkAccessibleByName(GeneratorRepository<Generator<?>> repo, Generator gen) {
         assertThat(repo.hasGeneratorFor("gen"), is(true));
         assertThat(repo.getGeneratorFor("gen"), is(gen));
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void checkAccessibleByType(GeneratorRepository<Generator<?>> repo, Generator gen) {
         assertThat(repo.hasGeneratorFor(Sample.class), is(true));
         assertThat(repo.getGeneratorFor(Sample.class), is(gen));
     }

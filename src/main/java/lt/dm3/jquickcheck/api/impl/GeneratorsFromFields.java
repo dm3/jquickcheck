@@ -12,8 +12,8 @@ public abstract class GeneratorsFromFields<G> implements GeneratorRepository<G> 
     private final Map<String, G> nameToGenerator = new HashMap<String, G>();
     private final Map<Type, G> typeToGenerator = new HashMap<Type, G>();
 
-    protected GeneratorsFromFields(Iterable<HasGenerator<G>> generators, Object context) {
-        for (HasGenerator<G> gen : generators) {
+    protected GeneratorsFromFields(Iterable<NamedAndTypedGenerator<G>> generators, Object context) {
+        for (NamedAndTypedGenerator<G> gen : generators) {
             nameToGenerator.put(gen.getName(), gen.getGenerator());
             if (gen.getType() != null) {
                 if (Primitives.isPrimitiveOrWrapper(gen.getType())) {
@@ -57,6 +57,9 @@ public abstract class GeneratorsFromFields<G> implements GeneratorRepository<G> 
         }
         for (G g : nameToGenerator.values()) {
             Type generatorType = getGeneratorTypeFor(g);
+            if (generatorType == null) {
+                return null;
+            }
             if (suitableFor(t, generatorType)) {
                 return g;
             }
@@ -66,11 +69,7 @@ public abstract class GeneratorsFromFields<G> implements GeneratorRepository<G> 
 
     @SuppressWarnings("unchecked")
     protected Type getGeneratorTypeFor(G object) {
-        Type result = getGenericTypeFor((Class<G>) object.getClass());
-        if (result == null) {
-            throw impossibleToResolveGeneratorFor(object.getClass());
-        }
-        return result;
+        return getGenericTypeFor((Class<G>) object.getClass());
     }
 
     @SuppressWarnings("unchecked")

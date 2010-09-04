@@ -3,12 +3,12 @@ package lt.dm3.jquickcheck.fj;
 import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.api.impl.GeneratorsFromFields;
-import lt.dm3.jquickcheck.api.impl.HasGenerator;
+import lt.dm3.jquickcheck.api.impl.NamedAndTypedGenerator;
 import fj.test.Arbitrary;
 
 public class FJGeneratorRepository extends GeneratorsFromFields<Arbitrary<?>> {
 
-    public FJGeneratorRepository(Iterable<HasGenerator<Arbitrary<?>>> generators, Object context) {
+    public FJGeneratorRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators, Object context) {
         super(generators, context);
     }
 
