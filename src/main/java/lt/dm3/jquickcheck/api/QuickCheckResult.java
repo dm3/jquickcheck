@@ -1,5 +1,6 @@
 package lt.dm3.jquickcheck.api;
 
+
 public interface QuickCheckResult {
     public boolean isPassed();
 

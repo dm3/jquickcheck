@@ -40,21 +40,30 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter {
         }
     }
 
+    private static final class PropertyF extends F<Object, Property> {
+        private final Invocation invocation;
+
+        PropertyF(Invocation invocation) {
+            this.invocation = invocation;
+        }
+
+        @Override
+        public Property f(Object param) {
+            try {
+                return Property.prop(invocation.invoke(param));
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public QuickCheckResult check(Generator<?>[] generators, final Invocation invocation) {
         if (generators.length == 1) {
             Gen gen = Gen.gen(new FJGenAdapter(generators[0]).toFJ());
-            return new FJQuickCheckResult(Property.property(Arbitrary.arbitrary(gen), new F<Object, Property>() {
-                @Override
-                public Property f(Object param) {
-                    try {
-                        return Property.prop(invocation.invoke(param));
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }).check());
+            return new FJQuickCheckResult(Property.property(Arbitrary.arbitrary(gen), new PropertyF(invocation))
+                    .check());
         }
         throw new IllegalArgumentException("Unsupported number of generators: " + generators.length);
     }

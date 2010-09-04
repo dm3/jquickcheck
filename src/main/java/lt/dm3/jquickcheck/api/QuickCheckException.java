@@ -4,7 +4,8 @@ public class QuickCheckException extends RuntimeException {
 
     private static final long serialVersionUID = 7856404897568627298L;
 
-    private final QuickCheckResult result;
+    // Don't want to make result serializable
+    private final transient QuickCheckResult result;
 
     public QuickCheckException(QuickCheckResult result2) {
         this.result = result2;
