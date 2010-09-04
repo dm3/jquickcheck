@@ -7,6 +7,7 @@ import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.Provider;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
+import lt.dm3.jquickcheck.api.PropertyMethodFactory;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 
 import org.junit.Test;
@@ -20,6 +21,7 @@ public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
     private Provider<GEN> provider;
     private GeneratorResolutionStrategy<GEN> strategy;
     private QuickCheckAdapter<GEN> adapter;
+    private PropertyMethodFactory<GEN> methodFactory;
 
     public QuickCheckRunner(Class<?> klass) throws InitializationError {
         super(klass);
@@ -35,6 +37,7 @@ public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
             this.provider = createProvider(ann);
             this.strategy = provider.resolutionStrategy();
             this.adapter = provider.adapter();
+            this.methodFactory = provider.methodFactory();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -54,7 +57,8 @@ public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
 
     @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        return new QuickCheckStatement(strategy.resolve(test), adapter, method, test);
+        return new QuickCheckStatement<GEN>(strategy.resolve(test), adapter,
+                                            methodFactory.createMethod(method.getMethod(), test));
     }
 
     /**

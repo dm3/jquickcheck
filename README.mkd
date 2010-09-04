@@ -58,3 +58,7 @@ special static `TYPE` variable on the respective primitive wrapper class
 7. Add default generator resolution strategy discovery
 8. FJ - allow both Gen and Arbitrary as generators?
 9. Additional custom generator type resolution algorithms for javaNetQuickCheck and FJ (based on method return type?)
+10. Integration with templates:
+    - FJ: Some code generation will probably be needed to generate the Gen for the result of the template.
+          All of the properties registered with `with` will have to be associated to some static registry and later,
+          when the test method is executed will be bound (`Gen#bind`) to produce the `Gen<Result>`.

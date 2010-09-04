@@ -38,12 +38,60 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
         public boolean isExhausted() {
             return result.isExhausted();
         }
+
+        public static QuickCheckResult falsified() {
+            return new QuickCheckResult() {
+                @Override
+                public boolean isPassed() {
+                    return false;
+                }
+
+                @Override
+                public boolean isProven() {
+                    return false;
+                }
+
+                @Override
+                public boolean isFalsified() {
+                    return true;
+                }
+
+                @Override
+                public boolean isExhausted() {
+                    return false;
+                }
+            };
+        }
+
+        public static QuickCheckResult proven() {
+            return new QuickCheckResult() {
+                @Override
+                public boolean isPassed() {
+                    return false;
+                }
+
+                @Override
+                public boolean isProven() {
+                    return true;
+                }
+
+                @Override
+                public boolean isFalsified() {
+                    return false;
+                }
+
+                @Override
+                public boolean isExhausted() {
+                    return false;
+                }
+            };
+        }
     }
 
     private static final class PropertyF extends F<Object, Property> {
-        private final PropertyInvocation invocation;
+        private final PropertyInvocation<Arbitrary<?>> invocation;
 
-        PropertyF(PropertyInvocation invocation) {
+        PropertyF(PropertyInvocation<Arbitrary<?>> invocation) {
             this.invocation = invocation;
         }
 
@@ -59,10 +107,20 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public QuickCheckResult check(List<Arbitrary<?>> generators, final PropertyInvocation invocation) {
+    public QuickCheckResult check(final PropertyInvocation<Arbitrary<?>> invocation) {
+        List<Arbitrary<?>> generators = invocation.generators();
+        if (generators.isEmpty()) {
+            try {
+                if (invocation.invoke(null)) {
+                    return FJQuickCheckResult.proven();
+                }
+            } catch (RuntimeException e) {
+            }
+            return FJQuickCheckResult.falsified();
+        }
         if (generators.size() == 1) {
-            return new FJQuickCheckResult(Property.property((Arbitrary) generators.get(0), 
-                                          new PropertyF(invocation)).check());
+            return new FJQuickCheckResult(Property.property((Arbitrary) generators.get(0),
+                                                            new PropertyF(invocation)).check());
         }
         throw new IllegalArgumentException("Unsupported number of generators: " + generators.size());
     }
