@@ -1,10 +1,12 @@
 package lt.dm3.jquickcheck.junit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
+import lt.dm3.jquickcheck.QuickCheckException;
 import lt.dm3.jquickcheck.fj.FJGeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.junit4.Generator;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
@@ -24,6 +26,11 @@ public class QuickCheckRunnerTest {
         @Property
         public boolean shouldRunTheTestWithNoArguments() {
             return true;
+        }
+
+        @Property
+        public boolean shouldFailTheTestWhichReturnsFalse() {
+            return false;
         }
     }
 
@@ -110,7 +117,12 @@ public class QuickCheckRunnerTest {
 
     @Test
     public void runActualTest() throws InitializationError {
-        doTest(ActualTest.class);
+        Result result = JUnitCore.runClasses(ActualTest.class);
+        int totalTests = new TestClass(ActualTest.class).getAnnotatedMethods(Property.class).size();
+
+        assertThat(result.getFailureCount(), equalTo(1));
+        assertThat(result.getFailures().get(0).getException(), instanceOf(QuickCheckException.class));
+        assertThat(result.getRunCount(), equalTo(totalTests));
     }
 
     @Test

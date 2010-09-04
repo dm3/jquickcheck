@@ -1,6 +1,4 @@
-package lt.dm3.jquickcheck.junit4;
-
-import lt.dm3.jquickcheck.QuickCheckResult;
+package lt.dm3.jquickcheck;
 
 public class QuickCheckException extends RuntimeException {
 
@@ -24,5 +22,30 @@ public class QuickCheckException extends RuntimeException {
             return "Proven";
         }
         return "Unknown result!";
+    }
+
+    public static QuickCheckException falsified() {
+        return new QuickCheckException(new QuickCheckResult() {
+
+            @Override
+            public boolean isProven() {
+                return false;
+            }
+
+            @Override
+            public boolean isPassed() {
+                return false;
+            }
+
+            @Override
+            public boolean isFalsified() {
+                return true;
+            }
+
+            @Override
+            public boolean isExhausted() {
+                return false;
+            }
+        });
     }
 }

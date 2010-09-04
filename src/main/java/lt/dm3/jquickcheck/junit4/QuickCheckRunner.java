@@ -51,7 +51,7 @@ public class QuickCheckRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        return QuickCheckStatement.newStatement(strategy.resolve(test), method, test);
+        return new QuickCheckStatement(strategy.resolve(test), method, test);
     }
 
     /**

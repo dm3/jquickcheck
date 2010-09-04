@@ -7,6 +7,7 @@ import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.GeneratorRepository;
 import lt.dm3.jquickcheck.Invocation;
 import lt.dm3.jquickcheck.QuickCheckAdapter;
+import lt.dm3.jquickcheck.QuickCheckException;
 import lt.dm3.jquickcheck.QuickCheckResult;
 import lt.dm3.jquickcheck.fj.FJQuickCheckAdapter;
 
@@ -28,7 +29,17 @@ public class QuickCheckExecution {
     public void execute() {
         Type[] args = method.getMethod().getGenericParameterTypes();
         Annotation[][] annotations = method.getMethod().getParameterAnnotations();
-        if (args.length == 1) {
+        if (args.length == 0) {
+            boolean successful = false;
+            try {
+                successful = (Boolean) method.invokeExplosively(target, null);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            if (!successful) {
+                throw QuickCheckException.falsified();
+            }
+        } else if (args.length == 1) {
             final Type t = args[0];
             Generator<?> gen = null;
             if (annotations[0].length == 1) {
