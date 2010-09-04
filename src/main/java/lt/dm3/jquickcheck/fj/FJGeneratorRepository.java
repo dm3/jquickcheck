@@ -1,17 +1,17 @@
 package lt.dm3.jquickcheck.fj;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.api.impl.GeneratorsFromFields;
 import lt.dm3.jquickcheck.junit4.Generator;
 import fj.test.Arbitrary;
 
-public class FJGeneratorRepository implements GeneratorRepository<Generator<?>> {
+public class FJGeneratorRepository extends GeneratorsFromFields<Generator<?>> {
 
-    private final GeneratorRepository<Generator<?>> generatorRepository;
-
-    public FJGeneratorRepository(GeneratorRepository<Generator<?>> generatorRepository) {
-        this.generatorRepository = generatorRepository;
+    public FJGeneratorRepository(Iterable<Field> gens, Object context) {
+        super(gens, context);
     }
 
     @Override
@@ -23,23 +23,8 @@ public class FJGeneratorRepository implements GeneratorRepository<Generator<?>> 
     }
 
     @Override
-    public boolean hasGeneratorFor(String fieldName) {
-        return generatorRepository.hasGeneratorFor(fieldName);
-    }
-
-    @Override
-    public Generator<?> getGeneratorFor(String fieldName) {
-        return generatorRepository.getGeneratorFor(fieldName);
-    }
-
-    @Override
-    public boolean hasGeneratorFor(Type t) {
-        return generatorRepository.hasGeneratorFor(t);
-    }
-
-    @Override
-    public Generator<?> getGeneratorFor(Type t) {
-        return generatorRepository.getGeneratorFor(t);
+    protected boolean isGenerator(ParameterizedType pType) {
+        return pType.getRawType().equals(Generator.class);
     }
 
 }

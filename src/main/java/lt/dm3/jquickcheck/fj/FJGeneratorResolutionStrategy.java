@@ -3,18 +3,19 @@ package lt.dm3.jquickcheck.fj;
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.junit4.Generator;
-import lt.dm3.jquickcheck.junit4.Generators;
 
 public class FJGeneratorResolutionStrategy implements GeneratorResolutionStrategy<Generator<?>> {
 
     @Override
     public <T> GeneratorRepository<Generator<?>> resolve(T context) {
         Field[] fields = context.getClass().getDeclaredFields();
-        final Generators gens = new Generators();
+        final List<Field> gens = new ArrayList<Field>(fields.length);
         for (final Field field : fields) {
             if (Generator.class.isAssignableFrom(field.getType())) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
@@ -27,7 +28,7 @@ public class FJGeneratorResolutionStrategy implements GeneratorResolutionStrateg
                 });
             }
         }
-        return new FJGeneratorRepository(gens.forTest(context));
+        return new FJGeneratorRepository(gens, context);
     }
 
 }
