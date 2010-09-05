@@ -13,6 +13,7 @@
     <modules>
         <module>jquickcheck-core</module>
         <module>jquickcheck-test</module>
+        <module>jquickcheck-sample</module>
     </modules>
 
     <properties>
@@ -24,6 +25,16 @@
     <dependencyManagement>
         <dependencies>
             <!-- MODULES -->
+            <dependency>
+                <groupId>lt.dm3</groupId>
+                <artifactId>jquickcheck-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>lt.dm3</groupId>
+                <artifactId>jquickcheck-sample</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>lt.dm3</groupId>
                 <artifactId>jquickcheck-core</artifactId>

@@ -26,6 +26,7 @@
             <artifactId>fj-test</artifactId>
         </dependency>
 
+        <!-- TEST -->
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>

@@ -18,7 +18,7 @@ public class DefaultGeneratorRepositoryTest {
 
     private GeneratorRepository<Generator<?>> repo;
 
-    private static class TestRepo extends DefaultGeneratorRepository<Generator<?>> {
+    static class TestRepo extends DefaultGeneratorRepository<Generator<?>> {
 
         public TestRepo(Iterable<? extends NamedAndTypedGenerator<Generator<?>>> generators) {
             super(generators);

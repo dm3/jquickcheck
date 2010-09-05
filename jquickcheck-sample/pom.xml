@@ -10,36 +10,16 @@
     </parent>
 
     <groupId>lt.dm3</groupId>
-    <artifactId>jquickcheck-test</artifactId>
+    <artifactId>jquickcheck-sample</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>jquickcheck testing harness</name>
+    <name>Sample generator provider for jquickcheck</name>
 
     <dependencies>
         <dependency>
             <groupId>lt.dm3</groupId>
             <artifactId>jquickcheck-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>lt.dm3</groupId>
-            <artifactId>jquickcheck-sample</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

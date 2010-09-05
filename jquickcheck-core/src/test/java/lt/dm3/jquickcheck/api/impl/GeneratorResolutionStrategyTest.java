@@ -2,18 +2,36 @@ package lt.dm3.jquickcheck.api.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
+import java.lang.reflect.Field;
+
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
+import lt.dm3.jquickcheck.api.impl.DefaultGeneratorRepositoryTest.TestRepo;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.Sample;
 import lt.dm3.jquickcheck.sample.SampleGenerator;
-import lt.dm3.jquickcheck.sample.SampleResolutionFromFields;
 
 import org.junit.Test;
 
 public class GeneratorResolutionStrategyTest {
 
-    private final GeneratorResolutionStrategy<Generator<?>> strategy = new SampleResolutionFromFields();
+    static class TestResolver extends ResolutionFromFieldsOfType<Generator<?>> {
+
+        @Override
+        protected boolean holdsGeneratorInstance(Field field) {
+            return Generator.class.isAssignableFrom(field.getType());
+        }
+
+        @Override
+        protected GeneratorRepository<Generator<?>> createRepository(Iterable<NamedAndTypedGenerator<Generator<?>>> generators,
+                                                                     Object context) {
+            return new TestRepo(generators);
+        }
+
+    }
+
+    private final GeneratorResolutionStrategy<Generator<?>> strategy = new TestResolver();
 
     public abstract static class FieldTest {
         // getter only needed for test
