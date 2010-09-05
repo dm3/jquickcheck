@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
-import lt.dm3.jquickcheck.fj.FJ;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
+import lt.dm3.jquickcheck.sample.SampleProvider;
 
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
@@ -22,7 +22,7 @@ public class ConfigurationTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class DefaultClassLevelConfigurationTest {
         private static int counter = 0;
 
@@ -34,7 +34,7 @@ public class ConfigurationTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class, minSuccessful = 50)
+    @QuickCheck(provider = SampleProvider.class, minSuccessful = 50)
     public static class CustomClassLevelConfigurationTest {
         private static int counter = 0;
 
@@ -46,7 +46,7 @@ public class ConfigurationTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class CustomPropertyLevelConfigurationTest {
         private static int counter = 0;
 
@@ -64,7 +64,7 @@ public class ConfigurationTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class, minSuccessful = 10)
+    @QuickCheck(provider = SampleProvider.class, minSuccessful = 10)
     public static class CustomPropertyLevelPriorityConfigurationTest {
         private static int counter = 0;
 

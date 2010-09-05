@@ -7,9 +7,10 @@ import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.QuickCheckException;
-import lt.dm3.jquickcheck.fj.FJ;
-import lt.dm3.jquickcheck.fj.Gens;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
+import lt.dm3.jquickcheck.sample.Generator;
+import lt.dm3.jquickcheck.sample.PositiveIntGenerator;
+import lt.dm3.jquickcheck.sample.SampleProvider;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -20,12 +21,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
-import fj.test.Arbitrary;
-
 public class QuickCheckRunnerTest {
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class ActualTest {
         @Property
         public boolean shouldRunTheTestWithNoArguments() {
@@ -39,7 +38,7 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class PrimitiveTest {
         @Property
         public boolean shouldRunTestWithPrimitiveIntArgument(int arg) {
@@ -58,9 +57,9 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class CustomParameterGeneratorInstanceTest {
-        private static final Arbitrary<Integer> positiveIntGen = Gens.POSITIVE_INTEGERS;
+        private static final Generator<Integer> positiveIntGen = new PositiveIntGenerator();
 
         @Property
         public boolean shouldRunTestWithCustomPrimitiveIntGenerator(@G(gen = "positiveIntGen") int arg) {
@@ -69,9 +68,9 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class OneCustomParameterGeneratorInstanceTest {
-        private static final Arbitrary<Integer> positiveIntGen = Gens.POSITIVE_INTEGERS;
+        private static final Generator<Integer> positiveIntGen = new PositiveIntGenerator();
 
         @Property
         public boolean shouldRunTestWithCustomPrimitiveIntGenerator(int arg) {
@@ -80,9 +79,9 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class CustomPrivateFinalFieldGeneratorTest {
-        private final Arbitrary<Integer> positiveIntGen = Gens.POSITIVE_INTEGERS;
+        private final Generator<Integer> positiveIntGen = new PositiveIntGenerator();
 
         @Property
         public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
@@ -91,9 +90,9 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class CustomPrivateFinalStaticFieldGeneratorTest {
-        private final static Arbitrary<Integer> positiveIntGen = Gens.POSITIVE_INTEGERS;
+        private final static Generator<Integer> positiveIntGen = new PositiveIntGenerator();
 
         @Property
         public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
@@ -102,12 +101,12 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class CustomPrivateFieldGeneratorTest {
-        private final Arbitrary<Integer> positiveIntGen;
+        private final Generator<Integer> positiveIntGen;
 
         public CustomPrivateFieldGeneratorTest() {
-            positiveIntGen = Gens.POSITIVE_INTEGERS;
+            positiveIntGen = new PositiveIntGenerator();
         }
 
         @Property
@@ -117,13 +116,13 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class CustomPrivateFieldSetInBeforeClassGeneratorTest {
-        private static Arbitrary<Integer> positiveIntGen;
+        private static Generator<Integer> positiveIntGen;
 
         @BeforeClass
         public static void beforeClass() {
-            positiveIntGen = Gens.POSITIVE_INTEGERS;
+            positiveIntGen = new PositiveIntGenerator();
         }
 
         @Property
@@ -133,13 +132,14 @@ public class QuickCheckRunnerTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = FJ.class)
+    @QuickCheck(provider = SampleProvider.class)
     public static class CustomPrivateFieldSetInBeforeGeneratorTest {
-        private Arbitrary<Integer> positiveIntGen;
+        private Generator<Integer> positiveIntGen;
 
         @Before
         public void before() {
-            positiveIntGen = Gens.POSITIVE_INTEGERS;
+            // this is effectively a noop
+            positiveIntGen = new PositiveIntGenerator();
         }
 
         @Property

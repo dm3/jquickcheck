@@ -1,10 +1,12 @@
 package lt.dm3.jquickcheck.sample;
 
+import java.util.Random;
+
 public class IntegerGenerator implements Generator<Integer> {
 
     @Override
     public Integer generate() {
-        return 1;
+        return new Random().nextBoolean() ? 1 : -1;
     }
 
 }

@@ -27,7 +27,7 @@
                         <version>2.3.1</version>
                         <configuration>
                             <effort>Max</effort>
-                            <threshold>Low</threshold>
+                            <threshold>Medium</threshold>
                             <xmlOutput>true</xmlOutput>
                         </configuration>
                         <executions>

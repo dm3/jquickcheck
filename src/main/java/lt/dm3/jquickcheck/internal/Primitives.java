@@ -43,7 +43,7 @@ public abstract class Primitives {
     }
 
     private static void add(Map<Class<?>, Class<?>> forward, Map<Class<?>, Class<?>> backward, Class<?> key,
-            Class<?> value) {
+                            Class<?> value) {
         forward.put(key, value);
         backward.put(value, key);
     }
@@ -75,5 +75,9 @@ public abstract class Primitives {
 
     private static boolean isPrimitive(Type t) {
         return PRIMITIVE_TO_WRAPPER_TYPE.containsKey(t);
+    }
+
+    public static boolean isInteger(Type t) {
+        return t.equals(Integer.class) || isPrimitive(t) && PRIMITIVE_TO_WRAPPER_TYPE.get(t).equals(Integer.class);
     }
 }

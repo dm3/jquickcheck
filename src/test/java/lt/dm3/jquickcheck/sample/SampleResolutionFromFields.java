@@ -16,7 +16,7 @@ public class SampleResolutionFromFields extends ResolutionFromFieldsOfType<Gener
     @Override
     protected GeneratorRepository<Generator<?>> createRepository(Iterable<NamedAndTypedGenerator<Generator<?>>> generators,
             Object context) {
-        return new NoDefaultGeneratorRepository(generators);
+        return new SampleGeneratorRepository(generators);
     }
 
 }
