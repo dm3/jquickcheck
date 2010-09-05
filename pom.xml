@@ -57,6 +57,12 @@
                 <artifactId>quickcheck-all</artifactId>
                 <version>0.6-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.13.0-GA</version>
+            </dependency>
+
 
             <!-- TEST -->
             <dependency>
@@ -148,29 +154,4 @@
         </plugins>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.7</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.functionaljava</groupId>
-            <artifactId>fj-test</artifactId>
-            <version>3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <version>1.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.8.5</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>

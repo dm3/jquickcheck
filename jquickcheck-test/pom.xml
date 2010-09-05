@@ -25,6 +25,10 @@
             <groupId>lt.dm3</groupId>
             <artifactId>jquickcheck-sample</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
