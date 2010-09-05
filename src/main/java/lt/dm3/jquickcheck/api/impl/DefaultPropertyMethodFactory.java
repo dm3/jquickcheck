@@ -7,6 +7,7 @@ import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 import lt.dm3.jquickcheck.api.PropertyMethod;
 import lt.dm3.jquickcheck.api.PropertyMethodFactory;
 
@@ -15,10 +16,12 @@ public class DefaultPropertyMethodFactory<GEN> implements PropertyMethodFactory<
     private static final class NoArgumentMethod<GEN> implements PropertyMethod<GEN> {
         private final Method method;
         private final Object target;
+        private final Settings defaultSettings;
 
-        NoArgumentMethod(Method method, Object target) {
+        public NoArgumentMethod(Method method, Object target, Settings defaultSettings) {
             this.method = method;
             this.target = target;
+            this.defaultSettings = defaultSettings;
         }
 
         @Override
@@ -39,17 +42,28 @@ public class DefaultPropertyMethodFactory<GEN> implements PropertyMethodFactory<
                 public List<GEN> generators() {
                     return Collections.emptyList();
                 }
+
+                @Override
+                public Settings settings() {
+                    return defaultSettings;
+                }
             };
         }
 
     }
 
+    private final Settings defaultSettings;
+
+    public DefaultPropertyMethodFactory(Settings defaultSettings) {
+        this.defaultSettings = defaultSettings;
+    }
+
     @Override
     public PropertyMethod<GEN> createMethod(Method method, Object target) {
         if (method.getParameterTypes().length == 0) {
-            return new NoArgumentMethod<GEN>(method, target);
+            return new NoArgumentMethod<GEN>(method, target, defaultSettings);
         }
-        return new DefaultPropertyMethod<GEN>(method, target);
+        return new DefaultPropertyMethod<GEN>(method, target, defaultSettings);
     }
 
 }

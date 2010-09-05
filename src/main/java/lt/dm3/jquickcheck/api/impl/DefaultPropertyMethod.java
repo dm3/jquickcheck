@@ -10,6 +10,7 @@ import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 import lt.dm3.jquickcheck.api.PropertyMethod;
 import lt.dm3.jquickcheck.api.PropertyParameter;
 
@@ -17,8 +18,9 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
     private final Method method;
     private final Object target;
     private final List<PropertyParameter<GEN>> parameters;
+    private final Settings defaultSettings;
 
-    public DefaultPropertyMethod(Method method, Object target) {
+    public DefaultPropertyMethod(Method method, Object target, Settings defaultSettings) {
         this.method = method;
         Type[] parameterTypes = method.getParameterTypes();
         Annotation[][] annotations = method.getParameterAnnotations();
@@ -28,6 +30,7 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
         }
         this.parameters = Collections.unmodifiableList(parameters);
         this.target = target;
+        this.defaultSettings = defaultSettings;
     }
 
     @Override
@@ -51,6 +54,11 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
             @Override
             public List<GEN> generators() {
                 return Collections.unmodifiableList(generators);
+            }
+
+            @Override
+            public Settings settings() {
+                return defaultSettings;
             }
         };
     }

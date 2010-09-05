@@ -44,7 +44,8 @@ public class DefaultPropertyMethodTest {
 
     private PropertyMethod<Generator<?>> defaultMethod(String name, Class<?>... parameters) {
         try {
-            return new DefaultPropertyMethod<Generator<?>>(this.getClass().getMethod(name, parameters), this);
+            return new DefaultPropertyMethod<Generator<?>>(this.getClass().getMethod(name, parameters), this,
+                                                           new DefaultInvocationSettings(1));
         } catch (NoSuchMethodException e) {
             Assert.fail(e.getMessage());
         }

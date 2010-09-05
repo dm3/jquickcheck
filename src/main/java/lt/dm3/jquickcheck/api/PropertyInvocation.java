@@ -11,6 +11,17 @@ import java.util.List;
 public interface PropertyInvocation<GEN> {
 
     /**
+     * Configurable invocation-level settings such as the number of times property has to pass in order to be proven.
+     */
+    public interface Settings {
+
+        /**
+         * @return the number of times property has to pass in order to be proven.
+         */
+        int minSuccessful();
+    }
+
+    /**
      * @param param
      * @return true if property is true for the given arguments
      */
@@ -21,5 +32,10 @@ public interface PropertyInvocation<GEN> {
      *         order they are passed into the test method)
      */
     List<GEN> generators();
+
+    /**
+     * @return settings of this invocation
+     */
+    Settings settings();
 
 }

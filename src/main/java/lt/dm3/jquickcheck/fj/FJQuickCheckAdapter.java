@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import lt.dm3.jquickcheck.api.PropertyInvocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
 import lt.dm3.jquickcheck.api.impl.DefaultQuickCheckResult;
@@ -68,17 +69,21 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
     @Override
     public QuickCheckResult check(final PropertyInvocation<Arbitrary<?>> invocation) {
         List<Arbitrary> generators = (List) invocation.generators();
+        Settings settings = invocation.settings();
         switch (generators.size()) {
             case 0:
                 return invokeOnce(invocation);
             case 1:
-                return new FJQuickCheckResult(Property.property(generators.get(0), oneArg(invocation)).check());
+                return new FJQuickCheckResult(Property.property(generators.get(0), oneArg(invocation))
+                                                                .check(settings.minSuccessful(), 500, 0, 100));
             case 2:
                 return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
-                                                                twoArgs(invocation)).check());
+                                                                twoArgs(invocation))
+                                                                .check(settings.minSuccessful(), 500, 0, 100));
             case 3:
                 return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
-                                                                generators.get(2), threeArgs(invocation)).check());
+                                                                generators.get(2), threeArgs(invocation))
+                                                                .check(settings.minSuccessful(), 500, 0, 100));
             case 4:
             case 5:
             case 6:

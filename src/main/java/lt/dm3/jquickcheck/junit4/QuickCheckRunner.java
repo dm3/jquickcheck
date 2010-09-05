@@ -9,6 +9,7 @@ import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.api.PropertyMethodFactory;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
+import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
 
 import org.junit.Test;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -37,7 +38,7 @@ public class QuickCheckRunner<GEN> extends BlockJUnit4ClassRunner {
             this.provider = createProvider(ann);
             this.strategy = provider.resolutionStrategy();
             this.adapter = provider.adapter();
-            this.methodFactory = provider.methodFactory();
+            this.methodFactory = provider.methodFactory(new DefaultInvocationSettings(ann));
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

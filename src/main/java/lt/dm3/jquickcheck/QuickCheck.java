@@ -11,4 +11,23 @@ public @interface QuickCheck {
 
     public Class<? extends Provider<?>> provider();
 
+    /**
+     * @return The minimum number of successful tests before a result is reached.
+     */
+    int minSuccessful() default 100;
+
+    /**
+     * @return The maximum number of tests discarded because they did not satisfy pre-conditions.
+     */
+    int maxDiscarded() default 500;
+
+    /**
+     * @return The minimum size to use for checking.
+     */
+    int minSize() default 0;
+
+    /**
+     * @return The maximum size to use for checking.
+     */
+    int maxSize() default 100;
 }

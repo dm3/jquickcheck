@@ -2,6 +2,7 @@ package lt.dm3.jquickcheck.fj;
 
 import lt.dm3.jquickcheck.Provider;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
+import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 import lt.dm3.jquickcheck.api.PropertyMethodFactory;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.impl.DefaultPropertyMethodFactory;
@@ -20,7 +21,7 @@ public class FJ implements Provider<Arbitrary<?>> {
     }
 
     @Override
-    public PropertyMethodFactory<Arbitrary<?>> methodFactory() {
-        return new DefaultPropertyMethodFactory<Arbitrary<?>>();
+    public PropertyMethodFactory<Arbitrary<?>> methodFactory(Settings defaultSettings) {
+        return new DefaultPropertyMethodFactory<Arbitrary<?>>(defaultSettings);
     }
 }
