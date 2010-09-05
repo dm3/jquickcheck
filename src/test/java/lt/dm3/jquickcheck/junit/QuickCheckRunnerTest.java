@@ -42,7 +42,17 @@ public class QuickCheckRunnerTest {
     @QuickCheck(provider = FJ.class)
     public static class PrimitiveTest {
         @Property
-        public boolean shouldRunTheTestWithPrimitiveIntArgument(int arg) {
+        public boolean shouldRunTestWithPrimitiveIntArgument(int arg) {
+            return true;
+        }
+
+        @Property
+        public boolean shouldRunTestWithTwoPrimitiveIntArguments(int arg, int arg2) {
+            return true;
+        }
+
+        @Property
+        public boolean shouldRunTestWithThreePrimitiveIntArguments(int arg, int arg2, int arg3) {
             return true;
         }
     }
@@ -191,8 +201,8 @@ public class QuickCheckRunnerTest {
     @Test
     public void runCustomPrivateFieldGeneratorTestIfInitializedInBeforeShouldFail() throws InitializationError {
         Result result = JUnitCore.runClasses(CustomPrivateFieldSetInBeforeGeneratorTest.class);
-        int totalTests = new TestClass(CustomPrivateFieldSetInBeforeGeneratorTest.class).getAnnotatedMethods(
-                Property.class).size();
+        int totalTests = new TestClass(CustomPrivateFieldSetInBeforeGeneratorTest.class)
+                .getAnnotatedMethods(Property.class).size();
 
         assertThat(result.getFailureCount(), equalTo(totalTests));
         assertThat(result.getRunCount(), equalTo(totalTests));

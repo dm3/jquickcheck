@@ -4,49 +4,35 @@ public class QuickCheckException extends RuntimeException {
 
     private static final long serialVersionUID = 7856404897568627298L;
 
-    // Don't want to make result serializable
-    private final transient QuickCheckResult result;
+    private final String message;
 
-    public QuickCheckException(QuickCheckResult result2) {
-        this.result = result2;
+    public QuickCheckException(QuickCheckResult result) {
+        StringBuilder message = new StringBuilder();
+        if (result.isExhausted()) {
+            message.append("Exhausted");
+        } else if (result.isFalsified()) {
+            message.append("Falsified");
+        } else if (result.isPassed()) {
+            message.append("Passed");
+        } else if (result.isProven()) {
+            message.append("Proven");
+        }
+        if (result.exception() != null) {
+            message.append("\n").append("Exception: " + result.exception());
+        }
+        if (!result.arguments().isEmpty()) {
+            message.append("\n").append("Arguments: " + result.arguments());
+        }
+        if (message.length() == 0) {
+            this.message = "Unknown result!";
+        } else {
+            this.message = message.toString();
+        }
     }
 
     @Override
     public String getMessage() {
-        if (result.isExhausted()) {
-            return "Exhausted";
-        } else if (result.isFalsified()) {
-            return "Falsified";
-        } else if (result.isPassed()) {
-            return "Passed";
-        } else if (result.isProven()) {
-            return "Proven";
-        }
-        return "Unknown result!";
+        return message;
     }
 
-    public static QuickCheckException falsified() {
-        return new QuickCheckException(new QuickCheckResult() {
-
-            @Override
-            public boolean isProven() {
-                return false;
-            }
-
-            @Override
-            public boolean isPassed() {
-                return false;
-            }
-
-            @Override
-            public boolean isFalsified() {
-                return true;
-            }
-
-            @Override
-            public boolean isExhausted() {
-                return false;
-            }
-        });
-    }
 }

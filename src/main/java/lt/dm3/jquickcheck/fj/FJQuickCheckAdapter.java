@@ -1,12 +1,16 @@
 package lt.dm3.jquickcheck.fj;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import lt.dm3.jquickcheck.api.PropertyInvocation;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
+import lt.dm3.jquickcheck.api.impl.DefaultQuickCheckResult;
 import fj.F;
 import fj.test.Arbitrary;
+import fj.test.Arg;
 import fj.test.CheckResult;
 import fj.test.Property;
 
@@ -39,90 +43,102 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
             return result.isExhausted();
         }
 
-        public static QuickCheckResult falsified() {
-            return new QuickCheckResult() {
-                @Override
-                public boolean isPassed() {
-                    return false;
-                }
-
-                @Override
-                public boolean isProven() {
-                    return false;
-                }
-
-                @Override
-                public boolean isFalsified() {
-                    return true;
-                }
-
-                @Override
-                public boolean isExhausted() {
-                    return false;
-                }
-            };
-        }
-
-        public static QuickCheckResult proven() {
-            return new QuickCheckResult() {
-                @Override
-                public boolean isPassed() {
-                    return false;
-                }
-
-                @Override
-                public boolean isProven() {
-                    return true;
-                }
-
-                @Override
-                public boolean isFalsified() {
-                    return false;
-                }
-
-                @Override
-                public boolean isExhausted() {
-                    return false;
-                }
-            };
-        }
-    }
-
-    private static final class PropertyF extends F<Object, Property> {
-        private final PropertyInvocation<Arbitrary<?>> invocation;
-
-        PropertyF(PropertyInvocation<Arbitrary<?>> invocation) {
-            this.invocation = invocation;
+        @Override
+        public Throwable exception() {
+            return result.exception().toNull();
         }
 
         @Override
-        public Property f(Object param) {
-            try {
-                return Property.prop(invocation.invoke(param));
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+        public List<String> arguments() {
+            return result.args().map(new F<fj.data.List<Arg<?>>, List<String>>() {
+                @Override
+                public List<String> f(fj.data.List<Arg<?>> a) {
+                    List<String> result = new ArrayList<String>(a.length());
+                    for (Arg<?> arg : a) {
+                        result.add(Arg.argShow.showS(arg));
+                    }
+                    return result;
+                }
+            }).orSome(Collections.<String> emptyList());
         }
+
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public QuickCheckResult check(final PropertyInvocation<Arbitrary<?>> invocation) {
-        List<Arbitrary<?>> generators = invocation.generators();
-        if (generators.isEmpty()) {
-            try {
-                if (invocation.invoke(null)) {
-                    return FJQuickCheckResult.proven();
-                }
-            } catch (RuntimeException e) {
-                return FJQuickCheckResult.falsified();
+        List<Arbitrary> generators = (List) invocation.generators();
+        switch (generators.size()) {
+            case 0:
+                return invokeOnce(invocation);
+            case 1:
+                return new FJQuickCheckResult(Property.property(generators.get(0), oneArg(invocation)).check());
+            case 2:
+                return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
+                                                                twoArgs(invocation)).check());
+            case 3:
+                return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
+                                                                generators.get(2), threeArgs(invocation)).check());
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            default:
+                throw new IllegalArgumentException("Unsupported number of generators: " + generators.size());
+        }
+    }
+
+    private F<Object, Property> oneArg(final PropertyInvocation<Arbitrary<?>> invocation) {
+        return new F<Object, Property>() {
+            @Override
+            public Property f(Object a) {
+                return Property.prop(invocation.invoke(a));
             }
-            return FJQuickCheckResult.falsified();
+        };
+    }
+
+    private F<Object, F<Object, Property>> twoArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+        return new F<Object, F<Object, Property>>() {
+            @Override
+            public F<Object, Property> f(final Object a) {
+                return new F<Object, Property>() {
+                    @Override
+                    public Property f(Object b) {
+                        return Property.prop(invocation.invoke(a, b));
+                    }
+                };
+            }
+        };
+    }
+
+    private F<Object, F<Object, F<Object, Property>>> threeArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+        return new F<Object, F<Object, F<Object, Property>>>() {
+            @Override
+            public F<Object, F<Object, Property>> f(final Object a) {
+                return new F<Object, F<Object, Property>>() {
+                    @Override
+                    public F<Object, Property> f(final Object b) {
+                        return new F<Object, Property>() {
+                            @Override
+                            public Property f(final Object c) {
+                                return Property.prop(invocation.invoke(a, b, c));
+                            }
+                        };
+                    }
+                };
+            }
+        };
+    }
+
+    private QuickCheckResult invokeOnce(final PropertyInvocation<Arbitrary<?>> invocation) {
+        try {
+            if (invocation.invoke()) {
+                return DefaultQuickCheckResult.proven();
+            }
+        } catch (RuntimeException e) {
+            return DefaultQuickCheckResult.falsified(e);
         }
-        if (generators.size() == 1) {
-            return new FJQuickCheckResult(Property.property((Arbitrary) generators.get(0),
-                                                            new PropertyF(invocation)).check());
-        }
-        throw new IllegalArgumentException("Unsupported number of generators: " + generators.size());
+        return DefaultQuickCheckResult.falsified();
     }
 }

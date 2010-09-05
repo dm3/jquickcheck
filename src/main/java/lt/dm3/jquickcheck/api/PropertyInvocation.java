@@ -14,7 +14,7 @@ public interface PropertyInvocation<GEN> {
      * @param param
      * @return true if property is true for the given arguments
      */
-    boolean invoke(Object param);
+    boolean invoke(Object... param);
 
     /**
      * @return all of the generators used with this property in the order they must appear in the invocation (in the

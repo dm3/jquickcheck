@@ -1,5 +1,7 @@
 package lt.dm3.jquickcheck.api;
 
+import java.util.List;
+
 /**
  * Result of passing quickcheck over one property.
  * <p>
@@ -9,11 +11,16 @@ package lt.dm3.jquickcheck.api;
  * 
  */
 public interface QuickCheckResult {
-    public boolean isPassed();
 
-    public boolean isProven();
+    boolean isPassed();
 
-    public boolean isFalsified();
+    boolean isProven();
 
-    public boolean isExhausted();
+    boolean isFalsified();
+
+    boolean isExhausted();
+
+    Throwable exception();
+
+    List<?> arguments();
 }

@@ -25,7 +25,7 @@ public class DefaultPropertyMethodFactory<GEN> implements PropertyMethodFactory<
         public PropertyInvocation<GEN> createInvocationWith(GeneratorRepository<GEN> repo) {
             return new PropertyInvocation<GEN>() {
                 @Override
-                public boolean invoke(Object param) {
+                public boolean invoke(Object... param) {
                     try {
                         return (Boolean) method.invoke(target, (Object[]) null);
                     } catch (IllegalAccessException e) {
