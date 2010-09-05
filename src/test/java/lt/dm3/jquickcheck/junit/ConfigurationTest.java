@@ -45,6 +45,42 @@ public class ConfigurationTest {
         }
     }
 
+    @RunWith(QuickCheckRunner.class)
+    @QuickCheck(provider = FJ.class)
+    public static class CustomPropertyLevelConfigurationTest {
+        private static int counter = 0;
+
+        @Property
+        public boolean shouldBeRunDefaultTimes(int arg) {
+            counter++;
+            return true;
+        }
+
+        @Property(minSuccessful = 50)
+        public boolean shouldBeRunNTimes(int arg) {
+            counter++;
+            return true;
+        }
+    }
+
+    @RunWith(QuickCheckRunner.class)
+    @QuickCheck(provider = FJ.class, minSuccessful = 10)
+    public static class CustomPropertyLevelPriorityConfigurationTest {
+        private static int counter = 0;
+
+        @Property
+        public boolean shouldBeRunDefaultTimes(int arg) {
+            counter++;
+            return true;
+        }
+
+        @Property(minSuccessful = 50)
+        public boolean shouldBeRunNTimes(int arg) {
+            counter++;
+            return true;
+        }
+    }
+
     @Test
     public void shouldRunEachPropertyWithArgumentsNTimesByDefault() {
         doTest(DefaultClassLevelConfigurationTest.class);
@@ -57,6 +93,20 @@ public class ConfigurationTest {
         doTest(CustomClassLevelConfigurationTest.class);
 
         assertThat(CustomClassLevelConfigurationTest.counter, equalTo(50));
+    }
+
+    @Test
+    public void shouldRunPropertyWithArgumentsNumberOfTimesSpecifiedAtThePropertyLevel() {
+        doTest(CustomPropertyLevelConfigurationTest.class);
+
+        assertThat(CustomPropertyLevelConfigurationTest.counter, equalTo(DEFAULT_SUCCESSFUL_RUNS + 50));
+    }
+
+    @Test
+    public void shouldRunPropertyNumberOfTimesSpecifiedAtThePropertyLevelFirstAndThenLookAtTestCaseLevel() {
+        doTest(CustomPropertyLevelPriorityConfigurationTest.class);
+
+        assertThat(CustomPropertyLevelPriorityConfigurationTest.counter, equalTo(10 + 50));
     }
 
     private static void doTest(Class<?> testClass) {

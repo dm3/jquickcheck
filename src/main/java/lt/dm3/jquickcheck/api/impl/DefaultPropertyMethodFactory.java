@@ -1,10 +1,12 @@
 package lt.dm3.jquickcheck.api.impl;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
+import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
 import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
@@ -60,10 +62,15 @@ public class DefaultPropertyMethodFactory<GEN> implements PropertyMethodFactory<
 
     @Override
     public PropertyMethod<GEN> createMethod(Method method, Object target) {
-        if (method.getParameterTypes().length == 0) {
-            return new NoArgumentMethod<GEN>(method, target, defaultSettings);
+        Annotation propertyAnnotation = method.getAnnotation(Property.class);
+        Settings settingsToUse = defaultSettings;
+        if (propertyAnnotation != null) {
+            settingsToUse = settingsToUse.mergeWith(new DefaultInvocationSettings((Property) propertyAnnotation));
         }
-        return new DefaultPropertyMethod<GEN>(method, target, defaultSettings);
+        if (method.getParameterTypes().length == 0) {
+            return new NoArgumentMethod<GEN>(method, target, settingsToUse);
+        }
+        return new DefaultPropertyMethod<GEN>(method, target, settingsToUse);
     }
 
 }

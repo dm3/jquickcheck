@@ -18,9 +18,9 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
     private final Method method;
     private final Object target;
     private final List<PropertyParameter<GEN>> parameters;
-    private final Settings defaultSettings;
+    private final Settings methodSettings;
 
-    public DefaultPropertyMethod(Method method, Object target, Settings defaultSettings) {
+    public DefaultPropertyMethod(Method method, Object target, Settings methodSettings) {
         this.method = method;
         Type[] parameterTypes = method.getParameterTypes();
         Annotation[][] annotations = method.getParameterAnnotations();
@@ -30,7 +30,7 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
         }
         this.parameters = Collections.unmodifiableList(parameters);
         this.target = target;
-        this.defaultSettings = defaultSettings;
+        this.methodSettings = methodSettings;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
 
             @Override
             public Settings settings() {
-                return defaultSettings;
+                return methodSettings;
             }
         };
     }

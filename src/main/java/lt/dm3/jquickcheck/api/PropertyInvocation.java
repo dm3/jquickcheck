@@ -19,6 +19,16 @@ public interface PropertyInvocation<GEN> {
          * @return the number of times property has to pass in order to be proven.
          */
         int minSuccessful();
+
+        /**
+         * The primary source of settings in the case of a merge will be the Settings object passed as an argument. This
+         * settings object will provide only the settings which remain as defaults in the argument settings.
+         * 
+         * @param settings
+         *            object to be used as a primary source of settings
+         * @return new Settings object with properties overwritten by the properties of the given settings object
+         */
+        Settings mergeWith(Settings settings);
     }
 
     /**
