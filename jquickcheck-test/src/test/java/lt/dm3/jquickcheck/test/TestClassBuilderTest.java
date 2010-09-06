@@ -75,12 +75,14 @@ public class TestClassBuilderTest {
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol3");
         Object instance = clazz.newInstance();
 
-        ParameterizedType pType = (ParameterizedType) clazz.getField(fieldName).getGenericType();
         assertThat(clazz.getField(fieldName).getType(), equalTo((Type) Generator.class));
+        assertThat(clazz.getField(fieldName).get(instance), instanceOf(ListIntGenerator.class));
+
+        // check the generic type of the field
+        ParameterizedType pType = (ParameterizedType) clazz.getField(fieldName).getGenericType();
         assertThat(pType.getActualTypeArguments()[0], instanceOf(ParameterizedType.class));
         ParameterizedType pType2 = ((ParameterizedType) pType.getActualTypeArguments()[0]);
         assertThat(pType2.getActualTypeArguments()[0], equalTo((Type) Integer.class));
-        assertThat(clazz.getField(fieldName).get(instance), instanceOf(ListIntGenerator.class));
     }
 
     @Test
