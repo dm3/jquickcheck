@@ -19,6 +19,7 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
+import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 
 import org.junit.runner.RunWith;
@@ -48,12 +49,12 @@ public class TestClassBuilder<T> {
     }
 
     public TestClassBuilder<T> withGenerator(int accessFlag, String fieldClass, String fieldName, String fieldValue) {
+        String description = ClassUtils.parameterized(genClass).ofFormatted(fieldClass).build();
         try {
             ClassFile file = clazz.getClassFile();
             ConstPool constPool = file.getConstPool();
             String genClassDescriptor = Descriptor.of(genClass.getName());
             FieldInfo field = new FieldInfo(constPool, fieldName, genClassDescriptor);
-            String description = ClassUtils.classNameOf(genClass).of(fieldClass).build();
             SignatureAttribute sig = new SignatureAttribute(constPool, description);
             field.setAccessFlags(accessFlag);
             field.addAttribute(sig);
@@ -67,7 +68,7 @@ public class TestClassBuilder<T> {
                                                      fieldClass, clazz), e);
         } catch (NotFoundException e) {
             throw new RuntimeException(String.format("Cannot add field %s of type %s to class %s", fieldName,
-                                                     fieldClass, clazz), e);
+                                                     description, clazz), e);
         }
         return this;
     }
@@ -78,12 +79,16 @@ public class TestClassBuilder<T> {
             ConstPool cPool = file.getConstPool();
             String methodDescriptor = ClassUtils.methodReturning(boolean.class).with(parameters).build();
             MethodInfo method = new MethodInfo(cPool, propertyName, methodDescriptor);
-            Bytecode body = new Bytecode(cPool, 1, 3);
+            Bytecode body = new Bytecode(cPool, 0, parameters.length + 1);
             // return true
             body.addIconst(1);
             body.addReturn(CtClass.booleanType);
             method.setCodeAttribute(body.toCodeAttribute());
             method.setAccessFlags(Modifier.PUBLIC);
+            AnnotationsAttribute attr = new AnnotationsAttribute(cPool, AnnotationsAttribute.visibleTag);
+            Annotation prop = new Annotation(Property.class.getName(), cPool);
+            attr.addAnnotation(prop);
+            method.addAttribute(attr);
             file.addMethod(method);
         } catch (DuplicateMemberException e) {
             throw new RuntimeException(String.format("Cannot add property %s with parameters of types %s to class %s",
@@ -101,7 +106,6 @@ public class TestClassBuilder<T> {
         runWith.addMemberValue("value", new ClassMemberValue(QuickCheckRunner.class.getName(), constPool));
         attr.setAnnotation(runWith);
         file.addAttribute(attr);
-
         try {
             clazz.toClass();
         } catch (CannotCompileException e) {

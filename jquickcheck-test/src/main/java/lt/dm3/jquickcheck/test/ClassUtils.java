@@ -20,17 +20,27 @@ public abstract class ClassUtils {
         }
 
         ClassNameBuilder of(Class<?> clazz) {
-            return of(clazz.getName());
+            return new ClassNameBuilder(prune(this.name) + "<" + Descriptor.of(clazz.getName()) + ">;");
         }
 
-        ClassNameBuilder of(String className) {
-            return new ClassNameBuilder(this.name.substring(0, this.name.length() - 1) + "<"
-                    + Descriptor.of(className) + ">;");
+        ClassNameBuilder ofFormatted(String className) {
+            return new ClassNameBuilder(prune(this.name) + "<" + className // (isGeneric(className) ? prune(className) :
+                                                                           // className)
+                    + ">;");
+        }
+
+        private boolean isGeneric(String className) {
+            return className.endsWith(">;");
+        }
+
+        private String prune(String toPrune) {
+            return toPrune.substring(0, toPrune.length() - 1);
         }
 
         String build() {
             return name;
         }
+
     }
 
     static final class MethodBuilder {
@@ -65,7 +75,7 @@ public abstract class ClassUtils {
         return "new " + clazz.getName() + "()";
     }
 
-    public static ClassNameBuilder classNameOf(Class<?> clazz) {
+    public static ClassNameBuilder parameterized(Class<?> clazz) {
         return new ClassNameBuilder(Descriptor.of(clazz.getName()));
     }
 

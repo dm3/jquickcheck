@@ -1,0 +1,31 @@
+## Javassist
+### Inner classes
+Javassist breaks on inner/nested classes. For example, trying to create a field
+with a value set to `new Outer$Inner()` fails with a `cannot find a
+constructor` exception in the javassist compiler:
+
+    class Outer {
+        class Inner { }
+    }
+
+    clazz.addField(newField, "new Outer$Inner()");
+
+### Generic field signatures
+There is no way in javassist to create a field with a generic signature AND
+assign it a value in a sensible way. You need to
+
+    ClassFile file = clazz.getClassFile();
+    ConstPool constPool = file.getConstPool();
+    String genClassDescriptor = Descriptor.of(genClass.getName());
+    FieldInfo field = new FieldInfo(constPool, fieldName, genClassDescriptor);
+    SignatureAttribute sig = new SignatureAttribute(constPool, description);
+    field.setAccessFlags(accessFlag);
+    field.addAttribute(sig);
+    file.addField(field);
+    CtField newField = clazz.getField(fieldName);
+    // hack - need to remove field in order to assign it back with a value
+    clazz.removeField(newField);
+    clazz.addField(newField, fieldValue);
+
+Anyway, javassist doesn't support generics as first class citizens - that's why
+working with them is kinda backwards.
