@@ -8,11 +8,11 @@ import static org.junit.Assert.assertThat;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javassist.Modifier;
 import javassist.NotFoundException;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
-import lt.dm3.jquickcheck.test.TestClassBuilder.AccessModifier;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +39,8 @@ public class TestClassBuilderTest {
         TestClassBuilder
                 .forJUnit4("lol2", Generator.class)
                 .withGenerator(Integer.class.getName(), "intGen",
-                               TestClassBuilder.newInstance(IntegerGenerator.class),
-                               AccessModifier.Public)
+                               ClassUtils.newInstance(IntegerGenerator.class),
+                               Modifier.PUBLIC)
                 .build();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol2");
