@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.typeCompatibleWith;
 import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -36,11 +37,9 @@ public class TestClassBuilderTest {
                                                                                SecurityException, NoSuchFieldException,
                                                                                InstantiationException,
                                                                                IllegalAccessException {
-        TestClassBuilder
-                .forJUnit4("lol2", Generator.class)
-                .withGenerator(Integer.class.getName(), "intGen",
-                               ClassUtils.newInstance(IntegerGenerator.class),
-                               Modifier.PUBLIC)
+        TestClassBuilder.forJUnit4("lol2", Generator.class)
+                .withGenerator(Modifier.PUBLIC, Integer.class.getName(), "intGen",
+                               ClassUtils.newInstance(IntegerGenerator.class))
                 .build();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol2");
@@ -50,5 +49,20 @@ public class TestClassBuilderTest {
         assertThat(clazz.getField("intGen").getType(), equalTo((Type) Generator.class));
         assertThat(pType.getActualTypeArguments()[0], equalTo((Type) Integer.class));
         assertThat(clazz.getField("intGen").get(instance), instanceOf(IntegerGenerator.class));
+    }
+
+    @Test
+    public void shouldCreateAJunitTestClassWithOnePropertyContainingSpecifiedParameters()
+                                                                                         throws ClassNotFoundException,
+                                                                                         SecurityException,
+                                                                                         NoSuchMethodException {
+        TestClassBuilder.forJUnit4("lol3", Generator.class)
+                .withProperty("prop1", Integer.class.getName(), int.class.getName())
+                .build();
+
+        Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol3");
+
+        Method m = clazz.getMethod("prop1", Integer.class, int.class);
+        assertThat(m.getParameterTypes().length, equalTo(2));
     }
 }

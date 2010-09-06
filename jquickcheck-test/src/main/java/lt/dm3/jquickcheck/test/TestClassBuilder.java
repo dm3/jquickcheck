@@ -1,15 +1,21 @@
 package lt.dm3.jquickcheck.test;
 
+import java.util.Arrays;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.Descriptor;
+import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
+import javassist.bytecode.MethodInfo;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
@@ -41,7 +47,7 @@ public class TestClassBuilder<T> {
         return new TestClassBuilder<T>(name, genClass);
     }
 
-    public TestClassBuilder<T> withGenerator(String fieldClass, String fieldName, String fieldValue, int accessFlag) {
+    public TestClassBuilder<T> withGenerator(int accessFlag, String fieldClass, String fieldName, String fieldValue) {
         try {
             ClassFile file = clazz.getClassFile();
             ConstPool constPool = file.getConstPool();
@@ -62,6 +68,27 @@ public class TestClassBuilder<T> {
         } catch (NotFoundException e) {
             throw new RuntimeException(String.format("Cannot add field %s of type %s to class %s", fieldName,
                                                      fieldClass, clazz), e);
+        }
+        return this;
+    }
+
+    public TestClassBuilder<T> withProperty(String propertyName, String... parameters) {
+        try {
+            ClassFile file = clazz.getClassFile();
+            ConstPool cPool = file.getConstPool();
+            String methodDescriptor = ClassUtils.methodReturning(boolean.class).with(parameters).build();
+            MethodInfo method = new MethodInfo(cPool, propertyName, methodDescriptor);
+            Bytecode body = new Bytecode(cPool, 1, 3);
+            // return true
+            body.addIconst(1);
+            body.addReturn(CtClass.booleanType);
+            method.setCodeAttribute(body.toCodeAttribute());
+            method.setAccessFlags(Modifier.PUBLIC);
+            file.addMethod(method);
+        } catch (DuplicateMemberException e) {
+            throw new RuntimeException(String.format("Cannot add property %s with parameters of types %s to class %s",
+                                                     propertyName,
+                                                     Arrays.toString(parameters), clazz), e);
         }
         return this;
     }
