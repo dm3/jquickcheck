@@ -29,6 +29,10 @@
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.java</groupId>
+            <artifactId>quickcheck</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

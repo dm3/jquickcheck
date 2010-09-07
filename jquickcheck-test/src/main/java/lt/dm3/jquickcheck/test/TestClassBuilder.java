@@ -12,7 +12,6 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
-import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
@@ -20,7 +19,9 @@ import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import lt.dm3.jquickcheck.Property;
+import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
+import lt.dm3.jquickcheck.sample.SampleProvider;
 
 import org.junit.runner.RunWith;
 
@@ -42,6 +43,7 @@ public class TestClassBuilder<T> {
         ClassPool cPool = ClassPool.getDefault();
         this.clazz = cPool.makeClass(name);
         this.genClass = genClass;
+        addClassAnnotation();
     }
 
     public static <T> TestClassBuilder<T> forJUnit4(String name, Class<? extends T> genClass) {
@@ -53,16 +55,12 @@ public class TestClassBuilder<T> {
         try {
             ClassFile file = clazz.getClassFile();
             ConstPool constPool = file.getConstPool();
-            String genClassDescriptor = Descriptor.of(genClass.getName());
-            FieldInfo field = new FieldInfo(constPool, fieldName, genClassDescriptor);
             SignatureAttribute sig = new SignatureAttribute(constPool, description);
+
+            clazz.addField(CtField.make(genClass.getName() + " " + fieldName + " = " + fieldValue, clazz));
+            FieldInfo field = clazz.getField(fieldName).getFieldInfo();
             field.setAccessFlags(accessFlag);
             field.addAttribute(sig);
-            file.addField(field);
-            CtField newField = clazz.getField(fieldName);
-            // hack - need to remove field in order to assign it back with a value
-            clazz.removeField(newField);
-            clazz.addField(newField, fieldValue);
         } catch (CannotCompileException e) {
             throw new RuntimeException(String.format("Cannot add field %s of type %s to class %s", fieldName,
                                                      fieldClass, clazz), e);
@@ -98,18 +96,24 @@ public class TestClassBuilder<T> {
         return this;
     }
 
-    public void build() {
+    public TestClass build() {
+        return new TestClass(clazz);
+    }
+
+    private void addClassAnnotation() {
         ClassFile file = clazz.getClassFile();
         ConstPool constPool = file.getConstPool();
         AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+
         Annotation runWith = new Annotation(RunWith.class.getName(), constPool);
         runWith.addMemberValue("value", new ClassMemberValue(QuickCheckRunner.class.getName(), constPool));
-        attr.setAnnotation(runWith);
+
+        Annotation quickCheck = new Annotation(QuickCheck.class.getName(), constPool);
+        quickCheck.addMemberValue("provider", new ClassMemberValue(SampleProvider.class.getName(),
+                                                                   constPool));
+
+        attr.addAnnotation(runWith);
+        attr.addAnnotation(quickCheck);
         file.addAttribute(attr);
-        try {
-            clazz.toClass();
-        } catch (CannotCompileException e) {
-            throw new RuntimeException("Could not create class " + clazz, e);
-        }
     }
 }

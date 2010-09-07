@@ -30,7 +30,7 @@ public class TestClassBuilderTest {
 
     @Test
     public void shouldCreateAJunitTestClassWithAnnotation() throws ClassNotFoundException, NotFoundException {
-        TestClassBuilder.forJUnit4("lol", Generator.class).build();
+        TestClassBuilder.forJUnit4("lol", Generator.class).build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol");
         RunWith runAnnotation = clazz.getAnnotation(RunWith.class);
@@ -48,7 +48,7 @@ public class TestClassBuilderTest {
         TestClassBuilder.forJUnit4("lol2", Generator.class)
                 .withGenerator(Modifier.PUBLIC, Descriptor.of(Integer.class.getName()), fieldName,
                                ClassUtils.newInstance(IntegerGenerator.class))
-                .build();
+                .build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol2");
         Object instance = clazz.newInstance();
@@ -57,6 +57,38 @@ public class TestClassBuilderTest {
         assertThat(clazz.getField(fieldName).getType(), equalTo((Type) Generator.class));
         assertThat(pType.getActualTypeArguments()[0], equalTo((Type) Integer.class));
         assertThat(clazz.getField(fieldName).get(instance), instanceOf(IntegerGenerator.class));
+    }
+
+    @Test
+    public void shouldCreateAJunitTestClassWithTwoGeneratorsOfTheSpecifiedType() throws ClassNotFoundException,
+                                                                               SecurityException, NoSuchFieldException,
+                                                                               InstantiationException,
+                                                                               IllegalAccessException {
+        String fieldName1 = "intGen";
+        String fieldName2 = "intListGen";
+        TestClassBuilder
+                .forJUnit4("lol5", Generator.class)
+                .withGenerator(Modifier.PUBLIC, Descriptor.of(Integer.class.getName()), fieldName1,
+                               ClassUtils.newInstance(IntegerGenerator.class))
+                .withGenerator(Modifier.PUBLIC, ClassUtils.parameterized(List.class).of(Integer.class).build(),
+                               fieldName2,
+                               ClassUtils.newInstance(ListIntGenerator.class))
+                .build().load();
+
+        Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol5");
+        Object instance = clazz.newInstance();
+
+        // Integer
+        ParameterizedType pType = (ParameterizedType) clazz.getField(fieldName1).getGenericType();
+        assertThat(clazz.getField(fieldName1).getType(), equalTo((Type) Generator.class));
+        assertThat(pType.getActualTypeArguments()[0], equalTo((Type) Integer.class));
+        assertThat(clazz.getField(fieldName1).get(instance), instanceOf(IntegerGenerator.class));
+
+        // List<Integer>
+        ParameterizedType pType2 = (ParameterizedType) clazz.getField(fieldName2).getGenericType();
+        assertThat(pType2.getActualTypeArguments()[0], instanceOf(ParameterizedType.class));
+        ParameterizedType pType2Type = ((ParameterizedType) pType2.getActualTypeArguments()[0]);
+        assertThat(pType2Type.getActualTypeArguments()[0], equalTo((Type) Integer.class));
     }
 
     @Test
@@ -70,7 +102,7 @@ public class TestClassBuilderTest {
                 .withGenerator(Modifier.PUBLIC, ClassUtils.parameterized(List.class).of(Integer.class).build(),
                                fieldName,
                                ClassUtils.newInstance(ListIntGenerator.class))
-                .build();
+                .build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol3");
         Object instance = clazz.newInstance();
@@ -93,7 +125,7 @@ public class TestClassBuilderTest {
         String methodName = "prop1";
         TestClassBuilder.forJUnit4("lol4", Generator.class)
                 .withProperty(methodName, Integer.class.getName(), int.class.getName())
-                .build();
+                .build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol4");
         Object instance = clazz.newInstance();

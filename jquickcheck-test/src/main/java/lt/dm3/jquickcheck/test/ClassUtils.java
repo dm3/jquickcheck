@@ -72,7 +72,7 @@ public abstract class ClassUtils {
     }
 
     public static String newInstance(Class<?> clazz) {
-        return "new " + clazz.getName() + "()";
+        return "new " + clazz.getName() + "();";
     }
 
     public static ClassNameBuilder parameterized(Class<?> clazz) {
