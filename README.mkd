@@ -1,6 +1,7 @@
 This project will integrate 2 QuickCheck java backends -
-(functionaljava)[http://code.google.com/p/functionaljava/] and
-(java.net.QuickCheck)[https://quickcheck.dev.java.net/] with the
-(JUnit)[http://www.junit.org/] and (TestNG)[http://testng.org/] testing
+[functionaljava](http://code.google.com/p/functionaljava/) and
+[java.net.QuickCheck](https://quickcheck.dev.java.net/) with the
+[JUnit](http://www.junit.org/) and [TestNG](http://testng.org/) testing
 frameworks.
-It's in the early development phase so please, move along :)
+
+It's in the early development phase so please, move along :]
