@@ -10,19 +10,28 @@
     </parent>
 
     <groupId>lt.dm3</groupId>
-    <artifactId>jquickcheck-core</artifactId>
+    <artifactId>jquickcheck-fj</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>jquickcheck core api and supporting classes</name>
+    <name>integration with functionaljava</name>
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>lt.dm3</groupId>
+            <artifactId>jquickcheck-sample</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.functionaljava</groupId>
+            <artifactId>fj-test</artifactId>
         </dependency>
 
         <!-- TEST -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
