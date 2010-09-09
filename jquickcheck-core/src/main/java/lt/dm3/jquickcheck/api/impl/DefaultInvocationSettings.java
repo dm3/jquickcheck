@@ -7,7 +7,7 @@ import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 public class DefaultInvocationSettings implements Settings {
 
     // TODO: default minSuccessful is also repeated in @Property and @QuickCheck
-    private static final int DEFAULT_MIN_SUCCESSFUL = 100;
+    public static final int DEFAULT_MIN_SUCCESSFUL = 100;
 
     private final int minSuccessful;
 

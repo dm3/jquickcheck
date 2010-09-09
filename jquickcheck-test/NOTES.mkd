@@ -10,6 +10,9 @@ constructor` exception in the javassist compiler:
 
     clazz.addField(newField, "new Outer$Inner()");
 
+Afterthought: I probably needed to `new Outer.Inner()` instead as it's how the nested
+class is instantiated in Java.
+
 ### Generic field signatures
 There is no way in javassist to create a field with a generic signature AND
 assign it a value in a sensible way. You need to
@@ -29,3 +32,24 @@ assign it a value in a sensible way. You need to
 
 Anyway, javassist doesn't support generics as first class citizens - that's why
 working with them is kinda backwards.
+
+Afterthought: you can do this instead:
+
+    ClassFile file = clazz.getClassFile();
+    ConstPool constPool = file.getConstPool();
+    SignatureAttribute sig = new SignatureAttribute(constPool, description);
+    clazz.addField(CtField.make(genClass.getName() + " " + fieldName + " = " + fieldValue, clazz));
+    FieldInfo field = clazz.getField(fieldName).getFieldInfo();
+    field.setAccessFlags(accessFlag);
+    field.addAttribute(sig);
+
+### Types of tests jquickcheck component integration will need
+1. tests for primitive generators
+    - generate all of the possible properties with 1-8 parameters of 7 primitive types (8 - void).
+        * one set of tests with arguments supplied by custom generators
+        * another set with arguments supplied by default generators
+2. test for no-arg properties
+    - should be run only once
+3. test for properties with annotated arguments `@G(gen = "generator")`
+    - test for arbitrary number of default/supplied generators
+    - different visibility of generator fields

@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
-public class QuickCheckRunnerTest {
+public abstract class QuickCheckRunnerTest {
 
     @RunWith(QuickCheckRunner.class)
     @QuickCheck(provider = SampleProvider.class)

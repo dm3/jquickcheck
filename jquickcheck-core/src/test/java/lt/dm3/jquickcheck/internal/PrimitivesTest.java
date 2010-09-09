@@ -26,8 +26,14 @@ public class PrimitivesTest {
     }
 
     @Test
-    public void equalIgnoreWrapping_shouldRecognizeIntegerTypes() {
+    public void equalIgnoreWrapping_shouldRecognizeAllPrimitiveTypes() {
         assertThat(Primitives.equalIgnoreWrapping(a, b), is(true));
+    }
+
+    @Test
+    public void equalIgnoreWrapping_shouldReturnTrueWhenComparingWithNonPrimitive() {
+        assertThat(Primitives.equalIgnoreWrapping(a, this.getClass()), is(false));
+        assertThat(Primitives.equalIgnoreWrapping(this.getClass(), b), is(false));
     }
 
     /**
@@ -55,6 +61,16 @@ public class PrimitivesTest {
     @Test(expected = IllegalArgumentException.class)
     public void opposite_shouldFailIfGivenANonPrimitive() {
         Primitives.oppositeOf(this.getClass());
+    }
+
+    @Test
+    public void isInteger_shouldReturnTrueIfPrimitiveOrWrappedInteger() {
+        if (primitive.equals(Integer.TYPE)) {
+            assertThat(Primitives.isInteger(primitive), is(true));
+        }
+        if (wrapper.equals(Integer.class)) {
+            assertThat(Primitives.isInteger(wrapper), is(true));
+        }
     }
 
     @Parameters

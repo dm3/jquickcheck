@@ -19,7 +19,8 @@ public class TestClassGeneratorTest {
         private final Random r = new Random();
 
         public GeneratorInfo generate() {
-            if (r.nextBoolean()) {
+            int next = r.nextInt();
+            if (next % 2 == 0) {
                 return new GeneratorInfo(ClassUtils.newInstance(IntegerGenerator.class), Integer.class);
             }
             return new GeneratorInfo(ClassUtils.newInstance(ListIntGenerator.class), List.class);
@@ -28,12 +29,14 @@ public class TestClassGeneratorTest {
     };
 
     @Test
-    public void shouldGenerateAClass() throws ClassNotFoundException {
-        TestClass testCase = new SampleTestClassGenerator(gen).generate();
+    public void shouldGenerateAValidClass() throws ClassNotFoundException {
+        for (int i = 0; i < 100; i++) {
+            TestClass testCase = new SampleTestClassGenerator(gen).generate();
 
-        Class<?> clazz = testCase.load();
-        Result result = JUnitCore.runClasses(clazz);
+            Class<?> clazz = testCase.load();
+            Result result = JUnitCore.runClasses(clazz);
 
-        assertThat(result.getFailureCount(), equalTo(0));
+            assertThat(result.getFailureCount(), equalTo(0));
+        }
     }
 }

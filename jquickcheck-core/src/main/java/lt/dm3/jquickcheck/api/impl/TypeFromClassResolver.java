@@ -32,8 +32,6 @@ public class TypeFromClassResolver implements GeneratorTypeResolver<Class<?>> {
             if (parameter == null) {
                 parameter = getGenericTypeForType(clazz.getGenericSuperclass());
             }
-        } else if (parameters.length == 1) {
-            parameter = parameters[0];
         }
 
         return parameter;

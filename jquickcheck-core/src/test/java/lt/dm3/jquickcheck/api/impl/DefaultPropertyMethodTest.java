@@ -5,6 +5,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+
+import java.lang.reflect.InvocationTargetException;
+
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
 import lt.dm3.jquickcheck.api.PropertyMethod;
@@ -40,6 +43,24 @@ public class DefaultPropertyMethodTest {
         assertThat(invocation.generators().size(), equalTo(2));
         assertThat(invocation.generators().get(0), is((Generator) generator));
         assertThat(invocation.generators().get(1), is((Generator) generatorInt));
+    }
+
+    // method accessed inside of the test
+    public boolean methodB() throws InvocationTargetException {
+        throw new InvocationTargetException(new RuntimeException("lol"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionIfImpossibleToInvokeTheReturnedInvocation() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        given(repo.hasGeneratorFor(Sample.class)).willReturn(false);
+        given(repo.hasGeneratorFor(Integer.class)).willReturn(false);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodB");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        invocation.invoke();
     }
 
     private PropertyMethod<Generator<?>> defaultMethod(String name, Class<?>... parameters) {
