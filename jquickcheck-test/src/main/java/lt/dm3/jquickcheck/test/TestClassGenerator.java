@@ -11,8 +11,9 @@ public abstract class TestClassGenerator<T> implements Generator<TestClass> {
 
     private final Random r = new Random();
     private final Generator<GeneratorInfo> generatorGenerator;
-    private final int maxGenerators = 20, maxParams = 8, maxProperties = 20;
-    private final int[] modifiers = new int[] { Modifier.PUBLIC, Modifier.PRIVATE, Modifier.PROTECTED, Modifier.STATIC,
+    private static final int maxGenerators = 20, maxParams = 8, maxProperties = 20;
+    private static final int[] modifiers = new int[] { Modifier.PUBLIC, Modifier.PRIVATE, Modifier.PROTECTED,
+                                                Modifier.STATIC,
                                                 Modifier.FINAL,
                                                 Modifier.setPackage(Modifier.STATIC),
                                                 Modifier.setPackage(Modifier.FINAL),
@@ -22,15 +23,18 @@ public abstract class TestClassGenerator<T> implements Generator<TestClass> {
                                                 Modifier.setProtected(Modifier.FINAL),
                                                 Modifier.setPublic(Modifier.STATIC),
                                                 Modifier.setPublic(Modifier.FINAL) };
+    private final TestClassBuilderFactory<? super T> builderFactory;
 
-    public TestClassGenerator(Generator<GeneratorInfo> generatorGenerator) {
+    public TestClassGenerator(Generator<GeneratorInfo> generatorGenerator,
+            TestClassBuilderFactory<? super T> builderFactory) {
         this.generatorGenerator = generatorGenerator;
+        this.builderFactory = builderFactory;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public TestClass generate() {
-        TestClassBuilder<Generator<?>> builder = (TestClassBuilder)
-                TestClassBuilder.forJUnit4(String.valueOf(randomString()), getGeneratorClass());
+        AbstractTestClassBuilder<? super T> builder = builderFactory.createBuilder(String.valueOf(randomString()),
+                                                                                      (Class) getGeneratorClass());
         int generators = r.nextInt(maxGenerators);
         GeneratorInfo[] gens = new GeneratorInfo[generators];
         String[] names = new String[generators];

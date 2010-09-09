@@ -15,6 +15,7 @@
         <module>jquickcheck-test</module>
         <module>jquickcheck-sample</module>
         <module>jquickcheck-fj</module>
+        <module>jquickcheck-junit</module>
     </modules>
 
     <properties>

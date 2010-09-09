@@ -18,9 +18,9 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.Descriptor;
 import lt.dm3.jquickcheck.Property;
-import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
+import lt.dm3.jquickcheck.sample.SampleRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,13 +30,13 @@ public class TestClassBuilderTest {
 
     @Test
     public void shouldCreateAJunitTestClassWithAnnotation() throws ClassNotFoundException, NotFoundException {
-        TestClassBuilder.forJUnit4("lol", Generator.class).build().load();
+        SampleTestClassBuilder.forSample("lol", Generator.class).build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol");
         RunWith runAnnotation = clazz.getAnnotation(RunWith.class);
         Class<? extends Runner> runnerClass = runAnnotation.value();
 
-        assertThat(runnerClass, typeCompatibleWith(QuickCheckRunner.class));
+        assertThat(runnerClass, typeCompatibleWith(SampleRunner.class));
     }
 
     @Test
@@ -45,7 +45,7 @@ public class TestClassBuilderTest {
                                                                                InstantiationException,
                                                                                IllegalAccessException {
         String fieldName = "intGen";
-        TestClassBuilder.forJUnit4("lol2", Generator.class)
+        SampleTestClassBuilder.forSample("lol2", Generator.class)
                 .withGenerator(Modifier.PUBLIC, Descriptor.of(Integer.class.getName()), fieldName,
                                ClassUtils.newInstance(IntegerGenerator.class))
                 .build().load();
@@ -66,8 +66,8 @@ public class TestClassBuilderTest {
                                                                                IllegalAccessException {
         String fieldName1 = "intGen";
         String fieldName2 = "intListGen";
-        TestClassBuilder
-                .forJUnit4("lol5", Generator.class)
+        SampleTestClassBuilder
+                .forSample("lol5", Generator.class)
                 .withGenerator(Modifier.PUBLIC, Descriptor.of(Integer.class.getName()), fieldName1,
                                ClassUtils.newInstance(IntegerGenerator.class))
                 .withGenerator(Modifier.PUBLIC, ClassUtils.parameterized(List.class).of(Integer.class).build(),
@@ -97,8 +97,8 @@ public class TestClassBuilderTest {
                IllegalAccessException {
 
         String fieldName = "intGen";
-        TestClassBuilder
-                .forJUnit4("lol3", Generator.class)
+        SampleTestClassBuilder
+                .forSample("lol3", Generator.class)
                 .withGenerator(Modifier.PUBLIC, ClassUtils.parameterized(List.class).of(Integer.class).build(),
                                fieldName,
                                ClassUtils.newInstance(ListIntGenerator.class))
@@ -123,7 +123,7 @@ public class TestClassBuilderTest {
         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
         String methodName = "prop1";
-        TestClassBuilder.forJUnit4("lol4", Generator.class)
+        SampleTestClassBuilder.forSample("lol4", Generator.class)
                 .withProperty(methodName, Integer.class.getName(), int.class.getName())
                 .build().load();
 

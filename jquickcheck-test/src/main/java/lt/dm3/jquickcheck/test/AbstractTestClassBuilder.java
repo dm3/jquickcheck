@@ -20,10 +20,7 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
-import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 import lt.dm3.jquickcheck.sample.SampleProvider;
-
-import org.junit.runner.RunWith;
 
 /**
  * A builder which builds test classes containing generators. Built test classes should later be used in tests for
@@ -34,23 +31,20 @@ import org.junit.runner.RunWith;
  * 
  * @param <T>
  */
-public class TestClassBuilder<T> {
+public abstract class AbstractTestClassBuilder<T> {
 
     private final CtClass clazz;
-    private final Class<? extends T> genClass;
+    private final Class<? super T> genClass;
 
-    public TestClassBuilder(String name, Class<? extends T> genClass) {
+    protected AbstractTestClassBuilder(String name, Class<? super T> genClass) {
         ClassPool cPool = ClassPool.getDefault();
         this.clazz = cPool.makeClass(name);
         this.genClass = genClass;
         addClassAnnotation();
     }
 
-    public static <T> TestClassBuilder<T> forJUnit4(String name, Class<? extends T> genClass) {
-        return new TestClassBuilder<T>(name, genClass);
-    }
-
-    public TestClassBuilder<T> withGenerator(int accessFlag, String fieldClass, String fieldName, String fieldValue) {
+    public AbstractTestClassBuilder<T> withGenerator(int accessFlag, String fieldClass, String fieldName,
+                                                     String fieldValue) {
         String description = ClassUtils.parameterized(genClass).ofFormatted(fieldClass).build();
         try {
             ClassFile file = clazz.getClassFile();
@@ -71,7 +65,7 @@ public class TestClassBuilder<T> {
         return this;
     }
 
-    public TestClassBuilder<T> withProperty(String propertyName, String... parameters) {
+    public AbstractTestClassBuilder<T> withProperty(String propertyName, String... parameters) {
         try {
             ClassFile file = clazz.getClassFile();
             ConstPool cPool = file.getConstPool();
@@ -104,16 +98,15 @@ public class TestClassBuilder<T> {
         ClassFile file = clazz.getClassFile();
         ConstPool constPool = file.getConstPool();
         AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-
-        Annotation runWith = new Annotation(RunWith.class.getName(), constPool);
-        runWith.addMemberValue("value", new ClassMemberValue(QuickCheckRunner.class.getName(), constPool));
+        addClassLevelAnnotation(attr, constPool);
 
         Annotation quickCheck = new Annotation(QuickCheck.class.getName(), constPool);
         quickCheck.addMemberValue("provider", new ClassMemberValue(SampleProvider.class.getName(),
                                                                    constPool));
 
-        attr.addAnnotation(runWith);
         attr.addAnnotation(quickCheck);
         file.addAttribute(attr);
     }
+
+    protected abstract void addClassLevelAnnotation(AnnotationsAttribute attribute, ConstPool constPool);
 }

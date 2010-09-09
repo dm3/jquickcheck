@@ -80,28 +80,6 @@ public abstract class QuickCheckRunnerTest {
 
     @RunWith(QuickCheckRunner.class)
     @QuickCheck(provider = SampleProvider.class)
-    public static class CustomPrivateFinalFieldGeneratorTest {
-        private final Generator<Integer> positiveIntGen = new PositiveIntGenerator();
-
-        @Property
-        public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
-            return arg > 0;
-        }
-    }
-
-    @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = SampleProvider.class)
-    public static class CustomPrivateFinalStaticFieldGeneratorTest {
-        private final static Generator<Integer> positiveIntGen = new PositiveIntGenerator();
-
-        @Property
-        public boolean shouldRunTestWithDefaultGeneratorSpecifiedEarlier(int arg) {
-            return arg > 0;
-        }
-    }
-
-    @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = SampleProvider.class)
     public static class CustomPrivateFieldGeneratorTest {
         private final Generator<Integer> positiveIntGen;
 
@@ -171,16 +149,6 @@ public abstract class QuickCheckRunnerTest {
     @Test
     public void runOneCustomParameterGeneratorInstanceTest() throws InitializationError {
         doTest(OneCustomParameterGeneratorInstanceTest.class);
-    }
-
-    @Test
-    public void runCustomPrivateFinalFieldGeneratorTest() throws InitializationError {
-        doTest(CustomPrivateFinalFieldGeneratorTest.class);
-    }
-
-    @Test
-    public void runCustomPrivateFinalStaticFieldGeneratorTest() throws InitializationError {
-        doTest(CustomPrivateFinalStaticFieldGeneratorTest.class);
     }
 
     @Test

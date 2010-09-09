@@ -114,6 +114,21 @@ public class GeneratorResolutionStrategyTest {
         }
     }
 
+    public static class WithNonGeneratorFields extends FieldTest {
+        private final int field = 1;
+        private final Generator<Sample> gen = new SampleGenerator();
+
+        @Override
+        Generator<Sample> gen() {
+            return gen;
+        }
+    }
+
+    @Test
+    public void shouldNotFailOnClassesHavingNonGeneratorFields() {
+        checkAccessible(new WithNonGeneratorFields());
+    }
+
     @Test
     public void shouldResolveAllOfTheSpecifiedGenerators() {
         checkAccessible(new WithOneDefaultField());
