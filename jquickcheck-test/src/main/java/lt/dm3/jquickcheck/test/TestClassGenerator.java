@@ -1,7 +1,6 @@
 package lt.dm3.jquickcheck.test;
 
 import java.util.Random;
-import java.util.UUID;
 
 import javassist.Modifier;
 import javassist.bytecode.Descriptor;
@@ -33,7 +32,8 @@ public abstract class TestClassGenerator<T> implements Generator<TestClass> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public TestClass generate() {
-        AbstractTestClassBuilder<? super T> builder = builderFactory.createBuilder(String.valueOf(randomString()),
+        AbstractTestClassBuilder<? super T> builder = builderFactory.createBuilder(String.valueOf(RandomUtils
+                .randomJavaIdentifier()),
                                                                                       (Class) getGeneratorClass());
         int generators = r.nextInt(maxGenerators);
         GeneratorInfo[] gens = new GeneratorInfo[generators];
@@ -41,19 +41,20 @@ public abstract class TestClassGenerator<T> implements Generator<TestClass> {
         for (int i = 0; i < generators; i++) {
             int mod = modifiers[r.nextInt(modifiers.length)];
             GeneratorInfo generator = generatorGenerator.generate();
-            String name = randomString();
+            String name = RandomUtils.randomJavaIdentifier();
             gens[i] = generator;
             names[i] = name;
-            builder.withGenerator(mod, descriptorOf(generator.getGeneratedValue()), name, generator.getGeneratorValue());
+            builder.withGenerator(mod, ClassUtils.describe(generator.getGeneratedValue()), name,
+                                  generator.getGeneratorValue());
         }
         int properties = r.nextInt(maxProperties - 1) + 1; // cannot have 0 properties
         for (int i = 0; i < properties; i++) {
-            String propName = randomString();
+            String propName = RandomUtils.randomJavaIdentifier();
             int params = r.nextInt(Math.min(maxParams, generators + 1));
             String[] paramClasses = new String[params];
             for (int j = 0; j < params; j++) {
                 int gen = r.nextInt(j + 1);
-                paramClasses[j] = gens[gen].getGeneratedValue().getName();
+                paramClasses[j] = ClassUtils.describe(gens[gen].getGeneratedValue());
 
                 /*
                  * if (r.nextBoolean()) { // add G(gen = name) annotation String generatorName = names[gen]; } else {
@@ -72,7 +73,4 @@ public abstract class TestClassGenerator<T> implements Generator<TestClass> {
         return Descriptor.of(clazz.getName());
     }
 
-    private String randomString() {
-        return "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10);
-    }
 }

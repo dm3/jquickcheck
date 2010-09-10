@@ -1,30 +1,50 @@
 package lt.dm3.jquickcheck.test;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
- * Creates a testcase for a specified runner for each default generator.
+ * Creates a testcase for a specified runner for each N default generators.
  * 
  * @author dm3
  * 
  */
-public abstract class DefaultGeneratorsTestClassIterator<T> implements Iterator<TestClass> {
+public class DefaultGeneratorsTestClassIterator<T> implements Iterator<TestClass> {
 
     private final TestClassBuilderFactory<T> builderFactory;
     private final Iterator<GeneratorInfo> defaultGenerators;
     private final Class<T> genClass;
+    private final int maxGeneratorsPerProperty;
+    private final int maxProperties;
+    private final Random r = new Random();
 
     public DefaultGeneratorsTestClassIterator(Iterator<GeneratorInfo> defaultGenerators,
-            TestClassBuilderFactory<T> builderFactory, Class<T> genClass) {
+            TestClassBuilderFactory<T> builderFactory, Class<T> genClass, int maxGenerators, int maxProperties) {
         this.defaultGenerators = defaultGenerators;
         this.builderFactory = builderFactory;
         this.genClass = genClass;
+        this.maxGeneratorsPerProperty = maxGenerators;
+        this.maxProperties = maxProperties;
     }
 
     public TestClass next() {
-        AbstractTestClassBuilder<T> b = builderFactory.createBuilder("a", genClass);
-        GeneratorInfo info = defaultGenerators.next();
-        b.withProperty("defaultProperty", info.getGeneratedValue().getName());
+        AbstractTestClassBuilder<T> b = builderFactory.createBuilder(RandomUtils.randomJavaIdentifier(), genClass);
+        int properties = r.nextInt(maxGeneratorsPerProperty) + 1;
+        boolean finished = false;
+        for (int i = 0; i < properties && !finished; i++) {
+            int arguments = r.nextInt(maxProperties) + 1;
+            String[] values = new String[arguments];
+            for (int j = 0; j < arguments && !finished; j++) {
+                if (defaultGenerators.hasNext()) {
+                    values[j] = ClassUtils.describe(defaultGenerators.next().getGeneratedValue());
+                } else {
+                    finished = true;
+                    values = Arrays.copyOf(values, j);
+                }
+            }
+            b.withProperty(RandomUtils.randomJavaIdentifier(), values);
+        }
         return b.build();
     }
 

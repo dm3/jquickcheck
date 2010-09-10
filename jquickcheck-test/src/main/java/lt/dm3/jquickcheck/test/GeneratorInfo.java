@@ -1,11 +1,13 @@
 package lt.dm3.jquickcheck.test;
 
+import java.lang.reflect.Type;
+
 public class GeneratorInfo {
 
     private final String generatorValue;
-    private final Class<?> generatedValue;
+    private final Type generatedValue;
 
-    public GeneratorInfo(String generatorValue, Class<?> generatedValue) {
+    public GeneratorInfo(String generatorValue, Type generatedValue) {
         this.generatorValue = generatorValue;
         this.generatedValue = generatedValue;
     }
@@ -14,7 +16,7 @@ public class GeneratorInfo {
         return generatorValue;
     }
 
-    public Class<?> getGeneratedValue() {
+    public Type getGeneratedValue() {
         return generatedValue;
     }
 

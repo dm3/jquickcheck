@@ -4,6 +4,7 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
+import lt.dm3.jquickcheck.sample.SampleProvider;
 import lt.dm3.jquickcheck.sample.SampleRunner;
 
 import org.junit.runner.RunWith;
@@ -24,4 +25,10 @@ public class SampleTestClassBuilder<T> extends AbstractTestClassBuilder<T> {
         runWith.addMemberValue("value", new ClassMemberValue(SampleRunner.class.getName(), constPool));
         attribute.addAnnotation(runWith);
     }
+
+    @Override
+    protected Class<?> getQuickCheckProviderClass() {
+        return SampleProvider.class;
+    }
+
 }

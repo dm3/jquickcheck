@@ -1,5 +1,8 @@
 package lt.dm3.jquickcheck.test;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import javassist.bytecode.Descriptor;
 
 public abstract class ClassUtils {
@@ -24,13 +27,7 @@ public abstract class ClassUtils {
         }
 
         ClassNameBuilder ofFormatted(String className) {
-            return new ClassNameBuilder(prune(this.name) + "<" + className // (isGeneric(className) ? prune(className) :
-                                                                           // className)
-                    + ">;");
-        }
-
-        private boolean isGeneric(String className) {
-            return className.endsWith(">;");
+            return new ClassNameBuilder(prune(this.name) + "<" + className + ">;");
         }
 
         private String prune(String toPrune) {
@@ -56,7 +53,7 @@ public abstract class ClassUtils {
         MethodBuilder with(String[] parameters) {
             String[] result = new String[parameters.length];
             for (int i = 0; i < parameters.length; i++) {
-                result[i] = Descriptor.of(parameters[i]);
+                result[i] = parameters[i];
             }
             return new MethodBuilder(returns, result);
         }
@@ -83,4 +80,18 @@ public abstract class ClassUtils {
         return new MethodBuilder(Descriptor.of(clazz.getName()));
     }
 
+    public static String describe(Type t) {
+        if (t instanceof Class<?>) {
+            return Descriptor.of(((Class) t).getName());
+        } else if (t instanceof ParameterizedType) {
+            ParameterizedType pType = ((ParameterizedType) t);
+            Type[] args = pType.getActualTypeArguments();
+            StringBuilder formatted = new StringBuilder();
+            for (Type type : args) {
+                formatted.append(describe(type));
+            }
+            return parameterized((Class) pType.getRawType()).ofFormatted(formatted.toString()).build();
+        }
+        return "";
+    }
 }

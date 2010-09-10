@@ -124,7 +124,7 @@ public class TestClassBuilderTest {
 
         String methodName = "prop1";
         SampleTestClassBuilder.forSample("lol4", Generator.class)
-                .withProperty(methodName, Integer.class.getName(), int.class.getName())
+                .withProperty(methodName, ClassUtils.describe(Integer.class), ClassUtils.describe(int.class))
                 .build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol4");

@@ -85,10 +85,34 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
                                                                 generators.get(2), threeArgs(invocation))
                                                                 .check(settings.minSuccessful(), 500, 0, 100));
             case 4:
+                return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
+                                                                generators.get(2), generators.get(3),
+                                                                fourArgs(invocation)).check(settings.minSuccessful(),
+                                                                                            500, 0, 100));
             case 5:
+                return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
+                                                                generators.get(2), generators.get(3),
+                                                                generators.get(4), fiveArgs(invocation)).
+                                                                check(settings.minSuccessful(), 500, 0, 100));
             case 6:
+                return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
+                                                                generators.get(2), generators.get(3),
+                                                                generators.get(4), generators.get(5),
+                                                                sixArgs(invocation)).check(settings.minSuccessful(),
+                                                                                           500, 0, 100));
             case 7:
+                return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
+                                                                generators.get(2), generators.get(3),
+                                                                generators.get(4), generators.get(5),
+                                                                generators.get(6), sevenArgs(invocation)).
+                                                                check(settings.minSuccessful(), 500, 0, 100));
             case 8:
+                return new FJQuickCheckResult(Property.property(generators.get(0), generators.get(1),
+                                                                generators.get(2), generators.get(3),
+                                                                generators.get(4), generators.get(5),
+                                                                generators.get(6), generators.get(7),
+                                                                eightArgs(invocation)).check(settings.minSuccessful(),
+                                                                                             500, 0, 100));
             default:
                 throw new IllegalArgumentException("Unsupported number of generators: " + generators.size());
         }
@@ -128,6 +152,179 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
                             @Override
                             public Property f(final Object c) {
                                 return Property.prop(invocation.invoke(a, b, c));
+                            }
+                        };
+                    }
+                };
+            }
+        };
+    }
+
+    private F<Object, F<Object, F<Object, F<Object, Property>>>> fourArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+        return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
+            @Override
+            public F<Object, F<Object, F<Object, Property>>> f(final Object a) {
+                return new F<Object, F<Object, F<Object, Property>>>() {
+                    @Override
+                    public F<Object, F<Object, Property>> f(final Object b) {
+                        return new F<Object, F<Object, Property>>() {
+                            @Override
+                            public F<Object, Property> f(final Object c) {
+                                return new F<Object, Property>() {
+                                    @Override
+                                    public Property f(final Object d) {
+                                        return Property.prop(invocation.invoke(a, b, c, d));
+                                    }
+                                };
+                            }
+                        };
+                    }
+                };
+            }
+        };
+    }
+
+    private F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> fiveArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+        return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
+            @Override
+            public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object a) {
+                return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
+                    @Override
+                    public F<Object, F<Object, F<Object, Property>>> f(final Object b) {
+                        return new F<Object, F<Object, F<Object, Property>>>() {
+                            @Override
+                            public F<Object, F<Object, Property>> f(final Object c) {
+                                return new F<Object, F<Object, Property>>() {
+                                    @Override
+                                    public F<Object, Property> f(final Object d) {
+                                        return new F<Object, Property>() {
+                                            @Override
+                                            public Property f(final Object e) {
+                                                return Property.prop(invocation.invoke(a, b, c, d, e));
+                                            }
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                };
+            }
+        };
+    }
+
+    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> sixArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+        return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>() {
+            @Override
+            public F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> f(final Object a) {
+                return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
+                    @Override
+                    public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object b) {
+                        return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
+                            @Override
+                            public F<Object, F<Object, F<Object, Property>>> f(final Object c) {
+                                return new F<Object, F<Object, F<Object, Property>>>() {
+                                    @Override
+                                    public F<Object, F<Object, Property>> f(final Object d) {
+                                        return new F<Object, F<Object, Property>>() {
+                                            @Override
+                                            public F<Object, Property> f(final Object e) {
+                                                return new F<Object, Property>() {
+                                                    @Override
+                                                    public Property f(final Object f) {
+                                                        return Property.prop(invocation.invoke(a, b, c, d, e, f));
+                                                    }
+                                                };
+                                            }
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                };
+            }
+        };
+    }
+
+    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>> sevenArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+        return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>() {
+            @Override
+            public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> f(final Object a) {
+                return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>() {
+                    @Override
+                    public F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> f(final Object b) {
+                        return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
+                            @Override
+                            public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object c) {
+                                return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
+                                    @Override
+                                    public F<Object, F<Object, F<Object, Property>>> f(final Object d) {
+                                        return new F<Object, F<Object, F<Object, Property>>>() {
+                                            @Override
+                                            public F<Object, F<Object, Property>> f(final Object e) {
+                                                return new F<Object, F<Object, Property>>() {
+                                                    @Override
+                                                    public F<Object, Property> f(final Object f) {
+                                                        return new F<Object, Property>() {
+                                                            @Override
+                                                            public Property f(final Object g) {
+                                                                return Property.prop(invocation.invoke(a, b, c, d, e,
+                                                                                                       f, g));
+                                                            }
+                                                        };
+                                                    }
+                                                };
+                                            }
+                                        };
+                                    }
+                                };
+                            }
+                        };
+                    }
+                };
+            }
+        };
+    }
+
+    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>> eightArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+        return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>>() {
+            @Override
+            public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>> f(final Object a) {
+                return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>() {
+                    @Override
+                    public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> f(final Object b) {
+                        return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>() {
+                            @Override
+                            public F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> f(final Object c) {
+                                return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
+                                    @Override
+                                    public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object d) {
+                                        return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
+                                            @Override
+                                            public F<Object, F<Object, F<Object, Property>>> f(final Object e) {
+                                                return new F<Object, F<Object, F<Object, Property>>>() {
+                                                    @Override
+                                                    public F<Object, F<Object, Property>> f(final Object f) {
+                                                        return new F<Object, F<Object, Property>>() {
+                                                            @Override
+                                                            public F<Object, Property> f(final Object g) {
+                                                                return new F<Object, Property>() {
+                                                                    @Override
+                                                                    public Property f(final Object h) {
+                                                                        return Property.prop(invocation.invoke(a, b, c,
+                                                                                                               d, e, f,
+                                                                                                               g, h));
+                                                                    };
+                                                                };
+                                                            }
+                                                        };
+                                                    }
+                                                };
+                                            }
+                                        };
+                                    }
+                                };
                             }
                         };
                     }

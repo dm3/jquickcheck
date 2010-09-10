@@ -50,19 +50,21 @@ special static `TYPE` variable on the respective primitive wrapper class
     Generator<List<String>> listOfStrings = list(of(string(), alphanumeric()))
 
 This feature won't be implemented as jcheck relies on FJ/javaNetQuickCheck generators.
-
-## Features TODO
-3. Dependencies between tests (ala JExample/jBehave/TestNG)
-4. Automatic generator resolution according to types. Sensible defaults and generator registry.
-5. Separate the project into 5 submodules:
+3. Separate the project into 5 submodules:
     - JUnit
     - TestNG
     - FJ
     - java.net.QuickCheck
     - core
-6. Add default generator resolution strategy discovery
+Actually separated into even more very thin submodules
 7. FJ - allow both Gen and Arbitrary as generators?
+Only Arbitrary
+
+## Features TODO
+4. Automatic generator resolution according to types. Sensible defaults and generator registry.
+6. Add default generator resolution strategy discovery
 8. Additional custom generator type resolution algorithms for javaNetQuickCheck and FJ (based on method return type?)
+3. Dependencies between tests (ala JExample/jBehave/TestNG)
 9. Integration with templates (makeiteasy):
     - FJ: Some code generation will probably be needed to generate the Gen for the result of the template.
           All of the properties registered with `with` will have to be associated to some static registry and later,

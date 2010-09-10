@@ -20,7 +20,6 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
-import lt.dm3.jquickcheck.sample.SampleProvider;
 
 /**
  * A builder which builds test classes containing generators. Built test classes should later be used in tests for
@@ -101,12 +100,14 @@ public abstract class AbstractTestClassBuilder<T> {
         addClassLevelAnnotation(attr, constPool);
 
         Annotation quickCheck = new Annotation(QuickCheck.class.getName(), constPool);
-        quickCheck.addMemberValue("provider", new ClassMemberValue(SampleProvider.class.getName(),
+        quickCheck.addMemberValue("provider", new ClassMemberValue(getQuickCheckProviderClass().getName(),
                                                                    constPool));
 
         attr.addAnnotation(quickCheck);
         file.addAttribute(attr);
     }
+
+    protected abstract Class<?> getQuickCheckProviderClass();
 
     protected abstract void addClassLevelAnnotation(AnnotationsAttribute attribute, ConstPool constPool);
 }
