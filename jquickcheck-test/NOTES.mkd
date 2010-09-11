@@ -53,3 +53,17 @@ Afterthought: you can do this instead:
 3. test for properties with annotated arguments `@G(gen = "generator")`
     - test for arbitrary number of default/supplied generators
     - different visibility of generator fields
+4. tests for default generators
+    - generate properties with arguments of types which should be supported by
+      quickcheck provider and no generator fields so that the default
+      resolution mechanism would kick in.
+
+## Design for a testcase generator
+TestGenerator - generates a testcase with (bold items should be configurable):
+    0. A `QuickCheck` property with *parameters*
+    1. *number* of fields of *types supported by quickcheck provider* with *modifiers*
+    2. *number* of properties, where each property has
+        - At most *number* of params, where each param
+            + May *depend/not depend* on a previously generated field with its type
+            + May *have/not have* an annotation restricting the scope of the generator
+        - An annotation with *parameters*
