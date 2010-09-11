@@ -18,10 +18,11 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.Descriptor;
 import lt.dm3.jquickcheck.Property;
+import lt.dm3.jquickcheck.QuickCheck;
+import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
 import lt.dm3.jquickcheck.sample.SampleRunner;
-import lt.dm3.jquickcheck.test.builder.ClassUtils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,7 @@ import org.junit.runner.Runner;
 public class TestClassBuilderTest {
 
     @Test
-    public void shouldCreateAJunitTestClassWithAnnotation() throws ClassNotFoundException, NotFoundException {
+    public void shouldCreateASampleTestClassWithAnnotation() throws ClassNotFoundException, NotFoundException {
         SampleTestClassBuilder.forSample("lol", Generator.class).build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol");
@@ -38,10 +39,12 @@ public class TestClassBuilderTest {
         Class<? extends Runner> runnerClass = runAnnotation.value();
 
         assertThat(runnerClass, typeCompatibleWith(SampleRunner.class));
+        assertThat(clazz.getAnnotation(QuickCheck.class).useDefaults(),
+                   is(DefaultInvocationSettings.DEFAULT_USE_DEFAULTS));
     }
 
     @Test
-    public void shouldCreateAJunitTestClassWithOneGeneratorOfTheSpecifiedType() throws ClassNotFoundException,
+    public void shouldCreateASampleTestClassWithOneGeneratorOfTheSpecifiedType() throws ClassNotFoundException,
                                                                                SecurityException, NoSuchFieldException,
                                                                                InstantiationException,
                                                                                IllegalAccessException {
@@ -61,7 +64,7 @@ public class TestClassBuilderTest {
     }
 
     @Test
-    public void shouldCreateAJunitTestClassWithTwoGeneratorsOfTheSpecifiedType() throws ClassNotFoundException,
+    public void shouldCreateASampleTestClassWithTwoGeneratorsOfTheSpecifiedType() throws ClassNotFoundException,
                                                                                SecurityException, NoSuchFieldException,
                                                                                InstantiationException,
                                                                                IllegalAccessException {
@@ -93,7 +96,7 @@ public class TestClassBuilderTest {
     }
 
     @Test
-    public void shouldCreateAJunitTestClassWithOneGeneratorOfTheSpecifiedCollectionType()
+    public void shouldCreateASampleTestClassWithOneGeneratorOfTheSpecifiedCollectionType()
         throws ClassNotFoundException, SecurityException, NoSuchFieldException, InstantiationException,
                IllegalAccessException {
 
@@ -119,7 +122,7 @@ public class TestClassBuilderTest {
     }
 
     @Test
-    public void shouldCreateAJunitTestClassWithOnePropertyContainingSpecifiedParameters()
+    public void shouldCreateASampleTestClassWithOnePropertyContainingSpecifiedParameters()
         throws ClassNotFoundException, SecurityException, NoSuchMethodException, InstantiationException,
         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -135,5 +138,18 @@ public class TestClassBuilderTest {
         assertThat(m.getParameterTypes().length, equalTo(2));
         assertThat(m.getAnnotation(Property.class), is(not(nullValue())));
         assertThat((Boolean) m.invoke(instance, new Object[] { 1, 1 }), is(true));
+    }
+
+    @Test
+    public void shouldCreateASampleTestClassWithUseDefaultsPropertySetToTrueOnClassLevel()
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        SampleTestClassBuilder.forSample("lol6", Generator.class).useDefaults().build().load();
+
+        Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol6");
+        Object instance = clazz.newInstance();
+
+        QuickCheck qc = clazz.getAnnotation(QuickCheck.class);
+        assertThat(qc.useDefaults(), is(true));
     }
 }

@@ -60,25 +60,6 @@ public class JUnitFJCommonScenarioTest extends AbstractCommonScenarioTest<Arbitr
 
     @RunWith(QuickCheckRunner.class)
     @QuickCheck(provider = SampleProvider.class)
-    public static class PrimitiveTest {
-        @Property
-        public boolean shouldRunTestWithPrimitiveIntArgument(int arg) {
-            return true;
-        }
-
-        @Property
-        public boolean shouldRunTestWithTwoPrimitiveIntArguments(int arg, int arg2) {
-            return true;
-        }
-
-        @Property
-        public boolean shouldRunTestWithThreePrimitiveIntArguments(int arg, int arg2, int arg3) {
-            return true;
-        }
-    }
-
-    @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = SampleProvider.class)
     public static class CustomParameterGeneratorInstanceTest {
         private static final Generator<Integer> positiveIntGen = new PositiveIntGenerator();
 
@@ -172,11 +153,6 @@ public class JUnitFJCommonScenarioTest extends AbstractCommonScenarioTest<Arbitr
 
             doTestSuccessfulRun(clazz);
         }
-    }
-
-    @Test
-    public void runPrimitiveTest() throws InitializationError {
-        doTestSuccessfulRun(PrimitiveTest.class);
     }
 
     @Test

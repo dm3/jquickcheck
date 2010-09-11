@@ -1,9 +1,12 @@
 package lt.dm3.jquickcheck.junit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
+import lt.dm3.jquickcheck.api.QuickCheckException;
+import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 import lt.dm3.jquickcheck.sample.SampleProvider;
 
@@ -15,14 +18,19 @@ import org.junit.runners.model.TestClass;
 
 public class ConfigurationTest {
 
-    private final int DEFAULT_SUCCESSFUL_RUNS;
-
-    public ConfigurationTest() throws SecurityException, NoSuchMethodException {
-        DEFAULT_SUCCESSFUL_RUNS = (Integer) QuickCheck.class.getMethod("minSuccessful").getDefaultValue();
-    }
+    private final int DEFAULT_SUCCESSFUL_RUNS = DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL;
 
     @RunWith(QuickCheckRunner.class)
     @QuickCheck(provider = SampleProvider.class)
+    public static class DefaultClassLevelConfigurationTestFailing {
+        @Property
+        public boolean shouldFailAsNotUsingDefaults(int arg) {
+            return true;
+        }
+    }
+
+    @RunWith(QuickCheckRunner.class)
+    @QuickCheck(provider = SampleProvider.class, useDefaults = true)
     public static class DefaultClassLevelConfigurationTest {
         private static int counter = 0;
 
@@ -34,7 +42,7 @@ public class ConfigurationTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = SampleProvider.class, minSuccessful = 50)
+    @QuickCheck(provider = SampleProvider.class, minSuccessful = 50, useDefaults = true)
     public static class CustomClassLevelConfigurationTest {
         private static int counter = 0;
 
@@ -46,7 +54,7 @@ public class ConfigurationTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = SampleProvider.class)
+    @QuickCheck(provider = SampleProvider.class, useDefaults = true)
     public static class CustomPropertyLevelConfigurationTest {
         private static int counter = 0;
 
@@ -64,7 +72,7 @@ public class ConfigurationTest {
     }
 
     @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = SampleProvider.class, minSuccessful = 10)
+    @QuickCheck(provider = SampleProvider.class, minSuccessful = 10, useDefaults = true)
     public static class CustomPropertyLevelPriorityConfigurationTest {
         private static int counter = 0;
 
@@ -79,6 +87,17 @@ public class ConfigurationTest {
             counter++;
             return true;
         }
+    }
+
+    @Test
+    public void shouldFailWhenUseDefaultsSetToFalseOnClassLevel() {
+        Result result = JUnitCore.runClasses(DefaultClassLevelConfigurationTestFailing.class);
+        int totalTests = new TestClass(DefaultClassLevelConfigurationTestFailing.class)
+                .getAnnotatedMethods(Property.class).size();
+
+        assertThat(result.getFailureCount(), equalTo(totalTests));
+        assertThat(result.getFailures().get(0).getException(), instanceOf(QuickCheckException.class));
+        assertThat(result.getRunCount(), equalTo(totalTests));
     }
 
     @Test

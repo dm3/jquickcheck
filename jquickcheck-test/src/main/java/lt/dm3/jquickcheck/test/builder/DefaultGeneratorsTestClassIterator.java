@@ -45,7 +45,7 @@ public class DefaultGeneratorsTestClassIterator<T> implements Iterator<Generated
             }
             b.withProperty(RandomUtils.randomJavaIdentifier(), true, values);
         }
-        return b.build();
+        return b.useDefaults().build();
     }
 
     public boolean hasNext() {

@@ -6,21 +6,32 @@ import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 
 public class DefaultInvocationSettings implements Settings {
 
-    // TODO: default minSuccessful is also repeated in @Property and @QuickCheck
     public static final int DEFAULT_MIN_SUCCESSFUL = 100;
+    public static final boolean DEFAULT_USE_DEFAULTS = false;
 
     private final int minSuccessful;
+    private final boolean useDefaults;
 
     public DefaultInvocationSettings(QuickCheck annotation) {
-        this.minSuccessful = annotation.minSuccessful();
+        this(annotation.minSuccessful(), annotation.useDefaults());
     }
 
     public DefaultInvocationSettings(Property propertyAnnotation) {
-        this.minSuccessful = propertyAnnotation.minSuccessful();
+        this(propertyAnnotation.minSuccessful(), propertyAnnotation.useDefaults());
     }
 
-    DefaultInvocationSettings(int minSuccessful) {
+    DefaultInvocationSettings() {
+        this(DEFAULT_MIN_SUCCESSFUL, DEFAULT_USE_DEFAULTS);
+    }
+
+    DefaultInvocationSettings(int minSuccessful, boolean useDefaults) {
         this.minSuccessful = minSuccessful;
+        this.useDefaults = useDefaults;
+    }
+
+    @Override
+    public boolean useDefaults() {
+        return useDefaults;
     }
 
     @Override
@@ -30,10 +41,10 @@ public class DefaultInvocationSettings implements Settings {
 
     @Override
     public Settings mergeWith(Settings other) {
-        if (other.minSuccessful() == DEFAULT_MIN_SUCCESSFUL) {
-            return this;
-        }
-        return new DefaultInvocationSettings(other.minSuccessful());
+        int minSuccessful = other.minSuccessful() == DEFAULT_MIN_SUCCESSFUL ? this.minSuccessful : other
+                .minSuccessful();
+        boolean useDefaults = other.useDefaults() == DEFAULT_USE_DEFAULTS ? this.useDefaults : other.useDefaults();
+        return new DefaultInvocationSettings(minSuccessful, useDefaults);
     }
 
 }

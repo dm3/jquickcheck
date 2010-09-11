@@ -17,9 +17,11 @@ import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
+import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
 
 /**
  * A builder which builds test classes containing generators. Built test classes should later be used in tests for
@@ -34,12 +36,12 @@ public abstract class AbstractTestClassBuilder<T> {
 
     private final CtClass clazz;
     private final Class<? super T> genClass;
+    private boolean useDefaults = DefaultInvocationSettings.DEFAULT_USE_DEFAULTS;
 
     protected AbstractTestClassBuilder(String name, Class<? super T> genClass) {
         ClassPool cPool = ClassPool.getDefault();
         this.clazz = cPool.makeClass(name);
         this.genClass = genClass;
-        addClassAnnotation();
     }
 
     public AbstractTestClassBuilder<T> withGenerator(int accessFlag, String fieldClass, String fieldName,
@@ -88,7 +90,13 @@ public abstract class AbstractTestClassBuilder<T> {
         return this;
     }
 
+    public AbstractTestClassBuilder<T> useDefaults() {
+        this.useDefaults = true;
+        return this;
+    }
+
     public GeneratedTest build() {
+        addClassAnnotation();
         return new GeneratedTest(clazz);
     }
 
@@ -101,6 +109,7 @@ public abstract class AbstractTestClassBuilder<T> {
         Annotation quickCheck = new Annotation(QuickCheck.class.getName(), constPool);
         quickCheck.addMemberValue("provider", new ClassMemberValue(getQuickCheckProviderClass().getName(),
                                                                    constPool));
+        quickCheck.addMemberValue("useDefaults", new BooleanMemberValue(useDefaults, constPool));
 
         attr.addAnnotation(quickCheck);
         file.addAttribute(attr);
@@ -109,4 +118,5 @@ public abstract class AbstractTestClassBuilder<T> {
     protected abstract Class<?> getQuickCheckProviderClass();
 
     protected abstract void addClassLevelAnnotation(AnnotationsAttribute attribute, ConstPool constPool);
+
 }

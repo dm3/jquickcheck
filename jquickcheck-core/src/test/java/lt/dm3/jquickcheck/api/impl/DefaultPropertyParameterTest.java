@@ -81,6 +81,7 @@ public class DefaultPropertyParameterTest {
     }
 
     private DefaultPropertyParameter<Generator<Sample>> defaultParameter(Type t, G... ann) {
-        return new DefaultPropertyParameter<Generator<Sample>>(t, ann);
+        // USE DEFAULTS = true
+        return new DefaultPropertyParameter<Generator<Sample>>(t, ann, new DefaultInvocationSettings(1, true));
     }
 }

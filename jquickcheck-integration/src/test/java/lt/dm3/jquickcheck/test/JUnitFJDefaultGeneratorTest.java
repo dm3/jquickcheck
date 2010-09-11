@@ -1,6 +1,7 @@
 package lt.dm3.jquickcheck.test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 import java.util.Iterator;
@@ -65,6 +66,7 @@ public class JUnitFJDefaultGeneratorTest extends AbstractDefaultGeneratorTest<Ar
             Result result = JUnitCore.runClasses(loaded);
             int totalTests = new TestClass(loaded).getAnnotatedMethods(Property.class).size();
 
+            assertThat(totalTests, greaterThan(0));
             assertThat(result.getFailureCount(), equalTo(0));
             assertThat(result.getRunCount(), equalTo(totalTests));
         }

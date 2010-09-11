@@ -12,9 +12,11 @@ import org.junit.Test;
 public class DefaultInvocationSettingsTest {
 
     @Test
-    public void shouldRetainTheNonDefaultSettingsOfTheMergeTarget() throws SecurityException, NoSuchMethodException {
-        Settings mergeTarget = new DefaultInvocationSettings(1);
-        Settings other = new DefaultInvocationSettings(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL);
+    public void shouldRetainTheNonDefaultMinSuccessfulSettingsOfTheMergeTarget() throws SecurityException,
+        NoSuchMethodException {
+        Settings mergeTarget = new DefaultInvocationSettings(1, DefaultInvocationSettings.DEFAULT_USE_DEFAULTS);
+        Settings other = new DefaultInvocationSettings(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL,
+                                                       !DefaultInvocationSettings.DEFAULT_USE_DEFAULTS);
 
         Settings result = mergeTarget.mergeWith(other);
 
@@ -22,9 +24,21 @@ public class DefaultInvocationSettingsTest {
     }
 
     @Test
+    public void shouldRetainTheNonDefaultUseDefaultsSettingsOfTheMergeTarget() throws SecurityException,
+        NoSuchMethodException {
+        Settings mergeTarget = new DefaultInvocationSettings(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL,
+                                                             !DefaultInvocationSettings.DEFAULT_USE_DEFAULTS);
+        Settings other = new DefaultInvocationSettings(1, DefaultInvocationSettings.DEFAULT_USE_DEFAULTS);
+
+        Settings result = mergeTarget.mergeWith(other);
+
+        assertThat(result.useDefaults(), equalTo(mergeTarget.useDefaults()));
+    }
+
+    @Test
     public void shouldRetainTheNonDefaultSettingsOfTheOtherSettingsObject() {
-        Settings mergeTarget = new DefaultInvocationSettings(1);
-        Settings other = new DefaultInvocationSettings(10);
+        Settings mergeTarget = new DefaultInvocationSettings(1, true);
+        Settings other = new DefaultInvocationSettings(10, false);
 
         Settings result = mergeTarget.mergeWith(other);
 
@@ -35,16 +49,21 @@ public class DefaultInvocationSettingsTest {
     public void shouldGetSettingsFromQuickCheckAnnotation() {
         QuickCheck qc = Annotations.newInstance(QuickCheck.class);
 
-        assertThat(new DefaultInvocationSettings(qc).minSuccessful(),
-                   equalTo(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL));
+        checkDefaults(new DefaultInvocationSettings(qc));
     }
 
     @Test
     public void shouldGetSettingsFromPropertyAnnotation() {
         Property p = Annotations.newInstance(Property.class);
 
-        assertThat(new DefaultInvocationSettings(p).minSuccessful(),
+        checkDefaults(new DefaultInvocationSettings(p));
+    }
+
+    private static void checkDefaults(DefaultInvocationSettings settings) {
+        assertThat(settings.minSuccessful(),
                    equalTo(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL));
+        assertThat(settings.useDefaults(),
+                   equalTo(DefaultInvocationSettings.DEFAULT_USE_DEFAULTS));
     }
 
 }

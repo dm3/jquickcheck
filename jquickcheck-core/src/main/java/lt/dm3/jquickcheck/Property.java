@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
+
 /**
  * Most of the parameters came from the functionaljava-test library.
  * 
@@ -14,10 +16,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Property {
+
+    boolean useDefaults() default DefaultInvocationSettings.DEFAULT_USE_DEFAULTS;
+
     /**
      * @return The minimum number of successful tests before a result is reached.
      */
-    int minSuccessful() default 100;
+    int minSuccessful() default DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL;
 
     /**
      * @return The maximum number of tests discarded because they did not satisfy pre-conditions.
@@ -33,4 +38,5 @@ public @interface Property {
      * @return The maximum size to use for checking.
      */
     int maxSize() default 100;
+
 }

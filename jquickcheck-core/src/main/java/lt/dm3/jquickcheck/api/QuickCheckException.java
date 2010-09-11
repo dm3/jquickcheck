@@ -6,6 +6,10 @@ public class QuickCheckException extends RuntimeException {
 
     private final String message;
 
+    public QuickCheckException(String message) {
+        this.message = message;
+    }
+
     public QuickCheckException(QuickCheckResult result) {
         StringBuilder message = new StringBuilder();
         if (result.isExhausted()) {

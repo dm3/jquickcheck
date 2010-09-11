@@ -22,15 +22,16 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
 
     public DefaultPropertyMethod(Method method, Object target, Settings methodSettings) {
         this.method = method;
+        this.methodSettings = methodSettings;
+        this.target = target;
+
         Type[] parameterTypes = method.getParameterTypes();
         Annotation[][] annotations = method.getParameterAnnotations();
         List<PropertyParameter<GEN>> parameters = new ArrayList<PropertyParameter<GEN>>(parameterTypes.length);
         for (int i = 0; i < parameterTypes.length; i++) {
-            parameters.add(new DefaultPropertyParameter<GEN>(parameterTypes[i], annotations[i]));
+            parameters.add(new DefaultPropertyParameter<GEN>(parameterTypes[i], annotations[i], methodSettings));
         }
         this.parameters = Collections.unmodifiableList(parameters);
-        this.target = target;
-        this.methodSettings = methodSettings;
     }
 
     @Override

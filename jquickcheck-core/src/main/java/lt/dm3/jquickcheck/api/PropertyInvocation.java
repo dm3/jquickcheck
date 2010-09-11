@@ -29,6 +29,11 @@ public interface PropertyInvocation<GEN> {
          * @return new Settings object with properties overwritten by the properties of the given settings object
          */
         Settings mergeWith(Settings settings);
+
+        /**
+         * @return true if the quick check runner should use default generators provided by quick check
+         */
+        boolean useDefaults();
     }
 
     /**
