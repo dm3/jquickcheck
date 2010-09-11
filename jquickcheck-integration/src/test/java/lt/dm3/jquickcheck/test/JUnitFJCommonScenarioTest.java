@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.junit;
+package lt.dm3.jquickcheck.test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -7,10 +7,17 @@ import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.QuickCheckException;
+import lt.dm3.jquickcheck.fj.DefaultGenerators;
+import lt.dm3.jquickcheck.fj.FJ;
+import lt.dm3.jquickcheck.junit4.JUnitTestClassBuilder;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.PositiveIntGenerator;
 import lt.dm3.jquickcheck.sample.SampleProvider;
+import lt.dm3.jquickcheck.test.builder.AbstractTestClassBuilder;
+import lt.dm3.jquickcheck.test.builder.GeneratedTest;
+import lt.dm3.jquickcheck.test.builder.GeneratorInfo;
+import lt.dm3.jquickcheck.test.builder.TestClassBuilderFactory;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -21,20 +28,34 @@ import org.junit.runner.RunWith;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
-public abstract class QuickCheckRunnerTest {
+import fj.test.Arbitrary;
 
-    @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = SampleProvider.class)
-    public static class ActualTest {
-        @Property
-        public boolean shouldRunTheTestWithNoArguments() {
-            return true;
-        }
+public class JUnitFJCommonScenarioTest extends AbstractCommonScenarioTest<Arbitrary> {
 
-        @Property
-        public boolean shouldFailTheTestWhichReturnsFalse() {
-            return false;
-        }
+    @Override
+    protected TestClassBuilderFactory<Arbitrary> defaultClassBuilderFactory() {
+        return new TestClassBuilderFactory<Arbitrary>() {
+            @Override
+            public AbstractTestClassBuilder<Arbitrary> createBuilder(String className,
+                                                                     Class<? super Arbitrary> generatorClass) {
+                return new JUnitTestClassBuilder(className, generatorClass) {
+                    @Override
+                    protected Class<?> getQuickCheckProviderClass() {
+                        return FJ.class;
+                    }
+                };
+            }
+        };
+    }
+
+    @Override
+    protected Class<Arbitrary> generatorClass() {
+        return Arbitrary.class;
+    }
+
+    @Override
+    protected Iterable<GeneratorInfo> supportedGenerators() {
+        return new DefaultGenerators();
     }
 
     @RunWith(QuickCheckRunner.class)
@@ -127,38 +148,55 @@ public abstract class QuickCheckRunnerTest {
     }
 
     @Test
-    public void runActualTest() throws InitializationError {
-        Result result = JUnitCore.runClasses(ActualTest.class);
-        int totalTests = new TestClass(ActualTest.class).getAnnotatedMethods(Property.class).size();
+    public void shouldCheckPropertyWithNoArguments() {
+        Class<?> clazz = withOneNoArgPropertyReturningTrue().load();
 
+        doTestSuccessfulRun(clazz);
+    }
+
+    @Test
+    public void shouldCheckPropertyWithNoArgumentsReturningFalse() {
+        Class<?> clazz = withOneNoArgPropertyReturningFalse().load();
+
+        Result result = JUnitCore.runClasses(clazz);
+
+        assertThat(result.getRunCount(), equalTo(1));
         assertThat(result.getFailureCount(), equalTo(1));
         assertThat(result.getFailures().get(0).getException(), instanceOf(QuickCheckException.class));
-        assertThat(result.getRunCount(), equalTo(totalTests));
+    }
+
+    @Test
+    public void shouldResolveFieldsWithAnyCombinationOfModifiers() {
+        for (GeneratedTest t : withOneFieldAndOnePropertyAndDifferentFieldModifiers()) {
+            Class<?> clazz = t.load();
+
+            doTestSuccessfulRun(clazz);
+        }
     }
 
     @Test
     public void runPrimitiveTest() throws InitializationError {
-        doTest(PrimitiveTest.class);
+        doTestSuccessfulRun(PrimitiveTest.class);
     }
 
     @Test
     public void runCustomParameterGeneratorInstanceTest() throws InitializationError {
-        doTest(CustomParameterGeneratorInstanceTest.class);
+        doTestSuccessfulRun(CustomParameterGeneratorInstanceTest.class);
     }
 
     @Test
     public void runOneCustomParameterGeneratorInstanceTest() throws InitializationError {
-        doTest(OneCustomParameterGeneratorInstanceTest.class);
+        doTestSuccessfulRun(OneCustomParameterGeneratorInstanceTest.class);
     }
 
     @Test
     public void runCustomPrivateFieldGeneratorTestIfInitializedInConstructor() throws InitializationError {
-        doTest(CustomPrivateFieldGeneratorTest.class);
+        doTestSuccessfulRun(CustomPrivateFieldGeneratorTest.class);
     }
 
     @Test
     public void runCustomPrivateFieldGeneratorTestIfInitializedInBeforeClass() throws InitializationError {
-        doTest(CustomPrivateFieldSetInBeforeClassGeneratorTest.class);
+        doTestSuccessfulRun(CustomPrivateFieldSetInBeforeClassGeneratorTest.class);
     }
 
     /**
@@ -176,7 +214,7 @@ public abstract class QuickCheckRunnerTest {
         assertThat(result.getRunCount(), equalTo(totalTests));
     }
 
-    private static void doTest(Class<?> testClass) {
+    private static void doTestSuccessfulRun(Class<?> testClass) {
         Result result = JUnitCore.runClasses(testClass);
         int totalTests = new TestClass(testClass).getAnnotatedMethods(Property.class).size();
 

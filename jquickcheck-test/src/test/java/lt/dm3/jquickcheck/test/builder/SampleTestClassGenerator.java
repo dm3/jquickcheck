@@ -1,6 +1,10 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import lt.dm3.jquickcheck.sample.Generator;
+import lt.dm3.jquickcheck.test.builder.AbstractTestClassBuilder;
+import lt.dm3.jquickcheck.test.builder.GeneratorInfo;
+import lt.dm3.jquickcheck.test.builder.TestClassBuilderFactory;
+import lt.dm3.jquickcheck.test.builder.TestClassGenerator;
 
 public class SampleTestClassGenerator extends TestClassGenerator<Generator<?>> {
 

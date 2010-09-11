@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
@@ -6,6 +6,7 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import lt.dm3.jquickcheck.sample.SampleProvider;
 import lt.dm3.jquickcheck.sample.SampleRunner;
+import lt.dm3.jquickcheck.test.builder.AbstractTestClassBuilder;
 
 import org.junit.runner.RunWith;
 

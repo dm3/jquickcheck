@@ -1,27 +1,17 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import java.util.Random;
 
-import javassist.Modifier;
 import javassist.bytecode.Descriptor;
 import lt.dm3.jquickcheck.sample.Generator;
+import lt.dm3.jquickcheck.test.AllModifiers;
 
-public abstract class TestClassGenerator<T> implements Generator<TestClass> {
+public abstract class TestClassGenerator<T> implements Generator<GeneratedTest> {
 
     private final Random r = new Random();
     private final Generator<GeneratorInfo> generatorGenerator;
     private static final int maxGenerators = 20, maxParams = 8, maxProperties = 20;
-    private static final int[] modifiers = new int[] { Modifier.PUBLIC, Modifier.PRIVATE, Modifier.PROTECTED,
-                                                Modifier.STATIC,
-                                                Modifier.FINAL,
-                                                Modifier.setPackage(Modifier.STATIC),
-                                                Modifier.setPackage(Modifier.FINAL),
-                                                Modifier.setPrivate(Modifier.STATIC),
-                                                Modifier.setPrivate(Modifier.FINAL),
-                                                Modifier.setProtected(Modifier.STATIC),
-                                                Modifier.setProtected(Modifier.FINAL),
-                                                Modifier.setPublic(Modifier.STATIC),
-                                                Modifier.setPublic(Modifier.FINAL) };
+    private static final int[] modifiers = AllModifiers.toArray();
     private final TestClassBuilderFactory<? super T> builderFactory;
 
     public TestClassGenerator(Generator<GeneratorInfo> generatorGenerator,
@@ -31,7 +21,7 @@ public abstract class TestClassGenerator<T> implements Generator<TestClass> {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public TestClass generate() {
+    public GeneratedTest generate() {
         AbstractTestClassBuilder<? super T> builder = builderFactory.createBuilder(String.valueOf(RandomUtils
                 .randomJavaIdentifier()),
                                                                                       (Class) getGeneratorClass());
@@ -62,7 +52,7 @@ public abstract class TestClassGenerator<T> implements Generator<TestClass> {
                  * }
                  */
             }
-            builder.withProperty(propName, paramClasses);
+            builder.withProperty(propName, true, paramClasses);
         }
         return builder.build();
     }

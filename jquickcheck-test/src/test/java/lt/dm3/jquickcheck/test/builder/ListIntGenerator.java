@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import java.util.Arrays;
 import java.util.List;

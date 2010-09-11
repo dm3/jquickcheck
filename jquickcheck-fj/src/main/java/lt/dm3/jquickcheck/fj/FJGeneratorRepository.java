@@ -9,6 +9,7 @@ import java.util.Map;
 
 import lt.dm3.jquickcheck.api.impl.DefaultGeneratorRepository;
 import lt.dm3.jquickcheck.api.impl.NamedAndTypedGenerator;
+import lt.dm3.jquickcheck.api.impl.TypeResolverRegistry;
 import lt.dm3.jquickcheck.internal.Primitives;
 import fj.test.Arbitrary;
 
@@ -26,8 +27,7 @@ public class FJGeneratorRepository extends DefaultGeneratorRepository<Arbitrary<
         for (Field f : arbFields) {
             if (f.getName().startsWith("arb")) {
                 if (f.getGenericType() instanceof ParameterizedType) {
-                    ParameterizedType pType = (ParameterizedType) f.getGenericType();
-                    Type key = pType.getActualTypeArguments()[0];
+                    Type key = TypeResolverRegistry.resolveFrom(f);
                     try {
                         Arbitrary<?> value = (Arbitrary<?>) f.get(null);
                         if (Primitives.isPrimitiveOrWrapper(key)) {

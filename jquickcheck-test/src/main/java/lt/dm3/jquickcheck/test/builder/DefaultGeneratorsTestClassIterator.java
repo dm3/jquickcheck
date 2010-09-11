@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -10,7 +10,7 @@ import java.util.Random;
  * @author dm3
  * 
  */
-public class DefaultGeneratorsTestClassIterator<T> implements Iterator<TestClass> {
+public class DefaultGeneratorsTestClassIterator<T> implements Iterator<GeneratedTest> {
 
     private final TestClassBuilderFactory<T> builderFactory;
     private final Iterator<GeneratorInfo> defaultGenerators;
@@ -28,7 +28,7 @@ public class DefaultGeneratorsTestClassIterator<T> implements Iterator<TestClass
         this.maxProperties = maxProperties;
     }
 
-    public TestClass next() {
+    public GeneratedTest next() {
         AbstractTestClassBuilder<T> b = builderFactory.createBuilder(RandomUtils.randomJavaIdentifier(), genClass);
         int properties = r.nextInt(maxGeneratorsPerProperty) + 1;
         boolean finished = false;
@@ -43,7 +43,7 @@ public class DefaultGeneratorsTestClassIterator<T> implements Iterator<TestClass
                     values = Arrays.copyOf(values, j);
                 }
             }
-            b.withProperty(RandomUtils.randomJavaIdentifier(), values);
+            b.withProperty(RandomUtils.randomJavaIdentifier(), true, values);
         }
         return b.build();
     }

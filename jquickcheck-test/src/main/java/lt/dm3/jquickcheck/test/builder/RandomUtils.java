@@ -1,8 +1,8 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import java.util.UUID;
 
-abstract class RandomUtils {
+public abstract class RandomUtils {
 
     private RandomUtils() {
         // static utils

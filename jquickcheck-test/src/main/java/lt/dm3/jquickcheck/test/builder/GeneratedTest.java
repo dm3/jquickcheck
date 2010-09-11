@@ -1,13 +1,13 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
 
-public class TestClass {
+public class GeneratedTest {
 
     private final CtClass clazz;
 
-    public TestClass(CtClass clazz) {
+    public GeneratedTest(CtClass clazz) {
         this.clazz = clazz;
     }
 

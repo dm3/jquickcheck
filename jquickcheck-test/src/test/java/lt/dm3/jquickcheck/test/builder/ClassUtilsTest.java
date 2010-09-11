@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javassist.bytecode.Descriptor;
+import lt.dm3.jquickcheck.test.builder.ClassUtils;
 
 import org.junit.Test;
 

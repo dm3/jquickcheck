@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -26,7 +26,8 @@ public class TestClassGeneratorTest {
             if (next % 3 == 0) {
                 return new GeneratorInfo(ClassUtils.newInstance(IntegerGenerator.class), Integer.class);
             } else if (next % 2 == 0) {
-                return new GeneratorInfo("lt.dm3.jquickcheck.test.TestClassGeneratorTest.staticMethod();", List.class);
+                return new GeneratorInfo("lt.dm3.jquickcheck.test.builder.TestClassGeneratorTest.staticMethod();",
+                                         List.class);
             } else {
                 return new GeneratorInfo(ClassUtils.newInstance(ListIntGenerator.class), List.class);
             }
@@ -42,7 +43,7 @@ public class TestClassGeneratorTest {
     public void shouldGenerateAValidClass() throws ClassNotFoundException, InstantiationException,
         IllegalAccessException {
         for (int i = 0; i < 100; i++) {
-            TestClass testCase = new SampleTestClassGenerator(gen).generate();
+            GeneratedTest testCase = new SampleTestClassGenerator(gen).generate();
 
             Class<?> clazz = testCase.load();
 

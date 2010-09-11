@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -21,6 +21,7 @@ import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
 import lt.dm3.jquickcheck.sample.SampleRunner;
+import lt.dm3.jquickcheck.test.builder.ClassUtils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -124,7 +125,7 @@ public class TestClassBuilderTest {
 
         String methodName = "prop1";
         SampleTestClassBuilder.forSample("lol4", Generator.class)
-                .withProperty(methodName, ClassUtils.describe(Integer.class), ClassUtils.describe(int.class))
+                .withProperty(methodName, true, ClassUtils.describe(Integer.class), ClassUtils.describe(int.class))
                 .build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol4");

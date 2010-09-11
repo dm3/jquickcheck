@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.test;
+package lt.dm3.jquickcheck.test.builder;
 
 import java.util.Arrays;
 
@@ -64,15 +64,14 @@ public abstract class AbstractTestClassBuilder<T> {
         return this;
     }
 
-    public AbstractTestClassBuilder<T> withProperty(String propertyName, String... parameters) {
+    public AbstractTestClassBuilder<T> withProperty(String propertyName, boolean returns, String... parameters) {
         try {
             ClassFile file = clazz.getClassFile();
             ConstPool cPool = file.getConstPool();
             String methodDescriptor = ClassUtils.methodReturning(boolean.class).with(parameters).build();
             MethodInfo method = new MethodInfo(cPool, propertyName, methodDescriptor);
             Bytecode body = new Bytecode(cPool, 0, parameters.length + 1);
-            // return true
-            body.addIconst(1);
+            body.addIconst(returns ? 1 : 0); // 1 - true, 0 - false
             body.addReturn(CtClass.booleanType);
             method.setCodeAttribute(body.toCodeAttribute());
             method.setAccessFlags(Modifier.PUBLIC);
@@ -89,8 +88,8 @@ public abstract class AbstractTestClassBuilder<T> {
         return this;
     }
 
-    public TestClass build() {
-        return new TestClass(clazz);
+    public GeneratedTest build() {
+        return new GeneratedTest(clazz);
     }
 
     private void addClassAnnotation() {
