@@ -1,0 +1,35 @@
+Providing a custom junit runner is mandatory as all of the @Test methods are
+validated for being no-arg public void methods.
+There is no way to test the test runner by using something like
+
+    public class QuickCheckRunnerTest {
+        @RunWith(QuickCheckRunner.class)
+        public static class SimpleTest {
+            @Test
+            public void shouldRunTheTestWithNoArguments() {
+                Assert.assertTrue(true);
+            }
+        }
+
+        @Test
+        public void runSimpleTest() throws InitializationError {
+            Result result = JUnitCore.runClasses(SimpleTest.class);
+
+            Assert.assertEquals(result.getFailureCount(), 0);
+            Assert.assertEquals(result.getRunCount(), 1);
+        }
+    }
+
+As the `Result` object returned by `JUnitCore` only knows if our runner has
+been passed the test method, but not if it has actually invoked it.
+
+    JUnitCore.runClasses(Test.class);
+
+Is a shortcut for creating a runner and invoking it with a custom `RunNotifier`
+containing a possibly custom `RunListener`.
+
+## Dispatching on primitive types
+To tell if a `java.lang.reflect.Type` (usually an instance of
+`java.lang.Class`) represents a primitive, you need to compare it with a
+special static `TYPE` variable on the respective primitive wrapper class
+(`Double.TYPE`, ...).
