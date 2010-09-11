@@ -34,16 +34,16 @@ public class DefaultGeneratorsTestClassIterator<T> implements Iterator<Generated
         boolean finished = false;
         for (int i = 0; i < properties && !finished; i++) {
             int arguments = r.nextInt(maxProperties) + 1;
-            String[] values = new String[arguments];
+            Parameter[] values = new Parameter[arguments];
             for (int j = 0; j < arguments && !finished; j++) {
                 if (defaultGenerators.hasNext()) {
-                    values[j] = ClassUtils.describe(defaultGenerators.next().getGeneratedValue());
+                    values[j] = Parameter.of(defaultGenerators.next().getGeneratedValue());
                 } else {
                     finished = true;
                     values = Arrays.copyOf(values, j);
                 }
             }
-            b.withProperty(RandomUtils.randomJavaIdentifier(), true, values);
+            b.withRandomProperty().with(values).and();
         }
         return b.useDefaults().build();
     }

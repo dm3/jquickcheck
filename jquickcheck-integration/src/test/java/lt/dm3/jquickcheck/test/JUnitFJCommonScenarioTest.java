@@ -71,17 +71,6 @@ public class JUnitFJCommonScenarioTest extends AbstractCommonScenarioTest<Arbitr
 
     @RunWith(QuickCheckRunner.class)
     @QuickCheck(provider = SampleProvider.class)
-    public static class OneCustomParameterGeneratorInstanceTest {
-        private static final Generator<Integer> positiveIntGen = new PositiveIntGenerator();
-
-        @Property
-        public boolean shouldRunTestWithCustomPrimitiveIntGenerator(int arg) {
-            return arg > 0;
-        }
-    }
-
-    @RunWith(QuickCheckRunner.class)
-    @QuickCheck(provider = SampleProvider.class)
     public static class CustomPrivateFieldGeneratorTest {
         private final Generator<Integer> positiveIntGen;
 
@@ -158,11 +147,6 @@ public class JUnitFJCommonScenarioTest extends AbstractCommonScenarioTest<Arbitr
     @Test
     public void runCustomParameterGeneratorInstanceTest() throws InitializationError {
         doTestSuccessfulRun(CustomParameterGeneratorInstanceTest.class);
-    }
-
-    @Test
-    public void runOneCustomParameterGeneratorInstanceTest() throws InitializationError {
-        doTestSuccessfulRun(OneCustomParameterGeneratorInstanceTest.class);
     }
 
     @Test

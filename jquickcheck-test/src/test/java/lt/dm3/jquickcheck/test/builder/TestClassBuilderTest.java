@@ -127,8 +127,9 @@ public class TestClassBuilderTest {
         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
         String methodName = "prop1";
-        SampleTestClassBuilder.forSample("lol4", Generator.class)
-                .withProperty(methodName, true, ClassUtils.describe(Integer.class), ClassUtils.describe(int.class))
+        SampleTestClassBuilder.forSample("lol4", Generator.class).withProperty(methodName)
+                    .with(Parameter.of(Integer.class))
+                    .with(Parameter.of(int.class)).and()
                 .build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol4");

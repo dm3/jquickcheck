@@ -41,10 +41,10 @@ public abstract class TestClassGenerator<T> implements Generator<GeneratedTest> 
         for (int i = 0; i < properties; i++) {
             String propName = RandomUtils.randomJavaIdentifier();
             int params = r.nextInt(Math.min(maxParams, generators + 1));
-            String[] paramClasses = new String[params];
+            Parameter[] para = new Parameter[params];
             for (int j = 0; j < params; j++) {
                 int gen = r.nextInt(j + 1);
-                paramClasses[j] = ClassUtils.describe(gens[gen].getGeneratedValue());
+                para[j] = Parameter.of(gens[gen].getGeneratedValue());
 
                 /*
                  * if (r.nextBoolean()) { // add G(gen = name) annotation String generatorName = names[gen]; } else {
@@ -52,7 +52,7 @@ public abstract class TestClassGenerator<T> implements Generator<GeneratedTest> 
                  * }
                  */
             }
-            builder.withProperty(propName, true, paramClasses);
+            builder.withProperty(propName).with(para).and();
         }
         return builder.build();
     }

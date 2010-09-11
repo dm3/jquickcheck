@@ -1,25 +1,18 @@
 package lt.dm3.jquickcheck.test.builder;
 
-import java.util.Arrays;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
-import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
-import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
-import javassist.bytecode.MethodInfo;
 import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
-import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
 
@@ -66,28 +59,12 @@ public abstract class AbstractTestClassBuilder<T> {
         return this;
     }
 
-    public AbstractTestClassBuilder<T> withProperty(String propertyName, boolean returns, String... parameters) {
-        try {
-            ClassFile file = clazz.getClassFile();
-            ConstPool cPool = file.getConstPool();
-            String methodDescriptor = ClassUtils.methodReturning(boolean.class).with(parameters).build();
-            MethodInfo method = new MethodInfo(cPool, propertyName, methodDescriptor);
-            Bytecode body = new Bytecode(cPool, 0, parameters.length + 1);
-            body.addIconst(returns ? 1 : 0); // 1 - true, 0 - false
-            body.addReturn(CtClass.booleanType);
-            method.setCodeAttribute(body.toCodeAttribute());
-            method.setAccessFlags(Modifier.PUBLIC);
-            AnnotationsAttribute attr = new AnnotationsAttribute(cPool, AnnotationsAttribute.visibleTag);
-            Annotation prop = new Annotation(Property.class.getName(), cPool);
-            attr.addAnnotation(prop);
-            method.addAttribute(attr);
-            file.addMethod(method);
-        } catch (DuplicateMemberException e) {
-            throw new RuntimeException(String.format("Cannot add property %s with parameters of types %s to class %s",
-                                                     propertyName,
-                                                     Arrays.toString(parameters), clazz), e);
-        }
-        return this;
+    public PropertyBuilder<T> withProperty(String propertyName) {
+        return new PropertyBuilder<T>(this, propertyName);
+    }
+
+    public PropertyBuilder<T> withRandomProperty() {
+        return new PropertyBuilder<T>(this, RandomUtils.randomJavaIdentifier());
     }
 
     public AbstractTestClassBuilder<T> useDefaults() {
@@ -113,6 +90,11 @@ public abstract class AbstractTestClassBuilder<T> {
 
         attr.addAnnotation(quickCheck);
         file.addAttribute(attr);
+    }
+
+    // default scope
+    CtClass getCtClass() {
+        return clazz;
     }
 
     protected abstract Class<?> getQuickCheckProviderClass();

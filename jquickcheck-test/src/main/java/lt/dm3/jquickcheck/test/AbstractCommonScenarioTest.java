@@ -6,6 +6,7 @@ import lt.dm3.jquickcheck.test.builder.AbstractTestClassBuilder;
 import lt.dm3.jquickcheck.test.builder.ClassUtils;
 import lt.dm3.jquickcheck.test.builder.GeneratedTest;
 import lt.dm3.jquickcheck.test.builder.GeneratorInfo;
+import lt.dm3.jquickcheck.test.builder.Parameter;
 import lt.dm3.jquickcheck.test.builder.RandomUtils;
 import lt.dm3.jquickcheck.test.builder.TestClassBuilderFactory;
 
@@ -20,13 +21,13 @@ public abstract class AbstractCommonScenarioTest<T> {
     protected GeneratedTest withOneNoArgPropertyReturningTrue() {
         AbstractTestClassBuilder<T> b = defaultClassBuilderFactory().createBuilder(RandomUtils.randomJavaIdentifier(),
                                                                                    generatorClass());
-        return b.withProperty(RandomUtils.randomJavaIdentifier(), true).build();
+        return b.withRandomProperty().returning(true).and().build();
     }
 
     protected GeneratedTest withOneNoArgPropertyReturningFalse() {
         AbstractTestClassBuilder<T> b = defaultClassBuilderFactory().createBuilder(RandomUtils.randomJavaIdentifier(),
                                                                                    generatorClass());
-        return b.withProperty(RandomUtils.randomJavaIdentifier(), false).build();
+        return b.withRandomProperty().returning(false).and().build();
     }
 
     protected Iterable<GeneratedTest> withOneFieldAndOnePropertyAndDifferentFieldModifiers() {
@@ -47,16 +48,14 @@ public abstract class AbstractCommonScenarioTest<T> {
                         GeneratorInfo gen = generators.next();
                         /*
                          * This is brittle. If generator wouldn't be added to this class and the default generators for a 
-                         * provider would provide the test case with a generator required to run the propery, test
+                         * provider would provide the test case with a generator required to run the property, test
                          * would still pass. We need to disable the usage of default generators and hope that the
                          * test runner honors our settings.
                          */
                         b.withGenerator(modifiers[current], ClassUtils.describe(gen.getGeneratedValue()), "one",
                                         gen.getGeneratorValue());
-                        b.withProperty(RandomUtils.randomJavaIdentifier(), true,
-                                       ClassUtils.describe(gen.getGeneratedValue()));
                         current++;
-                        return b.build();
+                        return b.withRandomProperty().with(Parameter.of(gen.getGeneratedValue())).and().build();
                     }
 
                     public void remove() {
