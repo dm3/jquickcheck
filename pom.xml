@@ -16,6 +16,7 @@
         <module>jquickcheck-sample</module>
         <module>jquickcheck-fj</module>
         <module>jquickcheck-junit</module>
+        <module>jquickcheck-testng</module>
         <module>jquickcheck-integration</module>
     </modules>
 
@@ -64,6 +65,11 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>5.14</version>
             </dependency>
             <dependency>
                 <groupId>org.functionaljava</groupId>

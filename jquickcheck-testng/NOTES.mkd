@@ -1,0 +1,75 @@
+## TestNG
+TestNG is a much more complex beast than JUnit. In JUnit you basically have a
+`@RunWith` and supply it with a subtype of `org.junit.runners.Runner` which
+gets passed a test case class. Then it gets invoked on main lifecycle events
+such as test case instance and test case method creation/execution.
+After looking at TestNG internals for about 20 minutes I see two ways of starting the implementation:
+1. extend the `TestRunner` by providing my own `ITestRunnerFactory`?
+2. Use the `@DataProvider` mechanism and some sort of `AnnotationTransformer`
+   to transform data provider annotations to `@Property`?
+
+After a closer look I've rejected both options. TestNG code is very monolithic with regards to the actual method invocation. Almost everything is done in `Invoker`
+* Parameter value resolution is done through the static `Parameters` class. Should I repeat how unextensible this is?
+* `IHookable` is useless as I cannot control the parameters passed into the test method
+
+A crazy idea (is it even worth pursuing?)
+1. Modify the loaded test case class by adding `@DataProvider` to each `@Property` method.
+
+Finally I looked at how [Powermock](http://powermock) handles integration with
+TestNG. It seems that there's an undocumented integration point which _can_
+make the integration work - `ITestObjectFactory`. What guys behind Powermock
+did and what I should do is - create a proxy for the test class and run the
+proxy through quickcheck.
+Showstoppers:
+1. Unable to return `boolean` from the `@Property` as there is the following
+   code in `AnnotationHelper` at line 213 (as of TestNG 5.14):
+
+    public static ITestNGMethod[] findMethodsWithAnnotation(Class rootClass, Class annotationClass,
+                                                IAnnotationFinder annotationFinder, XmlTest xmlTest)
+        ...
+        // Skip the method if it has a return type
+        if (m.getReturnType() != void.class) {
+            Utils.log("", 3, "Method " + m + " has a @Test annotation"
+                    + " but also a return value:  ignoring it.");
+            continue;
+        }
+        ...
+    }
+2. Unable to have a test method with more than zero arguments _without_ `@Parameters` or a `@DataProvider`
+   The closest I got to running a property is this:
+
+    @QuickCheck
+    public class ConfigurationTest extends JQuickCheckTestCase {
+
+        @Test(dataProvider = "fake")
+        @Property
+        public void property(int i) {
+
+        }
+
+        // non-static provider won't work as MethodHelper#invokeMethod tries to find the method on the instance of the
+        // javassist proxy.
+        @DataProvider
+        public static Object[][] fake() {
+            return new Object[][] { { 1 } };
+        }
+    }
+
+The above snippet is actually run by JQuickCheck as a property - but look at
+the stuff you need to add to the class to make it work...
+
+## TestNG class
+`TestNG` class which is run by `TestNG#run`. It may run in several modes -
+slave, master or regular; we will only touch regular as slave/master modes seem
+to be needed only for the remote test running feature.  When run in _regular_ mode,
+TestNG will
+1. Create `SuiteRunners` for each suite
+2. Run suites in the order they are specified
+
+## SuiteRunner class
+`SuiteRunner` contains all of the information needed to run one test suite. The most important parts are:
+* Listeners
+* Configuration
+* Test runners which get populated by invoking `ITestRunnerFactory` during `SuiteRunner#init`
+When the suite runner gets invoked by `TestNG`, each of the `TestRunners` is
+queried for its `IInvoker` which is used to `#invokeConfigurations`.
