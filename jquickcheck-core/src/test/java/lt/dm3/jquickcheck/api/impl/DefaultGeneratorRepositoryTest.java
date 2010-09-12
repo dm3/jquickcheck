@@ -1,6 +1,7 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Type;
@@ -67,5 +68,54 @@ public class DefaultGeneratorRepositoryTest {
 
         assertThat(repo.hasGeneratorFor(name), is(true));
         assertThat(repo.getGeneratorFor(name), is((Generator) generator));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptSeveralGeneratorsWithTheSameIdentifier() {
+        String name = "a";
+        SampleGenerator generator = new SampleGenerator();
+        GeneratorHolder holder = new GeneratorHolder(int.class, name, generator);
+        GeneratorHolder holder2 = new GeneratorHolder(int.class, name, generator);
+
+        repo = new TestRepo(Arrays.asList(holder, holder2));
+    }
+
+    @Test
+    public void shouldReturnGeneratorOnRequestByNameIfSameGeneratorInstanceWasAddedUnderTheSameName() {
+        String name = "a";
+        SampleGenerator gen = new SampleGenerator();
+        GeneratorHolder holder = new GeneratorHolder(int.class, name, gen);
+        GeneratorHolder holder2 = new GeneratorHolder(double.class, name, gen);
+
+        repo = new TestRepo(Arrays.asList(holder, holder2));
+
+        assertThat(repo.hasGeneratorFor(name), is(true));
+        assertThat(repo.getGeneratorFor(name), sameInstance((Generator) gen));
+        Generator forDouble = repo.getGeneratorFor(double.class);
+        Generator forInt = repo.getGeneratorFor(int.class);
+        assertThat(forDouble, sameInstance(forInt));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionOnRequestByNameIfSeveralGeneratorsExistForTheSameName() {
+        String name = "a";
+        // must be different instances of a generator
+        GeneratorHolder holder = new GeneratorHolder(int.class, name, new SampleGenerator());
+        GeneratorHolder holder2 = new GeneratorHolder(double.class, name, new SampleGenerator());
+
+        repo = new TestRepo(Arrays.asList(holder, holder2));
+
+        repo.hasGeneratorFor(name);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionOnRequestByTypeIfSeveralGeneratorsExistForTheSameType() {
+        // must be different instances of a generator
+        GeneratorHolder holder = new GeneratorHolder(int.class, "a", new SampleGenerator());
+        GeneratorHolder holder2 = new GeneratorHolder(int.class, "b", new SampleGenerator());
+
+        repo = new TestRepo(Arrays.asList(holder, holder2));
+
+        repo.hasGeneratorFor(int.class);
     }
 }

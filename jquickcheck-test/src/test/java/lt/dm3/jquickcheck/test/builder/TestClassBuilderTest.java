@@ -17,6 +17,7 @@ import java.util.List;
 import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.Descriptor;
+import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
@@ -135,10 +136,33 @@ public class TestClassBuilderTest {
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol4");
         Object instance = clazz.newInstance();
 
+        // then
         Method m = clazz.getMethod(methodName, Integer.class, int.class);
         assertThat(m.getParameterTypes().length, equalTo(2));
         assertThat(m.getAnnotation(Property.class), is(not(nullValue())));
         assertThat((Boolean) m.invoke(instance, new Object[] { 1, 1 }), is(true));
+    }
+
+    @Test
+    public void shouldCreateASampleTestClassWithOnePropertyHavingAParameterWithAnAnnotation()
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException, SecurityException,
+        NoSuchMethodException {
+
+        String methodName = "prop1";
+        String annotationValue = "lulz";
+        SampleTestClassBuilder.forSample("lol7", Generator.class).withProperty(methodName)
+                    .with(Parameter.of(Integer.class).annotatedBy(G.class).with("gen", annotationValue).end()).and()
+                .build().load();
+
+        Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol7");
+
+        // then
+        Method m = clazz.getMethod(methodName, Integer.class);
+        assertThat(m.getParameterTypes().length, equalTo(1));
+        assertThat(m.getAnnotation(Property.class), is(not(nullValue())));
+
+        G gAnnotation = (G) m.getParameterAnnotations()[0][0];
+        assertThat(gAnnotation.gen(), equalTo(annotationValue));
     }
 
     @Test
@@ -148,7 +172,6 @@ public class TestClassBuilderTest {
         SampleTestClassBuilder.forSample("lol6", Generator.class).useDefaults().build().load();
 
         Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("lol6");
-        Object instance = clazz.newInstance();
 
         QuickCheck qc = clazz.getAnnotation(QuickCheck.class);
         assertThat(qc.useDefaults(), is(true));

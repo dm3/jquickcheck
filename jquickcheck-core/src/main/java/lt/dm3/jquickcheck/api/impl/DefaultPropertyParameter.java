@@ -10,6 +10,20 @@ import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 import lt.dm3.jquickcheck.api.PropertyParameter;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 
+/**
+ * Fails to resolve a generator given the property parameters (annotations, type and settings) in these cases:
+ * <ol>
+ * <li>Annotation for a named generator is specified, but a generator with this name cannot be found in the repository</li>
+ * <li>UseDefaults option is turned off in the settings and repository doesn't contain a generator for the given
+ * name/type</li>
+ * <li>UseDefaults is turned on and repository doesn't contain a generator for the given name/type or a default
+ * generator for the given type</li>
+ * </ol>
+ * 
+ * @author dm3
+ * 
+ * @param <GEN>
+ */
 class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
     private final Type type;
     private final Annotation[] annotations;
@@ -30,6 +44,8 @@ class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
                 String name = arbAnnotation.gen();
                 if (repo.hasGeneratorFor(name)) {
                     gen = repo.getGeneratorFor(name);
+                } else {
+                    throw new QuickCheckException("Could not find a generator for name: " + name);
                 }
             }
         }

@@ -33,3 +33,49 @@ To tell if a `java.lang.reflect.Type` (usually an instance of
 `java.lang.Class`) represents a primitive, you need to compare it with a
 special static `TYPE` variable on the respective primitive wrapper class
 (`Double.TYPE`, ...).
+
+## Generator resolution
+Having a situation like the following:
+
+    public class SomeTest {
+        public static final Arbitrary<Integer> arbInteger1 = Arbitrary.arbInteger;
+        public static final Arbitrary<Integer> arbInteger2 = Arbitrary.arbPositiveInteger;
+
+        @Property
+        public boolean someProperty(int a, int b) {
+            return a + b > 0;
+        }
+    }
+
+can either result in:
+1. non-reproducible results which will be affected by the ordering of fields
+2. an early initialization exception as several generators are defined for the same type
+3. a 'later' exception resulting from the property invocation as ambiguous
+   generators exist for parameter types
+
+The third option is the best compromise I can think of in this scenario. It
+will allow having more than one generator of one type in the same test case if
+properties are able to choose the required generators by themselves, as in the
+following:
+
+    public class SomeNamedTest {
+        public static final Arbitrary<Integer> arbInteger1 = Arbitrary.arbInteger;
+        public static final Arbitrary<Integer> arbInteger2 = Arbitrary.arbPositiveInteger;
+
+        @Property
+        public boolean someProperty(@G(gen = "arbInteger2") int a, @G(gen = "arbInteger2") int b) {
+            return a + b > 0;
+        }
+    }
+
+or like this (on my todo list):
+
+    public class SomeNamedTest2 {
+        public static final Arbitrary<Integer> arbInteger1 = Arbitrary.arbInteger;
+        public static final Arbitrary<Integer> arbInteger2 = Arbitrary.arbPositiveInteger;
+
+        @Property(use = {"arbInteger2"})
+        public boolean someProperty(int a, int b) {
+            return a + b > 0;
+        }
+    }

@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.Sample;
 import lt.dm3.jquickcheck.sample.SampleGenerator;
@@ -78,6 +79,22 @@ public class DefaultPropertyParameterTest {
         Generator<Sample> result = defaultParameter(type, ann).getGeneratorFrom(repo);
 
         assertThat(result, is(generatorForName));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = QuickCheckException.class)
+    public void shouldThrowExceptionIfGeneratorNameIsSpecifiedButGeneratorIsNotFoundInTheRepo() {
+        Class<Sample> type = Sample.class;
+        Generator<Sample> generatorForType = new SampleGenerator();
+        GeneratorRepository<Generator<Sample>> repo = mock(GeneratorRepository.class);
+        given(repo.hasGeneratorFor(type)).willReturn(true);
+        given(repo.getGeneratorFor(type)).willReturn(generatorForType);
+
+        String name = "a";
+        G ann = mock(G.class);
+        given(ann.gen()).willReturn(name);
+
+        Generator<Sample> result = defaultParameter(type, ann).getGeneratorFrom(repo);
     }
 
     private DefaultPropertyParameter<Generator<Sample>> defaultParameter(Type t, G... ann) {
