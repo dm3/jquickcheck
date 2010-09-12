@@ -40,6 +40,7 @@ public class DefaultGeneratorsTestClassIterator<T> implements Iterator<Generated
                     values[j] = Parameter.of(defaultGenerators.next().getGeneratedValue());
                 } else {
                     finished = true;
+                    // requires JDK 1.6
                     values = Arrays.copyOf(values, j);
                 }
             }

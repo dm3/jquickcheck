@@ -7,13 +7,10 @@ import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.fj.DefaultGenerators;
-import lt.dm3.jquickcheck.fj.FJ;
-import lt.dm3.jquickcheck.junit4.JUnitTestClassBuilder;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.PositiveIntGenerator;
 import lt.dm3.jquickcheck.sample.SampleProvider;
-import lt.dm3.jquickcheck.test.builder.AbstractTestClassBuilder;
 import lt.dm3.jquickcheck.test.builder.GeneratorInfo;
 import lt.dm3.jquickcheck.test.builder.TestClassBuilderFactory;
 
@@ -29,27 +26,17 @@ import org.junit.runners.model.TestClass;
 import fj.test.Arbitrary;
 import fj.test.Gen;
 
-public class JUnitFJCommonScenarioTest extends AbstractCommonScenarioTest<Arbitrary> {
+public class JUnitFJCommonScenarioTest extends AbstractCommonScenarioTest<Arbitrary<?>> {
 
     @Override
-    protected TestClassBuilderFactory<Arbitrary> defaultClassBuilderFactory() {
-        return new TestClassBuilderFactory<Arbitrary>() {
-            @Override
-            public AbstractTestClassBuilder<Arbitrary> createBuilder(String className,
-                                                                     Class<? super Arbitrary> generatorClass) {
-                return new JUnitTestClassBuilder(className, generatorClass) {
-                    @Override
-                    protected Class<?> getQuickCheckProviderClass() {
-                        return FJ.class;
-                    }
-                };
-            }
-        };
+    protected TestClassBuilderFactory<Arbitrary<?>> defaultClassBuilderFactory() {
+        return new JUnitFJFactory();
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    protected Class<Arbitrary> generatorClass() {
-        return Arbitrary.class;
+    protected Class<Arbitrary<?>> generatorClass() {
+        return (Class) Arbitrary.class;
     }
 
     @Override

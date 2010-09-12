@@ -8,7 +8,6 @@ import javassist.bytecode.Bytecode;
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.test.builder.AbstractTestClassBuilder;
 import lt.dm3.jquickcheck.test.builder.ClassUtils;
-import lt.dm3.jquickcheck.test.builder.GeneratedTest;
 import lt.dm3.jquickcheck.test.builder.GeneratorInfo;
 import lt.dm3.jquickcheck.test.builder.Parameter;
 import lt.dm3.jquickcheck.test.builder.PropertyBuilder;
@@ -38,12 +37,6 @@ public abstract class AbstractCommonScenarioTest<T> {
     protected abstract void checkNoPropertiesFailIn(Class<?> clazz);
 
     protected abstract void checkAllPropertiesFailIn(Class<?> clazz);
-
-    protected GeneratedTest withOneNoArgPropertyReturningFalse() {
-        AbstractTestClassBuilder<T> b = defaultClassBuilderFactory().createBuilder(RandomUtils.randomJavaIdentifier(),
-                                                                                   generatorClass());
-        return b.withRandomProperty().returning(false).and().build();
-    }
 
     // tests
     @Test
