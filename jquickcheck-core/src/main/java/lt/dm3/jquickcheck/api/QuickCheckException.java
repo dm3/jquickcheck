@@ -4,13 +4,20 @@ public class QuickCheckException extends RuntimeException {
 
     private static final long serialVersionUID = 7856404897568627298L;
 
+    private final Throwable cause;
     private final String message;
 
     public QuickCheckException(String message) {
+        this(message, null);
+    }
+
+    public QuickCheckException(String message, Throwable t) {
         this.message = message;
+        this.cause = t;
     }
 
     public QuickCheckException(QuickCheckResult result) {
+        this.cause = null;
         StringBuilder message = new StringBuilder();
         if (result.isExhausted()) {
             message.append("Exhausted");
@@ -36,7 +43,7 @@ public class QuickCheckException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return message;
+        return cause == null ? message : message + ", cause: " + cause.getMessage();
     }
 
 }

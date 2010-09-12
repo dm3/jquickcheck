@@ -23,20 +23,23 @@ This feature won't be implemented as jcheck relies on FJ/javaNetQuickCheck gener
 Actually separated into even more very thin submodules
 7. FJ - allow both Gen and Arbitrary as generators?
 Only Arbitrary
-
-## Features TODO
 4. Automatic generator resolution according to types. Sensible defaults and generator registry.
 6. Add default generator resolution strategy discovery
-8. Additional custom generator type resolution algorithms for javaNetQuickCheck and FJ (based on method return type?)
-3. Dependencies between tests (ala JExample/jBehave/TestNG)
-9. Integration with templates (makeiteasy):
-    - FJ: Some code generation will probably be needed to generate the Gen for the result of the template.
-          All of the properties registered with `with` will have to be associated to some static registry and later,
-          when the test method is executed, will be bound (`Gen#bind`) to produce the `Gen<Result>`.
 10. Test project which will use quickcheck and codemodel to generate test classes and feed them back into jquickcheck.
     Wanted to use codemodel at first, but found out it's GPL'd. This wouldn't
     cause much trouble as it would only be used for testing purposes (no
     linking with codemodel in the released jars) but it would make the
     `jquickcheck-test` project GPL which doesn't really suit me.
+Not sure if this brought any advantages. Had fun exploring javassist anyway.
+NOTE: javassist doesn't support generics - patches? Fluent interface for class building?
+
+## Features TODO
+8. Additional custom generator type resolution algorithms for javaNetQuickCheck and FJ (based on method return type?)
+9. Integration with templates (makeiteasy):
+    - FJ: Some code generation will probably be needed to generate the Gen for the result of the template.
+          All of the properties registered with `with` will have to be associated to some static registry and later,
+          when the test method is executed, will be bound (`Gen#bind`) to produce the `Gen<Result>`.
 11. strict mode: by default should be set to true. When true, no default
     generators should be used to satisfy properties.
+12. Default generator resolution for Collections/Arrays
+3. Dependencies between tests (ala JExample/jBehave/TestNG)

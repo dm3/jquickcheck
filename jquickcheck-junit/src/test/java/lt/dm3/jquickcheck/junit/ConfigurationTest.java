@@ -7,6 +7,7 @@ import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
+import lt.dm3.jquickcheck.api.impl.ProxyProvider;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 import lt.dm3.jquickcheck.sample.SampleProvider;
 
@@ -19,6 +20,15 @@ import org.junit.runners.model.TestClass;
 public class ConfigurationTest {
 
     private final int DEFAULT_SUCCESSFUL_RUNS = DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL;
+
+    @RunWith(QuickCheckRunner.class)
+    @QuickCheck(useDefaults = true)
+    public static class ShouldSelectADefaultProviderBasedOnTheLoadedClasses {
+        @Property
+        public boolean oneProperty(int arg) {
+            return true;
+        }
+    }
 
     @RunWith(QuickCheckRunner.class)
     @QuickCheck(provider = SampleProvider.class)
@@ -86,6 +96,16 @@ public class ConfigurationTest {
         public boolean shouldBeRunNTimes(int arg) {
             counter++;
             return true;
+        }
+    }
+
+    @Test
+    public void shouldSelectADefaultProviderBasedOnTheLoadedClasses() {
+        ProxyProvider.register(SampleProvider.class.getName());
+        try {
+            doTest(ShouldSelectADefaultProviderBasedOnTheLoadedClasses.class);
+        } finally {
+            ProxyProvider.deregister(SampleProvider.class.getName());
         }
     }
 
