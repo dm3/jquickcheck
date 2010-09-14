@@ -80,4 +80,8 @@ public abstract class Primitives {
     public static boolean isInteger(Type t) {
         return t.equals(Integer.class) || isPrimitive(t) && PRIMITIVE_TO_WRAPPER_TYPE.get(t).equals(Integer.class);
     }
+
+    public static boolean isBoolean(Type t) {
+        return t.equals(Boolean.class) || isPrimitive(t) && PRIMITIVE_TO_WRAPPER_TYPE.get(t).equals(Boolean.class);
+    }
 }

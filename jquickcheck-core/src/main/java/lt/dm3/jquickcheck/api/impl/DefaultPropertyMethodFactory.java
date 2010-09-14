@@ -1,10 +1,8 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.List;
 
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
@@ -28,28 +26,7 @@ public class DefaultPropertyMethodFactory<GEN> implements PropertyMethodFactory<
 
         @Override
         public PropertyInvocation<GEN> createInvocationWith(GeneratorRepository<GEN> repo) {
-            return new PropertyInvocation<GEN>() {
-                @Override
-                public boolean invoke(Object... param) {
-                    try {
-                        return (Boolean) method.invoke(target, (Object[]) null);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                @Override
-                public List<GEN> generators() {
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public Settings settings() {
-                    return defaultSettings;
-                }
-            };
+            return new DefaultPropertyInvocation<GEN>(target, method, defaultSettings, Collections.<GEN> emptyList());
         }
 
     }

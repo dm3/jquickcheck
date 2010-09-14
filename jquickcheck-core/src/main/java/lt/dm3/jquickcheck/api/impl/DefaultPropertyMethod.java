@@ -1,7 +1,6 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -40,36 +39,8 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
         for (PropertyParameter<GEN> param : parameters) {
             generators.add(param.getGeneratorFrom(repo));
         }
-        return new PropertyInvocation<GEN>() {
-            @Override
-            public boolean invoke(Object... param) {
-                try {
-                    Object result = method.invoke(target, param);
-                    if (result == null) {
-                        // completed normally, property returns void
-                        return true;
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                } catch (InvocationTargetException e) {
-                    if (e.getCause() instanceof AssertionError) {
-                        return false;
-                    }
-                    throw new RuntimeException(e);
-                }
-                return false;
-            }
-
-            @Override
-            public List<GEN> generators() {
-                return Collections.unmodifiableList(generators);
-            }
-
-            @Override
-            public Settings settings() {
-                return methodSettings;
-            }
-        };
+        return new DefaultPropertyInvocation<GEN>(target, method, methodSettings,
+                Collections.unmodifiableList(generators));
     }
 
 }
