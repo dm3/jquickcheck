@@ -41,6 +41,7 @@ public class DefaultPropertyMethodTest {
         PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
 
         assertThat(invocation.generators().size(), equalTo(2));
+
         assertThat(invocation.generators().get(0), is((Generator) generator));
         assertThat(invocation.generators().get(1), is((Generator) generatorInt));
     }
@@ -61,6 +62,53 @@ public class DefaultPropertyMethodTest {
         PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
 
         invocation.invoke();
+    }
+
+    public boolean methodThrowsAssertionError() {
+        throw new AssertionError();
+    }
+
+    @Test
+    public void shouldReturnAnInvocationWhichReturnsFalseIfPropertyMethodThrowsAnAssertionError() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodThrowsAssertionError");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        boolean result = invocation.invoke();
+
+        assertThat(result, is(false));
+    }
+
+    public void methodReturnsVoidAndThrowsAssertionError() {
+        throw new AssertionError();
+    }
+
+    @Test
+    public void shouldReturnAnInvocationWhichReturnsFalseIfPropertyMethodThrowsAnAssertionErrorAndReturnsVoid() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsVoidAndThrowsAssertionError");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        boolean result = invocation.invoke();
+
+        assertThat(result, is(false));
+    }
+
+    public void methodReturnsVoid() {
+    }
+
+    @Test
+    public void shouldReturnAnInvocationWhichReturnsTrueIfPropertyMethodReturnsVoid() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsVoid");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        boolean result = invocation.invoke();
+
+        assertThat(result, is(true));
     }
 
     private PropertyMethod<Generator<?>> defaultMethod(String name, Class<?>... parameters) {

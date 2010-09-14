@@ -12,7 +12,6 @@ public class TestNGObjectFactory<GEN> implements IObjectFactory {
 
     @SuppressWarnings("rawtypes")
     public Object newInstance(Constructor constructor, Object... params) {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Class<?> clazz = constructor.getDeclaringClass();
 
         ProxyFactory factory = new ProxyFactory();

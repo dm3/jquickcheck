@@ -44,12 +44,20 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
             @Override
             public boolean invoke(Object... param) {
                 try {
-                    return (Boolean) method.invoke(target, param);
+                    Object result = method.invoke(target, param);
+                    if (result == null) {
+                        // completed normally, property returns void
+                        return true;
+                    }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 } catch (InvocationTargetException e) {
+                    if (e.getCause() instanceof AssertionError) {
+                        return false;
+                    }
                     throw new RuntimeException(e);
                 }
+                return false;
             }
 
             @Override
