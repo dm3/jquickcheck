@@ -15,6 +15,7 @@
         <module>jquickcheck-test</module>
         <module>jquickcheck-sample</module>
         <module>jquickcheck-fj</module>
+        <!-- <module>jquickcheck-qc</module> -->
         <module>jquickcheck-junit</module>
         <module>jquickcheck-testng</module>
         <module>jquickcheck-integration</module>
@@ -54,6 +55,11 @@
                 <artifactId>jquickcheck-fj</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- <dependency>                                -->
+            <!--     <groupId>lt.dm3</groupId>               -->
+            <!--     <artifactId>jquickcheck-qc</artifactId> -->
+            <!--     <version>${project.version}</version>   -->
+            <!-- </dependency>                               -->
             <dependency>
                 <groupId>lt.dm3</groupId>
                 <artifactId>jquickcheck-junit</artifactId>
@@ -79,7 +85,7 @@
             <dependency>
                 <groupId>net.java</groupId>
                 <artifactId>quickcheck</artifactId>
-                <version>0.6-SNAPSHOT</version>
+                <version>0.5</version>
             </dependency>
             <dependency>
                 <groupId>org.javassist</groupId>
@@ -206,6 +212,21 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>fj-maven-repo</id>
+            <name>Functionaljava maven repository</name>
+            <url>http://fj-maven.googlecode.com/svn/maven/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 
     <reporting>
         <plugins>
