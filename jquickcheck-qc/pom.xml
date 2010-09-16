@@ -10,31 +10,29 @@
     </parent>
 
     <groupId>lt.dm3</groupId>
-    <artifactId>jquickcheck-integration</artifactId>
+    <artifactId>jquickcheck-qc</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Integration tests for jquickcheck</name>
+    <name>Integration with java.net.QuickCheck</name>
 
     <dependencies>
         <dependency>
             <groupId>lt.dm3</groupId>
-            <artifactId>jquickcheck-qc</artifactId>
+            <artifactId>jquickcheck-sample</artifactId>
         </dependency>
         <dependency>
-            <groupId>lt.dm3</groupId>
-            <artifactId>jquickcheck-fj</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>lt.dm3</groupId>
-            <artifactId>jquickcheck-junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>lt.dm3</groupId>
-            <artifactId>jquickcheck-test</artifactId>
+            <groupId>net.java</groupId>
+            <artifactId>quickcheck</artifactId>
+            <version>0.5</version>
         </dependency>
 
         <!-- TEST -->
+        <dependency>
+            <groupId>lt.dm3</groupId>
+            <artifactId>jquickcheck-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -1,6 +1,6 @@
 package lt.dm3.jquickcheck.testng;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +18,10 @@ public class ConfigurationTest {
 
     @QuickCheck(provider = SampleProvider.class, useDefaults = true)
     public static class SampleTestCase extends JQuickCheckTestCase {
+
         @Test(dataProvider = "lol")
         public void shouldname(int i) {
-            assertTrue(i + i > i);
+            assertFalse(true);
         }
 
         @DataProvider

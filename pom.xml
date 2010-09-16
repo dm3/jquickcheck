@@ -15,7 +15,7 @@
         <module>jquickcheck-test</module>
         <module>jquickcheck-sample</module>
         <module>jquickcheck-fj</module>
-        <!-- <module>jquickcheck-qc</module> -->
+        <module>jquickcheck-qc</module>
         <module>jquickcheck-junit</module>
         <module>jquickcheck-testng</module>
         <module>jquickcheck-integration</module>
@@ -55,11 +55,11 @@
                 <artifactId>jquickcheck-fj</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!-- <dependency>                                -->
-            <!--     <groupId>lt.dm3</groupId>               -->
-            <!--     <artifactId>jquickcheck-qc</artifactId> -->
-            <!--     <version>${project.version}</version>   -->
-            <!-- </dependency>                               -->
+            <dependency>
+                <groupId>lt.dm3</groupId>
+                <artifactId>jquickcheck-qc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>lt.dm3</groupId>
                 <artifactId>jquickcheck-junit</artifactId>
