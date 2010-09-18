@@ -35,15 +35,17 @@ public class QCQuickCheckAdapter implements QuickCheckAdapter<Generator<?>> {
     public QuickCheckResult check(final PropertyInvocation<Generator<?>> invocation) {
         QuickCheckResult result = null;
         try {
-            QuickCheck.forAll(new MultiGenerator(invocation.generators()), new AbstractCharacteristic<Object[]>() {
-                @Override
-                protected void doSpecify(Object[] params) throws Throwable {
-                    boolean result = invocation.invoke(params);
-                    if (!result) {
-                        throw new AssertionError("Falsified");
-                    }
-                }
-            });
+            QuickCheck.forAll(invocation.settings().minSuccessful(),
+                    new MultiGenerator(invocation.generators()),
+                    new AbstractCharacteristic<Object[]>() {
+                        @Override
+                        protected void doSpecify(Object[] params) throws Throwable {
+                            boolean result = invocation.invoke(params);
+                            if (!result) {
+                                throw new AssertionError("Falsified");
+                            }
+                        }
+                    });
         } catch (Exception e) {
             result = DefaultQuickCheckResult.falsified(e);
         }
