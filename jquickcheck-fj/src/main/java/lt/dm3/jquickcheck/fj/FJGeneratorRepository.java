@@ -26,17 +26,16 @@ public class FJGeneratorRepository extends DefaultGeneratorRepository<Arbitrary<
         Map<Type, Arbitrary<?>> defaults = new HashMap<Type, Arbitrary<?>>();
         Field[] arbFields = Arbitrary.class.getFields();
         for (Field f : arbFields) {
-            if (f.getName().startsWith("arb")) {
-                if (f.getGenericType() instanceof ParameterizedType) {
-                    Type key = TypeResolverRegistry.resolveFrom(f);
-                    try {
-                        Arbitrary<?> value = (Arbitrary<?>) f.get(null);
-                        if (Primitives.isPrimitiveOrWrapper(key)) {
-                            defaults.put(Primitives.oppositeOf(key), value);
-                        }
-                        defaults.put(key, value);
-                    } catch (IllegalArgumentException e) {} catch (IllegalAccessException e) {}
-                }
+            if (f.getName().startsWith("arb") && f.getGenericType() instanceof ParameterizedType) {
+                Type key = TypeResolverRegistry.resolveFrom(f);
+                try {
+                    Arbitrary<?> value = (Arbitrary<?>) f.get(null);
+                    if (Primitives.isPrimitiveOrWrapper(key)) {
+                        defaults.put(Primitives.oppositeOf(key), value);
+                    }
+                    defaults.put(key, value);
+                } catch (IllegalArgumentException e) {} catch (IllegalAccessException e) {} // NOPMD - have nowhere to
+                                                                                            // report the exception
             }
         }
 
@@ -46,6 +45,11 @@ public class FJGeneratorRepository extends DefaultGeneratorRepository<Arbitrary<
     public FJGeneratorRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators,
             Synthesizer<Arbitrary<?>> synthesizer) {
         super(generators, synthesizer);
+    }
+
+    @Override
+    public boolean hasDefaultGeneratorFor(Type t) {
+        return DEFAULTS.containsKey(t);
     }
 
     @Override

@@ -5,7 +5,7 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.ParameterizedType;
@@ -20,34 +20,46 @@ import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.Sample;
 import lt.dm3.jquickcheck.sample.SampleGenerator;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.googlecode.gentyref.TypeToken;
 
 public class DefaultPropertyParameterTest {
 
+    @SuppressWarnings("rawtypes")
+    GeneratorRepository<Generator> repo;
+
     @SuppressWarnings("unchecked")
+    @Before
+    public void before() {
+        repo = mock(GeneratorRepository.class);
+    }
+
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void shouldGetTheNamedGeneratorFromTheRepository() {
         String name = "a";
-        Generator<Sample> generator = new SampleGenerator();
-        GeneratorRepository<Generator<Sample>> repo = mock(GeneratorRepository.class);
+        Generator generator = new SampleGenerator();
+        given(repo.getGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.getDefaultGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
         given(repo.hasGeneratorFor(name)).willReturn(true);
-        given(repo.getGeneratorFor(name)).willReturn(generator);
+        given(repo.getGeneratorFor(anyString())).willReturn(generator);
         G ann = mock(G.class);
         given(ann.gen()).willReturn(name);
 
-        Generator<Sample> result = defaultParameter(Sample.class, ann).getGeneratorFrom(repo);
+        Generator result = defaultParameter(Sample.class, ann).getGeneratorFrom(repo);
 
         assertThat(result, is(generator));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void shouldGetTheGeneratorForTheTypeFromTheRepository() {
         Type type = Sample.class;
-        Generator<Sample> generator = new SampleGenerator();
-        GeneratorRepository<Generator<Sample>> repo = mock(GeneratorRepository.class);
+        Generator generator = new SampleGenerator();
+        given(repo.getGeneratorFor(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.getDefaultGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
         given(repo.hasGeneratorFor(type)).willReturn(true);
         given(repo.getGeneratorFor(type)).willReturn(generator);
 
@@ -61,7 +73,9 @@ public class DefaultPropertyParameterTest {
     public void shouldGetTheDefaultGeneratorIfNoGeneratorForNameOrTypeFound() {
         Class<Sample> type = Sample.class;
         Generator<Sample> generator = new SampleGenerator();
-        GeneratorRepository<Generator<Sample>> repo = mock(GeneratorRepository.class);
+        given(repo.getGeneratorFor(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.getGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.hasDefaultGeneratorFor(type)).willReturn(true);
         given(repo.getDefaultGeneratorFor(type)).willReturn(generator);
 
         Generator<Sample> result = defaultParameter(type).getGeneratorFrom(repo);
@@ -76,7 +90,6 @@ public class DefaultPropertyParameterTest {
         String name = "a";
         Generator<Sample> generatorForType = new SampleGenerator();
         Generator<Sample> generatorForName = new SampleGenerator();
-        GeneratorRepository<Generator<Sample>> repo = mock(GeneratorRepository.class);
         given(repo.hasGeneratorFor(type)).willReturn(true);
         given(repo.getGeneratorFor(type)).willReturn(generatorForType);
         given(repo.hasGeneratorFor(name)).willReturn(true);
@@ -95,20 +108,22 @@ public class DefaultPropertyParameterTest {
         ParameterizedType type = (ParameterizedType) new TypeToken<List<Sample>>() {}.getType();
         Generator gen = new SampleGenerator();
         GeneratorRepository<Generator> repo = mock(GeneratorRepository.class);
-        given(repo.hasGeneratorFor(type)).willReturn(false);
-        given(repo.getSyntheticGeneratorFor(eq(type), any(RequestToSynthesize.class))).willReturn(gen);
+        given(repo.getGeneratorFor(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.getGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.getDefaultGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.getSyntheticGeneratorFor(any(RequestToSynthesize.class))).willReturn(gen);
 
-        Generator result = defaultGenericParameter(type).getGeneratorFrom(repo);
+        Generator result = defaultParameter(type).getGeneratorFrom(repo);
 
         assertThat(result, sameInstance(gen));
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = QuickCheckException.class)
     public void shouldThrowExceptionIfGeneratorNameIsSpecifiedButGeneratorIsNotFoundInTheRepo() {
         Class<Sample> type = Sample.class;
         Generator<Sample> generatorForType = new SampleGenerator();
-        GeneratorRepository<Generator<Sample>> repo = mock(GeneratorRepository.class);
+        given(repo.getGeneratorFor(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.getDefaultGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
         given(repo.hasGeneratorFor(type)).willReturn(true);
         given(repo.getGeneratorFor(type)).willReturn(generatorForType);
 
@@ -119,23 +134,17 @@ public class DefaultPropertyParameterTest {
         defaultParameter(type, ann).getGeneratorFrom(repo);
     }
 
-    @SuppressWarnings("unchecked")
-    @Test(expected = QuickCheckException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfGeneratorNotFoundNeitherInDefaultsOrSyntheticsOrNormalGenerators() {
         Class<Sample> type = Sample.class;
-        GeneratorRepository<Generator<Sample>> repo = mock(GeneratorRepository.class);
 
         // synthetics are not applicable as type is non-parameterized
         defaultParameter(type).getGeneratorFrom(repo);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private DefaultPropertyParameter<Generator> defaultGenericParameter(Type t, G... ann) {
-        return (DefaultPropertyParameter) defaultParameter(t, ann);
-    }
-
-    private DefaultPropertyParameter<Generator<Sample>> defaultParameter(Type t, G... ann) {
+    @SuppressWarnings({ "rawtypes" })
+    private DefaultPropertyParameter<Generator> defaultParameter(Type t, G... ann) {
         // USE DEFAULTS = true, USE SYNTHETICS = true
-        return new DefaultPropertyParameter<Generator<Sample>>(t, ann, new DefaultInvocationSettings(1, true, true));
+        return new DefaultPropertyParameter<Generator>(t, ann, new DefaultInvocationSettings(1, true, true));
     }
 }

@@ -27,4 +27,15 @@ public class SampleGeneratorRepository extends DefaultGeneratorRepository<Genera
         throw new IllegalArgumentException("No default generator for: " + t);
     }
 
+    @Override
+    public boolean hasDefaultGeneratorFor(Type t) {
+        try {
+            getDefaultGeneratorFor(t);
+            return true;
+        } catch (Exception e) {
+            System.out.println("No no no no no no no!");
+        }
+        return false;
+    }
+
 }

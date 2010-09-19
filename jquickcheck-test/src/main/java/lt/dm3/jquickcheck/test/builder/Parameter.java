@@ -36,6 +36,10 @@ public class Parameter {
             return Parameter.this;
         }
 
+        Class<? extends java.lang.annotation.Annotation> getClazz() {
+            return clazz;
+        }
+
     }
 
     private final String description;
@@ -91,7 +95,7 @@ public class Parameter {
             Annotation[] paramAnns = new Annotation[param.annotations.size()];
             int currAnn = 0;
             for (Ann annotation : param.annotations) {
-                Annotation ann = new Annotation(annotation.clazz.getName(), pool);
+                Annotation ann = new Annotation(annotation.getClazz().getName(), pool);
                 for (Map.Entry<String, String> member : annotation.stringMembers.entrySet()) {
                     ann.addMemberValue(member.getKey(), new StringMemberValue(member.getValue(), pool));
                 }

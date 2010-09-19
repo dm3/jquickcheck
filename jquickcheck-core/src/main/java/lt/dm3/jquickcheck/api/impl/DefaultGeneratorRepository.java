@@ -1,6 +1,5 @@
 package lt.dm3.jquickcheck.api.impl;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,8 +99,8 @@ public abstract class DefaultGeneratorRepository<G> implements GeneratorReposito
     }
 
     @Override
-    public G getSyntheticGeneratorFor(ParameterizedType t, RequestToSynthesize<G> request) {
-        return request.synthesize(t, synthesizer, this);
+    public G getSyntheticGeneratorFor(RequestToSynthesize<G> request) {
+        return request.synthesize(synthesizer, this);
     }
 
     @Override

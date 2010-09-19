@@ -24,6 +24,10 @@ public class QCGeneratorResolutionStrategy extends ResolutionFromFieldsOfType<Ge
             public Generator<?> getDefaultGeneratorFor(Type t) {
                 return null;
             }
+
+            public boolean hasDefaultGeneratorFor(Type t) {
+                return false;
+            }
         };
     }
 }

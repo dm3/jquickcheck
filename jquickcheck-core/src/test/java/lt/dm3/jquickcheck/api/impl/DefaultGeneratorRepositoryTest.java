@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.ParameterizedType;
@@ -36,6 +35,11 @@ public class DefaultGeneratorRepositoryTest {
 
         @Override
         public Generator<?> getDefaultGeneratorFor(Type t) {
+            throw new UnsupportedOperationException("I heard you liked exceptions.");
+        }
+
+        @Override
+        public boolean hasDefaultGeneratorFor(Type t) {
             throw new UnsupportedOperationException("I heard you liked exceptions.");
         }
 
@@ -113,14 +117,13 @@ public class DefaultGeneratorRepositoryTest {
         GeneratorHolder holder = new GeneratorHolder(int.class, "a", gen);
         ParameterizedType iterableInt = (ParameterizedType) new TypeToken<Iterable<Integer>>() {}.getType();
         RequestToSynthesize<Generator<?>> r = mock(RequestToSynthesize.class);
-        given(r.synthesize(eq(iterableInt), any(Synthesizer.class), any(GeneratorRepository.class)))
-                    .willReturn((Generator) gen);
+        given(r.synthesize(any(Synthesizer.class), any(GeneratorRepository.class))).willReturn((Generator) gen);
 
         repo = new TestRepo(Arrays.asList(holder));
 
         assertThat(repo.hasGeneratorFor(int.class), is(true));
         assertThat(repo.hasGeneratorFor(iterableInt), is(false));
-        assertThat(repo.getSyntheticGeneratorFor(iterableInt, r), sameInstance((Generator) gen));
+        assertThat(repo.getSyntheticGeneratorFor(r), sameInstance((Generator) gen));
     }
 
     @Test(expected = IllegalArgumentException.class)

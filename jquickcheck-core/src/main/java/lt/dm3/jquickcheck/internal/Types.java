@@ -68,4 +68,20 @@ public class Types {
         }
         return false;
     }
+
+    public static int genericsNesting(Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
+            int max = 0;
+            for (Type t : pType.getActualTypeArguments()) {
+                int depth = genericsNesting(t);
+                if (depth > max) {
+                    max = depth;
+                }
+            }
+            return 1 + max;
+        }
+        return 1;
+    }
+
 }

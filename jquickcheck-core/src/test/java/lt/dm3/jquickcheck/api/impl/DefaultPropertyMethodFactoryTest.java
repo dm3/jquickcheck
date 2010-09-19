@@ -33,6 +33,11 @@ public class DefaultPropertyMethodFactoryTest {
             throw new UnsupportedOperationException("I heard you liked exceptions.");
         }
 
+        @Override
+        public boolean hasDefaultGeneratorFor(Type t) {
+            throw new UnsupportedOperationException("I heard you liked exceptions.");
+        }
+
     }
 
     private final PropertyMethodFactory<Generator<?>> factory = new DefaultPropertyMethodFactory<Generator<?>>(

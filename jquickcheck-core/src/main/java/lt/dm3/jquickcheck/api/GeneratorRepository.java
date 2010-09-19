@@ -1,6 +1,5 @@
 package lt.dm3.jquickcheck.api;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
@@ -26,6 +25,13 @@ public interface GeneratorRepository<G> {
      * @return true if this repository contains a generator associated with the given name
      */
     boolean hasGeneratorFor(String name);
+
+    /**
+     * @param t
+     *            type of the generator
+     * @return true if this repository contains a default generator of the given type
+     */
+    boolean hasDefaultGeneratorFor(Type t);
 
     /**
      * @param t
@@ -57,5 +63,9 @@ public interface GeneratorRepository<G> {
      */
     G getDefaultGeneratorFor(Type t);
 
-    G getSyntheticGeneratorFor(ParameterizedType t, RequestToSynthesize<G> request);
+    /**
+     * @param request
+     * @return a generator which was synthesized using the given request
+     */
+    G getSyntheticGeneratorFor(RequestToSynthesize<G> request);
 }

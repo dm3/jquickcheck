@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,15 +71,15 @@ public class FJGeneratorRepositoryTest {
         GeneratorRepository<Arbitrary<?>> repo = new FJGeneratorRepository((Iterable) Arrays.asList(h), synth);
 
         Arbitrary<?> result = repo.getSyntheticGeneratorFor(
-                (ParameterizedType) new TypeToken<ArrayList<Integer>>() {}.getType(),
-                new DefaultRequestToSynthesize<Arbitrary<?>>(mock(Settings.class)));
+                new DefaultRequestToSynthesize<Arbitrary<?>>(new TypeToken<ArrayList<Integer>>() {}.getType(),
+                        mock(Settings.class)));
 
         assertThat(result, not(nullValue()));
         assertThat(result.gen.gen(1, Rand.standard), instanceOf(ArrayList.class));
 
         result = repo.getSyntheticGeneratorFor(
-                (ParameterizedType) new TypeToken<Iterable<Integer>>() {}.getType(),
-                new DefaultRequestToSynthesize<Arbitrary<?>>(mock(Settings.class)));
+                new DefaultRequestToSynthesize<Arbitrary<?>>(new TypeToken<Iterable<Integer>>() {}.getType(),
+                        mock(Settings.class)));
 
         assertThat(result, not(nullValue()));
         assertThat(result.gen.gen(1, Rand.standard), instanceOf(ArrayList.class));

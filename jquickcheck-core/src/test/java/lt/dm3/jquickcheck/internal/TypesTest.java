@@ -1,5 +1,6 @@
 package lt.dm3.jquickcheck.internal;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasItems;
@@ -10,6 +11,8 @@ import java.lang.reflect.Type;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+
+import lt.dm3.jquickcheck.sample.Generator;
 
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -56,5 +59,23 @@ public class TypesTest {
         boolean result = Types.hasTypeArguments(x);
 
         assertThat(result, is(false));
+    }
+
+    @Test
+    public void genericsNesting_shouldReturnTheNestingOfAParameterizedType() {
+        Type x = new TypeToken<List<List<List<Integer>>>>() {}.getType();
+        assertThat(Types.genericsNesting(x), equalTo(4));
+
+        x = int.class;
+        assertThat(Types.genericsNesting(x), equalTo(1));
+
+        x = Object[].class;
+        assertThat(Types.genericsNesting(x), equalTo(1));
+
+        x = Object[][].class;
+        assertThat(Types.genericsNesting(x), equalTo(1));
+
+        x = new TypeToken<Generator<Object[]>>() {}.getType();
+        assertThat(Types.genericsNesting(x), equalTo(2));
     }
 }

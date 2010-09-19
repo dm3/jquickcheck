@@ -1,6 +1,6 @@
 package lt.dm3.jquickcheck.api;
 
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 
 public interface Synthesizer<G> {
@@ -12,6 +12,6 @@ public interface Synthesizer<G> {
      * @param components
      * @return
      */
-    G synthesize(ParameterizedType t, List<G> components);
+    G synthesize(Type t, List<G> components);
 
 }
