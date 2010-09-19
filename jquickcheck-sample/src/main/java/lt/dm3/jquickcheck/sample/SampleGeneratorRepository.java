@@ -10,11 +10,11 @@ import lt.dm3.jquickcheck.internal.Primitives;
 public class SampleGeneratorRepository extends DefaultGeneratorRepository<Generator<?>> {
 
     public SampleGeneratorRepository(Iterable<? extends NamedAndTypedGenerator<Generator<?>>> generators) {
-        super(generators);
+        super(generators, null);
     }
 
     public SampleGeneratorRepository(NamedAndTypedGenerator<Generator<?>>... generators) {
-        super(Arrays.asList(generators));
+        super(Arrays.asList(generators), null);
     }
 
     @Override

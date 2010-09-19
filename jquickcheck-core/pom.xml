@@ -14,13 +14,46 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>jquickcheck core api and supporting classes</name>
+    <name>Jquickcheck core api and supporting classes</name>
+
+    <profiles>
+        <profile>
+            <id>check</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>cobertura-maven-plugin</artifactId>
+                        <configuration>
+                            <check>
+                                <haltOnFailure>true</haltOnFailure>
+                            </check>
+                            <instrumentation>
+                                <excludes>
+                                    <!-- trivial getters -->
+                                    <exclude>**/DefaultQuickCheckResult.class</exclude>
+                                    <!-- don't want to test generated messages -->
+                                    <exclude>**/QuickCheckException.class</exclude>
+                                </excludes>
+                            </instrumentation>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
+        <dependency>
+            <groupId>com.googlecode.gentyref</groupId>
+            <artifactId>gentyref</artifactId>
+        </dependency>
+
         <!-- TEST -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

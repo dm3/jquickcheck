@@ -46,6 +46,7 @@ public class ProxyProvider implements Provider<Object> {
 
     static {
         register("lt.dm3.jquickcheck.fj.FJ");
+        register("lt.dm3.jquickcheck.qc.QC");
     }
 
     /**
@@ -77,10 +78,11 @@ public class ProxyProvider implements Provider<Object> {
         Class<?> provider = null;
         Iterator<String> providers = possibleProviders.iterator();
         while (providers.hasNext() && provider == null) {
+            String providerName = providers.next();
             try {
-                provider = Class.forName(providers.next());
+                provider = Class.forName(providerName);
             } catch (ClassNotFoundException e) {
-                // do nothing
+                providers.remove();
             }
         }
 

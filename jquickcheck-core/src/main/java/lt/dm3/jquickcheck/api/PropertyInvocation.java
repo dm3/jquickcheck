@@ -34,6 +34,11 @@ public interface PropertyInvocation<GEN> {
          * @return true if the quick check runner should use default generators provided by quick check
          */
         boolean useDefaults();
+
+        /**
+         * @return true if the quick check runner should use synthetic generators (usually containers)
+         */
+        boolean useSynthetics();
     }
 
     /**

@@ -1,6 +1,7 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
@@ -44,6 +45,8 @@ class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
                 String name = arbAnnotation.gen();
                 if (repo.hasGeneratorFor(name)) {
                     gen = repo.getGeneratorFor(name);
+                    // TODO: if name is specified for a component of a synthetic generator,
+                    // allow to create a synthetic one
                 } else {
                     throw new QuickCheckException("Could not find a generator for name: " + name);
                 }
@@ -54,6 +57,10 @@ class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
         }
         if (gen == null && settings.useDefaults()) {
             gen = repo.getDefaultGeneratorFor(type);
+        }
+        if (gen == null && settings.useSynthetics() && type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
+            gen = repo.getSyntheticGeneratorFor(pType, new DefaultRequestToSynthesize<GEN>(settings));
         }
         if (gen == null) {
             throw new QuickCheckException("Could not find a generator for parameter: " + this);

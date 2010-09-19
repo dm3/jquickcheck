@@ -19,7 +19,7 @@ public class QCGeneratorResolutionStrategy extends ResolutionFromFieldsOfType<Ge
     @Override
     protected GeneratorRepository<Generator<?>> createRepository(
         Iterable<NamedAndTypedGenerator<Generator<?>>> generators, Object context) {
-        return new DefaultGeneratorRepository<Generator<?>>(generators) {
+        return new DefaultGeneratorRepository<Generator<?>>(generators, null) {
             @Override
             public Generator<?> getDefaultGeneratorFor(Type t) {
                 return null;

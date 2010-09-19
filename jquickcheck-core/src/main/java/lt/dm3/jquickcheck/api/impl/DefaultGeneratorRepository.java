@@ -1,5 +1,6 @@
 package lt.dm3.jquickcheck.api.impl;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.api.RequestToSynthesize;
+import lt.dm3.jquickcheck.api.Synthesizer;
 import lt.dm3.jquickcheck.internal.Primitives;
 
 /**
@@ -23,8 +26,11 @@ public abstract class DefaultGeneratorRepository<G> implements GeneratorReposito
     private final Map<String, Set<G>> nameToGenerator = new HashMap<String, Set<G>>();
     private final Map<Type, Set<G>> typeToGenerator = new HashMap<Type, Set<G>>();
     private final Map<DefaultGeneratorId, G> idToGenerator = new HashMap<DefaultGeneratorId, G>();
+    private final Synthesizer<G> synthesizer;
 
-    protected DefaultGeneratorRepository(Iterable<? extends NamedAndTypedGenerator<G>> generators) {
+    protected DefaultGeneratorRepository(Iterable<? extends NamedAndTypedGenerator<G>> generators,
+            Synthesizer<G> synthesizer) {
+        this.synthesizer = synthesizer;
         for (NamedAndTypedGenerator<G> gen : generators) {
             DefaultGeneratorId id = new DefaultGeneratorId(gen.getName(), gen.getType());
             if (idToGenerator.containsKey(id)) {
@@ -91,6 +97,11 @@ public abstract class DefaultGeneratorRepository<G> implements GeneratorReposito
             throw new IllegalArgumentException("No generator found for type " + t);
         }
         return typeToGenerator.get(t).iterator().next();
+    }
+
+    @Override
+    public G getSyntheticGeneratorFor(ParameterizedType t, RequestToSynthesize<G> request) {
+        return request.synthesize(t, synthesizer, this);
     }
 
     @Override

@@ -92,7 +92,11 @@
                 <artifactId>javassist</artifactId>
                 <version>3.13.0-GA</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.googlecode.gentyref</groupId>
+                <artifactId>gentyref</artifactId>
+                <version>1.1.0</version>
+            </dependency>
 
             <!-- TEST -->
             <dependency>
@@ -151,14 +155,14 @@
                         <artifactId>cobertura-maven-plugin</artifactId>
                         <configuration>
                             <check>
-                                <haltOnFailure>true</haltOnFailure>
+                                <haltOnFailure>false</haltOnFailure>
                                 <!-- will work on this later :) -->
                                 <!-- <branchRate>85</branchRate> -->
                                 <!-- <lineRate>85</lineRate>     -->
                                 <!-- <packageLineRate>85</packageLineRate>     -->
                                 <!-- <packageBranchRate>85</packageBranchRate> -->
-                                <totalBranchRate>30</totalBranchRate>
-                                <totalLineRate>30</totalLineRate>
+                                <totalBranchRate>80</totalBranchRate>
+                                <totalLineRate>80</totalLineRate>
                             </check>
                         </configuration>
                         <executions>
@@ -230,6 +234,19 @@
 
     <reporting>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.3.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <targetJdk>${java.target}</targetJdk>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>

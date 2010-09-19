@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import lt.dm3.jquickcheck.api.Synthesizer;
 import lt.dm3.jquickcheck.api.impl.DefaultGeneratorRepository;
 import lt.dm3.jquickcheck.api.impl.NamedAndTypedGenerator;
 import lt.dm3.jquickcheck.api.impl.TypeResolverRegistry;
@@ -34,9 +35,7 @@ public class FJGeneratorRepository extends DefaultGeneratorRepository<Arbitrary<
                             defaults.put(Primitives.oppositeOf(key), value);
                         }
                         defaults.put(key, value);
-                    } catch (IllegalArgumentException e) {
-                    } catch (IllegalAccessException e) {
-                    }
+                    } catch (IllegalArgumentException e) {} catch (IllegalAccessException e) {}
                 }
             }
         }
@@ -44,8 +43,9 @@ public class FJGeneratorRepository extends DefaultGeneratorRepository<Arbitrary<
         DEFAULTS = Collections.unmodifiableMap(defaults);
     }
 
-    public FJGeneratorRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators) {
-        super(generators);
+    public FJGeneratorRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators,
+            Synthesizer<Arbitrary<?>> synthesizer) {
+        super(generators, synthesizer);
     }
 
     @Override

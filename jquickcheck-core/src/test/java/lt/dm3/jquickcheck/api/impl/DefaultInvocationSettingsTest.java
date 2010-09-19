@@ -14,9 +14,9 @@ public class DefaultInvocationSettingsTest {
     @Test
     public void shouldRetainTheNonDefaultMinSuccessfulSettingsOfTheMergeTarget() throws SecurityException,
         NoSuchMethodException {
-        Settings mergeTarget = new DefaultInvocationSettings(1, DefaultInvocationSettings.DEFAULT_USE_DEFAULTS);
+        Settings mergeTarget = new DefaultInvocationSettings(1, DefaultInvocationSettings.DEFAULT_USE_DEFAULTS, false);
         Settings other = new DefaultInvocationSettings(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL,
-                                                       !DefaultInvocationSettings.DEFAULT_USE_DEFAULTS);
+                                                       !DefaultInvocationSettings.DEFAULT_USE_DEFAULTS, false);
 
         Settings result = mergeTarget.mergeWith(other);
 
@@ -27,8 +27,8 @@ public class DefaultInvocationSettingsTest {
     public void shouldRetainTheNonDefaultUseDefaultsSettingsOfTheMergeTarget() throws SecurityException,
         NoSuchMethodException {
         Settings mergeTarget = new DefaultInvocationSettings(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL,
-                                                             !DefaultInvocationSettings.DEFAULT_USE_DEFAULTS);
-        Settings other = new DefaultInvocationSettings(1, DefaultInvocationSettings.DEFAULT_USE_DEFAULTS);
+                                                             !DefaultInvocationSettings.DEFAULT_USE_DEFAULTS, false);
+        Settings other = new DefaultInvocationSettings(1, DefaultInvocationSettings.DEFAULT_USE_DEFAULTS, false);
 
         Settings result = mergeTarget.mergeWith(other);
 
@@ -37,8 +37,8 @@ public class DefaultInvocationSettingsTest {
 
     @Test
     public void shouldRetainTheNonDefaultSettingsOfTheOtherSettingsObject() {
-        Settings mergeTarget = new DefaultInvocationSettings(1, true);
-        Settings other = new DefaultInvocationSettings(10, false);
+        Settings mergeTarget = new DefaultInvocationSettings(1, true, false);
+        Settings other = new DefaultInvocationSettings(10, false, false);
 
         Settings result = mergeTarget.mergeWith(other);
 

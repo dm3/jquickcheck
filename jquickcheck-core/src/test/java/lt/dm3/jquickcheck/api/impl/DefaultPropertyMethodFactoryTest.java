@@ -25,7 +25,7 @@ public class DefaultPropertyMethodFactoryTest {
     static class TestRepo extends DefaultGeneratorRepository<Generator<?>> {
 
         public TestRepo(Iterable<? extends NamedAndTypedGenerator<Generator<?>>> generators) {
-            super(generators);
+            super(generators, null);
         }
 
         @Override
@@ -90,8 +90,7 @@ public class DefaultPropertyMethodFactoryTest {
         assertThat(i.settings().minSuccessful(), equalTo(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL));
     }
 
-    public void noArgsVoid() {
-    }
+    public void noArgsVoid() {}
 
     @Test
     public void shouldCreatePropertyMethodFromAMethodWithVoidReturnType() throws SecurityException,

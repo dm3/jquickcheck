@@ -7,7 +7,7 @@ import lt.dm3.jquickcheck.internal.Primitives;
 final class DefaultGeneratorId {
 
     private static final Type ANY = new Type() {
-    };
+            };
 
     private final Type type;
     private final String name;
@@ -22,6 +22,8 @@ final class DefaultGeneratorId {
         if (this == obj) {
             return true;
         } else if (obj == null) {
+            return false;
+        } else if (!DefaultGeneratorId.class.isAssignableFrom(obj.getClass())) {
             return false;
         }
         DefaultGeneratorId other = (DefaultGeneratorId) obj;

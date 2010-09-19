@@ -1,5 +1,6 @@
 package lt.dm3.jquickcheck.api;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
@@ -55,4 +56,6 @@ public interface GeneratorRepository<G> {
      *             if no generator was found
      */
     G getDefaultGeneratorFor(Type t);
+
+    G getSyntheticGeneratorFor(ParameterizedType t, RequestToSynthesize<G> request);
 }

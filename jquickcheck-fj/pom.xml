@@ -25,6 +25,10 @@
             <groupId>org.functionaljava</groupId>
             <artifactId>fj-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode.gentyref</groupId>
+            <artifactId>gentyref</artifactId>
+        </dependency>
 
         <!-- TEST -->
         <dependency>
