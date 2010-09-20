@@ -36,6 +36,13 @@ public interface PropertyInvocation<GEN> {
         boolean useDefaults();
 
         /**
+         * Synthetic generators are composed of:
+         * <ul>
+         * <li>Arrays</li>
+         * <li>Collections</li>
+         * <li>Any other generic container types</li>
+         * </ul>
+         * 
          * @return true if the quick check runner should use synthetic generators (usually containers)
          */
         boolean useSynthetics();
@@ -43,6 +50,7 @@ public interface PropertyInvocation<GEN> {
 
     /**
      * @param param
+     *            arguments to the property encapsulated in this invocation
      * @return true if property is true for the given arguments
      */
     boolean invoke(Object... param);
