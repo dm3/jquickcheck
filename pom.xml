@@ -19,6 +19,7 @@
         <module>jquickcheck-junit</module>
         <module>jquickcheck-testng</module>
         <module>jquickcheck-integration</module>
+        <module>jquickcheck-example</module>
     </modules>
 
     <properties>
@@ -63,6 +64,11 @@
             <dependency>
                 <groupId>lt.dm3</groupId>
                 <artifactId>jquickcheck-junit</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>lt.dm3</groupId>
+                <artifactId>jquickcheck-testng</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
