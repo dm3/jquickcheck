@@ -32,10 +32,10 @@ public class DefaultPropertyMethodTest {
         GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
         Generator<Sample> generator = new SampleGenerator();
         Generator<Integer> generatorInt = new IntegerGenerator();
-        given(repo.hasGeneratorFor(Sample.class)).willReturn(true);
-        given(repo.getGeneratorFor(Sample.class)).willReturn((Generator) generator);
-        given(repo.hasGeneratorFor(Integer.class)).willReturn(true);
-        given(repo.getGeneratorFor(Integer.class)).willReturn((Generator) generatorInt);
+        given(repo.has(Sample.class)).willReturn(true);
+        given(repo.get(Sample.class)).willReturn((Generator) generator);
+        given(repo.has(Integer.class)).willReturn(true);
+        given(repo.get(Integer.class)).willReturn((Generator) generatorInt);
 
         PropertyMethod<Generator<?>> method = defaultMethod("methodA", Sample.class, Integer.class);
         PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
@@ -55,8 +55,8 @@ public class DefaultPropertyMethodTest {
     @Test(expected = RuntimeException.class)
     public void shouldThrowAnExceptionIfImpossibleToInvokeTheReturnedInvocation() {
         GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
-        given(repo.hasGeneratorFor(Sample.class)).willReturn(false);
-        given(repo.hasGeneratorFor(Integer.class)).willReturn(false);
+        given(repo.has(Sample.class)).willReturn(false);
+        given(repo.has(Integer.class)).willReturn(false);
 
         PropertyMethod<Generator<?>> method = defaultMethod("methodB");
         PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);

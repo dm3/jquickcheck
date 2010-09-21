@@ -5,18 +5,16 @@ package lt.dm3.jquickcheck.api;
  * 
  * @author dm3
  * 
- * @param <G>
+ * @param <GEN>
  *            type of the generator synthesized by this request
  */
-public interface RequestToSynthesize<G> {
+public interface RequestToSynthesize<GEN> {
 
     /**
-     * @param synth
-     *            synthesizer of generators for the given type
      * @param repo
      *            repository of generators for the given type
      * @return a generator synthesized by this request
      */
-    G synthesize(Synthesizer<G> synth, GeneratorRepository<G> repo);
+    GEN synthesize(GeneratorRepository<GEN> repo);
 
 }

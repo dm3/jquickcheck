@@ -7,14 +7,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import lt.dm3.jquickcheck.api.Synthesizer;
-import lt.dm3.jquickcheck.api.impl.DefaultGeneratorRepository;
-import lt.dm3.jquickcheck.api.impl.NamedAndTypedGenerator;
+import lt.dm3.jquickcheck.api.LookupDefaultByType;
 import lt.dm3.jquickcheck.api.impl.TypeResolverRegistry;
 import lt.dm3.jquickcheck.internal.Primitives;
 import fj.test.Arbitrary;
 
-public class FJGeneratorRepository extends DefaultGeneratorRepository<Arbitrary<?>> {
+public class FJLookupDefaultByType implements LookupDefaultByType<Arbitrary<?>> {
 
     /**
      * Contains all of the default generators for the FJ library. <br />
@@ -42,18 +40,16 @@ public class FJGeneratorRepository extends DefaultGeneratorRepository<Arbitrary<
         DEFAULTS = Collections.unmodifiableMap(defaults);
     }
 
-    public FJGeneratorRepository(Iterable<NamedAndTypedGenerator<Arbitrary<?>>> generators,
-            Synthesizer<Arbitrary<?>> synthesizer) {
-        super(generators, synthesizer);
-    }
-
     @Override
-    public boolean hasDefaultGeneratorFor(Type t) {
+    public boolean hasDefault(Type t) {
         return DEFAULTS.containsKey(t);
     }
 
     @Override
-    public Arbitrary<?> getDefaultGeneratorFor(Type t) {
+    public Arbitrary<?> getDefault(Type t) {
+        if (!DEFAULTS.containsKey(t)) {
+            throw new IllegalArgumentException("Could not find a default generator for type: " + t);
+        }
         return DEFAULTS.get(t);
     }
 

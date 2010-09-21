@@ -10,12 +10,12 @@ import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.QuickCheckException;
-import lt.dm3.jquickcheck.api.RequestToSynthesize;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.Sample;
 import lt.dm3.jquickcheck.sample.SampleGenerator;
@@ -41,10 +41,10 @@ public class DefaultPropertyParameterTest {
     public void shouldGetTheNamedGeneratorFromTheRepository() {
         String name = "a";
         Generator generator = new SampleGenerator();
-        given(repo.getGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.getDefaultGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.hasGeneratorFor(name)).willReturn(true);
-        given(repo.getGeneratorFor(anyString())).willReturn(generator);
+        given(repo.get(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.getDefault(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.has(name)).willReturn(true);
+        given(repo.get(anyString())).willReturn(generator);
         G ann = mock(G.class);
         given(ann.gen()).willReturn(name);
 
@@ -58,10 +58,10 @@ public class DefaultPropertyParameterTest {
     public void shouldGetTheGeneratorForTheTypeFromTheRepository() {
         Type type = Sample.class;
         Generator generator = new SampleGenerator();
-        given(repo.getGeneratorFor(anyString())).willThrow(new IllegalArgumentException());
-        given(repo.getDefaultGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.hasGeneratorFor(type)).willReturn(true);
-        given(repo.getGeneratorFor(type)).willReturn(generator);
+        given(repo.get(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.getDefault(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.has(type)).willReturn(true);
+        given(repo.get(type)).willReturn(generator);
 
         Generator<Sample> result = defaultParameter(type).getGeneratorFrom(repo);
 
@@ -73,10 +73,10 @@ public class DefaultPropertyParameterTest {
     public void shouldGetTheDefaultGeneratorIfNoGeneratorForNameOrTypeFound() {
         Class<Sample> type = Sample.class;
         Generator<Sample> generator = new SampleGenerator();
-        given(repo.getGeneratorFor(anyString())).willThrow(new IllegalArgumentException());
-        given(repo.getGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.hasDefaultGeneratorFor(type)).willReturn(true);
-        given(repo.getDefaultGeneratorFor(type)).willReturn(generator);
+        given(repo.get(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.get(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.hasDefault(type)).willReturn(true);
+        given(repo.getDefault(type)).willReturn(generator);
 
         Generator<Sample> result = defaultParameter(type).getGeneratorFrom(repo);
 
@@ -90,10 +90,10 @@ public class DefaultPropertyParameterTest {
         String name = "a";
         Generator<Sample> generatorForType = new SampleGenerator();
         Generator<Sample> generatorForName = new SampleGenerator();
-        given(repo.hasGeneratorFor(type)).willReturn(true);
-        given(repo.getGeneratorFor(type)).willReturn(generatorForType);
-        given(repo.hasGeneratorFor(name)).willReturn(true);
-        given(repo.getGeneratorFor(name)).willReturn(generatorForName);
+        given(repo.has(type)).willReturn(true);
+        given(repo.get(type)).willReturn(generatorForType);
+        given(repo.has(name)).willReturn(true);
+        given(repo.get(name)).willReturn(generatorForName);
         G ann = mock(G.class);
         given(ann.gen()).willReturn(name);
 
@@ -106,12 +106,13 @@ public class DefaultPropertyParameterTest {
     @Test
     public void shouldSynthesizeAGeneratorIfSettingsSaySoAndNoGeneratorFoundInNonDefaultsOrDefaults() {
         ParameterizedType type = (ParameterizedType) new TypeToken<List<Sample>>() {}.getType();
-        Generator gen = new SampleGenerator();
+        Generator sampleGen = new SampleGenerator(), gen = new SampleGenerator();
         GeneratorRepository<Generator> repo = mock(GeneratorRepository.class);
-        given(repo.getGeneratorFor(anyString())).willThrow(new IllegalArgumentException());
-        given(repo.getGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.getDefaultGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.getSyntheticGeneratorFor(any(RequestToSynthesize.class))).willReturn(gen);
+        given(repo.get(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.has(Sample.class)).willReturn(true);
+        given(repo.get(Sample.class)).willReturn(sampleGen);
+        given(repo.getDefault(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.getSyntheticGeneratorFor(type, Arrays.asList(sampleGen))).willReturn(gen);
 
         Generator result = defaultParameter(type).getGeneratorFrom(repo);
 
@@ -122,10 +123,10 @@ public class DefaultPropertyParameterTest {
     public void shouldThrowExceptionIfGeneratorNameIsSpecifiedButGeneratorIsNotFoundInTheRepo() {
         Class<Sample> type = Sample.class;
         Generator<Sample> generatorForType = new SampleGenerator();
-        given(repo.getGeneratorFor(anyString())).willThrow(new IllegalArgumentException());
-        given(repo.getDefaultGeneratorFor(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.hasGeneratorFor(type)).willReturn(true);
-        given(repo.getGeneratorFor(type)).willReturn(generatorForType);
+        given(repo.get(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.getDefault(any(Type.class))).willThrow(new IllegalArgumentException());
+        given(repo.has(type)).willReturn(true);
+        given(repo.get(type)).willReturn(generatorForType);
 
         String name = "a";
         G ann = mock(G.class);

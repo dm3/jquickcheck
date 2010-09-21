@@ -42,8 +42,8 @@ class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
             if (ann instanceof G) {
                 G arbAnnotation = (G) ann;
                 String name = arbAnnotation.gen();
-                if (repo.hasGeneratorFor(name)) {
-                    gen = repo.getGeneratorFor(name);
+                if (repo.has(name)) {
+                    gen = repo.get(name);
                     // TODO: if name is specified for a component of a synthetic generator,
                     // allow to create a synthetic one?
                 } else {
@@ -51,14 +51,14 @@ class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
                 }
             }
         }
-        if (gen == null && repo.hasGeneratorFor(type)) {
-            gen = repo.getGeneratorFor(type);
+        if (gen == null && repo.has(type)) {
+            gen = repo.get(type);
         }
-        if (gen == null && settings.useDefaults() && repo.hasDefaultGeneratorFor(type)) {
-            gen = repo.getDefaultGeneratorFor(type);
+        if (gen == null && settings.useDefaults() && repo.hasDefault(type)) {
+            gen = repo.getDefault(type);
         }
         if (gen == null && settings.useSynthetics()) {
-            gen = repo.getSyntheticGeneratorFor(new DefaultRequestToSynthesize<GEN>(type, settings));
+            gen = new DefaultRequestToSynthesize<GEN>(type, settings).synthesize(repo);
         }
         if (gen == null) {
             throw new QuickCheckException("Could not find a generator for parameter: " + this);

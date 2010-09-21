@@ -3,42 +3,22 @@ package lt.dm3.jquickcheck.api.impl;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
-
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
+import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
 import lt.dm3.jquickcheck.api.PropertyMethod;
 import lt.dm3.jquickcheck.api.PropertyMethodFactory;
 import lt.dm3.jquickcheck.internal.Annotations;
 import lt.dm3.jquickcheck.sample.Generator;
-import lt.dm3.jquickcheck.sample.GeneratorHolder;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
 
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class DefaultPropertyMethodFactoryTest {
-
-    static class TestRepo extends DefaultGeneratorRepository<Generator<?>> {
-
-        public TestRepo(Iterable<? extends NamedAndTypedGenerator<Generator<?>>> generators) {
-            super(generators, null);
-        }
-
-        @Override
-        public Generator<?> getDefaultGeneratorFor(Type t) {
-            throw new UnsupportedOperationException("I heard you liked exceptions.");
-        }
-
-        @Override
-        public boolean hasDefaultGeneratorFor(Type t) {
-            throw new UnsupportedOperationException("I heard you liked exceptions.");
-        }
-
-    }
 
     private final PropertyMethodFactory<Generator<?>> factory = new DefaultPropertyMethodFactory<Generator<?>>(
                                                      new DefaultInvocationSettings(
@@ -52,8 +32,7 @@ public class DefaultPropertyMethodFactoryTest {
     public void shouldCreatePropertyMethodFromANoArgumentsMethod() throws SecurityException, NoSuchMethodException {
         PropertyMethod<Generator<?>> m = factory.createMethod(this.getClass().getMethod("noArgsNoAnnotation"), this);
 
-        PropertyInvocation<Generator<?>> i = m.createInvocationWith(new TestRepo(Collections
-                .<GeneratorHolder> emptyList()));
+        PropertyInvocation<Generator<?>> i = m.createInvocationWith(mock(GeneratorRepository.class));
 
         assertThat(i.invoke(), is(true));
         assertThat(i.generators().isEmpty(), is(true));
@@ -70,8 +49,7 @@ public class DefaultPropertyMethodFactoryTest {
         NoSuchMethodException {
         PropertyMethod<Generator<?>> m = factory.createMethod(this.getClass().getMethod("noArgsWithAnnotation"), this);
 
-        PropertyInvocation<Generator<?>> i = m.createInvocationWith(new TestRepo(Collections
-                .<GeneratorHolder> emptyList()));
+        PropertyInvocation<Generator<?>> i = m.createInvocationWith(mock(GeneratorRepository.class));
 
         assertThat(i.invoke(), is(true));
         assertThat(i.generators().isEmpty(), is(true));
@@ -82,13 +60,15 @@ public class DefaultPropertyMethodFactoryTest {
         return true;
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void shouldCreatePropertyMethodFromAMethodWithArguments() throws SecurityException, NoSuchMethodException {
         PropertyMethod<Generator<?>> m = factory.createMethod(this.getClass().getMethod("someArgs", int.class), this);
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        given(repo.has(int.class)).willReturn(true);
+        given(repo.get(int.class)).willReturn((Generator) new IntegerGenerator());
 
-        PropertyInvocation<Generator<?>> i = m.createInvocationWith(
-                                                 new TestRepo(Arrays.asList(
-                                                         new GeneratorHolder(int.class, "", new IntegerGenerator()))));
+        PropertyInvocation<Generator<?>> i = m.createInvocationWith(repo);
 
         assertThat(i.invoke(1), is(true));
         assertThat(i.generators().size(), equalTo(1));
@@ -102,8 +82,7 @@ public class DefaultPropertyMethodFactoryTest {
         NoSuchMethodException {
         PropertyMethod<Generator<?>> m = factory.createMethod(this.getClass().getMethod("noArgsVoid"), this);
 
-        PropertyInvocation<Generator<?>> i = m.createInvocationWith(
-                                                new TestRepo(Collections.<GeneratorHolder> emptyList()));
+        PropertyInvocation<Generator<?>> i = m.createInvocationWith(mock(GeneratorRepository.class));
 
         assertThat(i.invoke(), is(true));
         assertThat(i.generators().size(), equalTo(0));
@@ -117,8 +96,7 @@ public class DefaultPropertyMethodFactoryTest {
     public void shouldFailIfNonBooleanReturnIsEncountered() throws SecurityException, NoSuchMethodException {
         PropertyMethod<Generator<?>> m = factory.createMethod(this.getClass().getMethod("returnsInteger"), this);
 
-        PropertyInvocation<Generator<?>> i = m.createInvocationWith(
-                                                new TestRepo(Collections.<GeneratorHolder> emptyList()));
+        PropertyInvocation<Generator<?>> i = m.createInvocationWith(mock(GeneratorRepository.class));
 
         i.invoke();
     }

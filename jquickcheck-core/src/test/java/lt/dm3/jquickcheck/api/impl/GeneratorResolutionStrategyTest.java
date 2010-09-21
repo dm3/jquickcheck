@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
-import lt.dm3.jquickcheck.api.impl.DefaultGeneratorRepositoryTest.TestRepo;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.Sample;
 import lt.dm3.jquickcheck.sample.SampleGenerator;
@@ -21,12 +20,6 @@ public class GeneratorResolutionStrategyTest {
         @Override
         protected boolean holdsGeneratorInstance(Field field) {
             return Generator.class.isAssignableFrom(field.getType());
-        }
-
-        @Override
-        protected GeneratorRepository<Generator<?>> createRepository(Iterable<NamedAndTypedGenerator<Generator<?>>> generators,
-                                                                     Object context) {
-            return new TestRepo(generators);
         }
 
     }
@@ -154,13 +147,13 @@ public class GeneratorResolutionStrategyTest {
         GeneratorRepository<Generator<?>> repo = strategy
                 .resolve(new WithOneFieldHavingNoTypeParameterAndAnonymousGeneratorWithNoTypeParameter());
 
-        repo.getGeneratorFor(Sample.class);
+        repo.get(Sample.class);
     }
 
     private void checkNotAccessibleByType(FieldTest instance) {
         GeneratorRepository<Generator<?>> repo = strategy.resolve(instance);
 
-        assertThat(repo.hasGeneratorFor(Sample.class), is(false));
+        assertThat(repo.has(Sample.class), is(false));
     }
 
     @SuppressWarnings("rawtypes")
@@ -178,13 +171,13 @@ public class GeneratorResolutionStrategyTest {
 
     @SuppressWarnings("rawtypes")
     private void checkAccessibleByName(GeneratorRepository<Generator<?>> repo, Generator gen) {
-        assertThat(repo.hasGeneratorFor("gen"), is(true));
-        assertThat(repo.getGeneratorFor("gen"), is(gen));
+        assertThat(repo.has("gen"), is(true));
+        assertThat(repo.get("gen"), is(gen));
     }
 
     @SuppressWarnings("rawtypes")
     private void checkAccessibleByType(GeneratorRepository<Generator<?>> repo, Generator gen) {
-        assertThat(repo.hasGeneratorFor(Sample.class), is(true));
-        assertThat(repo.getGeneratorFor(Sample.class), is(gen));
+        assertThat(repo.has(Sample.class), is(true));
+        assertThat(repo.get(Sample.class), is(gen));
     }
 }
