@@ -23,8 +23,13 @@ final class QuickCheckStatement<GEN> extends Statement {
 
     @Override
     public void evaluate() {
-        PropertyInvocation<GEN> invocation = method.createInvocationWith(repository);
-        QuickCheckResult result = adapter.check(invocation);
+        final QuickCheckResult result;
+        try {
+            PropertyInvocation<GEN> invocation = method.createInvocationWith(repository);
+            result = adapter.check(invocation);
+        } catch (RuntimeException unexpected) {
+            throw new QuickCheckException(unexpected.getMessage());
+        }
         if (!result.isPassed() && !result.isProven()) {
             throw new QuickCheckException(result);
         }

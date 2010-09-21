@@ -24,7 +24,7 @@ public class DefaultPropertyMethod<GEN> implements PropertyMethod<GEN> {
         this.methodSettings = methodSettings;
         this.target = target;
 
-        Type[] parameterTypes = method.getParameterTypes();
+        Type[] parameterTypes = method.getGenericParameterTypes();
         Annotation[][] annotations = method.getParameterAnnotations();
         List<PropertyParameter<GEN>> parameters = new ArrayList<PropertyParameter<GEN>>(parameterTypes.length);
         for (int i = 0; i < parameterTypes.length; i++) {

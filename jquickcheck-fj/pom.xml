@@ -19,23 +19,14 @@
     <dependencies>
         <dependency>
             <groupId>lt.dm3</groupId>
-            <artifactId>jquickcheck-sample</artifactId>
+            <artifactId>jquickcheck-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.functionaljava</groupId>
             <artifactId>fj-test</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.googlecode.gentyref</groupId>
-            <artifactId>gentyref</artifactId>
-        </dependency>
 
         <!-- TEST -->
-        <dependency>
-            <groupId>lt.dm3</groupId>
-            <artifactId>jquickcheck-test</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

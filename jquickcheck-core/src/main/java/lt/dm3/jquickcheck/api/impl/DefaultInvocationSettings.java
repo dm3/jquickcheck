@@ -15,11 +15,11 @@ public class DefaultInvocationSettings implements Settings {
     private final boolean useSynthetics;
 
     public DefaultInvocationSettings(QuickCheck annotation) {
-        this(annotation.minSuccessful(), annotation.useDefaults(), false);
+        this(annotation.minSuccessful(), annotation.useDefaults(), annotation.useSynthetics());
     }
 
     public DefaultInvocationSettings(Property propertyAnnotation) {
-        this(propertyAnnotation.minSuccessful(), propertyAnnotation.useDefaults(), false);
+        this(propertyAnnotation.minSuccessful(), propertyAnnotation.useDefaults(), propertyAnnotation.useSynthetics());
     }
 
     DefaultInvocationSettings() {
@@ -49,10 +49,12 @@ public class DefaultInvocationSettings implements Settings {
 
     @Override
     public Settings mergeWith(Settings other) {
-        int minSuccessful = other.minSuccessful() == DEFAULT_MIN_SUCCESSFUL ? this.minSuccessful : other
-                .minSuccessful();
+        int minSuccessful = other.minSuccessful() == DEFAULT_MIN_SUCCESSFUL ? this.minSuccessful :
+                                                                              other.minSuccessful();
         boolean useDefaults = other.useDefaults() == DEFAULT_USE_DEFAULTS ? this.useDefaults : other.useDefaults();
-        return new DefaultInvocationSettings(minSuccessful, useDefaults, false);
+        boolean useSynthetics = other.useSynthetics() == DEFAULT_USE_SYNTHETICS ? this.useSynthetics :
+                                                                                  other.useSynthetics();
+        return new DefaultInvocationSettings(minSuccessful, useDefaults, useSynthetics);
     }
 
 }

@@ -28,6 +28,13 @@ public @interface QuickCheck {
     boolean useDefaults() default DefaultInvocationSettings.DEFAULT_USE_DEFAULTS;
 
     /**
+     * Defaults to true
+     * 
+     * @return true if synthetic generators should be constructed when no explicit generator can be found for some type
+     */
+    boolean useSynthetics() default DefaultInvocationSettings.DEFAULT_USE_SYNTHETICS;
+
+    /**
      * @return The minimum number of successful tests before a result is reached.
      */
     int minSuccessful() default DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL;

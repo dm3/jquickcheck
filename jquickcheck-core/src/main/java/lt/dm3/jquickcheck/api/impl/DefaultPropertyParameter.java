@@ -68,7 +68,11 @@ class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
 
     @Override
     public String toString() {
-        return "Property of [" + type + "] with @{" + Arrays.toString(annotations) + "}";
+        StringBuilder result = new StringBuilder("Property of [" + type + "]");
+        if (annotations.length > 0) {
+            result.append("with @{" + Arrays.toString(annotations) + "}");
+        }
+        return result.toString();
     }
 
 }

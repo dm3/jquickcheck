@@ -56,7 +56,7 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
                 public List<String> f(fj.data.List<Arg<?>> a) {
                     List<String> result = new ArrayList<String>(a.length());
                     for (Arg<?> arg : a) {
-                        result.add(Arg.argShow.showS(arg));
+                        result.add("(" + Arg.argShow.showS(arg) + ")");
                     }
                     return result;
                 }
@@ -160,7 +160,8 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
         };
     }
 
-    private F<Object, F<Object, F<Object, F<Object, Property>>>> fourArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+    private F<Object, F<Object, F<Object, F<Object, Property>>>> fourArgs(
+        final PropertyInvocation<Arbitrary<?>> invocation) {
         return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
             @Override
             public F<Object, F<Object, F<Object, Property>>> f(final Object a) {
@@ -184,7 +185,8 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
         };
     }
 
-    private F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> fiveArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+    private F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> fiveArgs(
+        final PropertyInvocation<Arbitrary<?>> invocation) {
         return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
             @Override
             public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object a) {
@@ -213,7 +215,8 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
         };
     }
 
-    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> sixArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> sixArgs(
+        final PropertyInvocation<Arbitrary<?>> invocation) {
         return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>() {
             @Override
             public F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> f(final Object a) {
@@ -247,7 +250,8 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
         };
     }
 
-    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>> sevenArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>> sevenArgs(
+        final PropertyInvocation<Arbitrary<?>> invocation) {
         return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>() {
             @Override
             public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> f(final Object a) {
@@ -287,10 +291,12 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
         };
     }
 
-    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>> eightArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
+    private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>> eightArgs(
+        final PropertyInvocation<Arbitrary<?>> invocation) {
         return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>>() {
             @Override
-            public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>> f(final Object a) {
+            public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>> f(
+                final Object a) {
                 return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>() {
                     @Override
                     public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> f(final Object b) {
