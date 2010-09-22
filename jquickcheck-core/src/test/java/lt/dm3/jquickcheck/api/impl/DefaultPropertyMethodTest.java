@@ -4,13 +4,18 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
 import lt.dm3.jquickcheck.api.PropertyMethod;
+import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
 import lt.dm3.jquickcheck.sample.Sample;
@@ -19,6 +24,9 @@ import lt.dm3.jquickcheck.sample.SampleGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.googlecode.gentyref.TypeToken;
+
+@SuppressWarnings("unchecked")
 public class DefaultPropertyMethodTest {
 
     // method accessed inside of the test
@@ -26,7 +34,7 @@ public class DefaultPropertyMethodTest {
         return true;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void shouldCreateAnInvocationContainingAGeneratorForEachParameterInCorrectOrder() {
         GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
@@ -51,7 +59,6 @@ public class DefaultPropertyMethodTest {
         throw new InvocationTargetException(new RuntimeException("lol"));
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = RuntimeException.class)
     public void shouldThrowAnExceptionIfImpossibleToInvokeTheReturnedInvocation() {
         GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
@@ -96,8 +103,7 @@ public class DefaultPropertyMethodTest {
         assertThat(result, is(false));
     }
 
-    public void methodReturnsVoid() {
-    }
+    public void methodReturnsVoid() {}
 
     @Test
     public void shouldReturnAnInvocationWhichReturnsTrueIfPropertyMethodReturnsVoid() {
@@ -111,10 +117,36 @@ public class DefaultPropertyMethodTest {
         assertThat(result, is(true));
     }
 
+    public void methodWithSyntheticType(List<Integer> param) {}
+
+    /**
+     * Hacky test. Too much mocking.
+     */
+    @SuppressWarnings({ "rawtypes" })
+    @Test
+    public void shoulCallSyntheticGeneratorForAParameterizedType() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        given(repo.has(Integer.class)).willReturn(true);
+        given(repo.get(Integer.class)).willReturn((Generator) new SampleGenerator());
+        given(repo.has(List.class)).willReturn(false);
+        given(repo.get(List.class)).willThrow(new IllegalArgumentException());
+        given(repo.hasDefault(List.class)).willReturn(false);
+        given(repo.getDefault(List.class)).willThrow(new IllegalArgumentException());
+
+        try {
+            PropertyMethod<Generator<?>> method = defaultMethod("methodWithSyntheticType", List.class);
+            method.createInvocationWith(repo);
+        } catch (QuickCheckException expected) {
+            // fails because #getSyntheticGeneratorFor returns null
+        }
+
+        verify(repo).getSyntheticGeneratorFor(eq(new TypeToken<List<Integer>>() {}.getType()), any(List.class));
+    }
+
     private PropertyMethod<Generator<?>> defaultMethod(String name, Class<?>... parameters) {
         try {
             return new DefaultPropertyMethod<Generator<?>>(this.getClass().getMethod(name, parameters), this,
-                                                           new DefaultInvocationSettings(1, false, false));
+                                                           new DefaultInvocationSettings(1, false, true));
         } catch (NoSuchMethodException e) {
             Assert.fail(e.getMessage());
         }

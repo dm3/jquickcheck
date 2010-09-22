@@ -18,6 +18,8 @@ import lt.dm3.jquickcheck.api.QuickCheckException;
  * name/type</li>
  * <li>UseDefaults is turned on and repository doesn't contain a generator for the given name/type or a default
  * generator for the given type</li>
+ * <li>UseSynthetics is turned off and no default/normal generator exists</li>
+ * <li>UseSynthetics is turned, no default/normal generator exists and synthesizing a generator is impossible</li>
  * </ol>
  * 
  * @author dm3
