@@ -11,15 +11,33 @@ import lt.dm3.jquickcheck.api.PropertyParameter;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 
 /**
- * Fails to resolve a generator given the property parameters (annotations, type and settings) in these cases:
+ * Generator resolution algorithm:
  * <ol>
- * <li>Annotation for a named generator is specified, but a generator with this name cannot be found in the repository</li>
- * <li>UseDefaults option is turned off in the settings and repository doesn't contain a generator for the given
- * name/type</li>
- * <li>UseDefaults is turned on and repository doesn't contain a generator for the given name/type or a default
- * generator for the given type</li>
- * <li>UseSynthetics is turned off and no default/normal generator exists</li>
- * <li>UseSynthetics is turned, no default/normal generator exists and synthesizing a generator is impossible</li>
+ * <li>Check if parameter has a defined name (defined through the <tt>G</tt> annotation)
+ * <ol>
+ * <li>if so: try to get a generator with a matching name from the repository. If succeeded - finish.</li>
+ * <li>if not: continue</li>
+ * </ol>
+ * </li>
+ * <li>Check if a generator exists for the exact type of the parameter
+ * <ol>
+ * <li>if exists: get the generator for the defined type and finish</li>
+ * <li>if doesn't exist: continue</li>
+ * </ol>
+ * </li>
+ * <li>Check if <tt>useDefaults</tt> option is true and a default generator exists for the exact type of the parameter
+ * <ol>
+ * <li>if exists: get the generator for the defined type and finish</li>
+ * <li>if doesn't or <tt>useDefaults</tt> is false: continue</li>
+ * </ol>
+ * </li>
+ * <li>Check if <tt>useSynthetics</tt> option is true
+ * <ol>
+ * <li>if true: try to synthesize a generator for the given type using the same repository and settings as were passed
+ * into this property</li>
+ * <li>if false: throw {@link QuickCheckException}</li>
+ * </ol>
+ * </li>
  * </ol>
  * 
  * @author dm3
