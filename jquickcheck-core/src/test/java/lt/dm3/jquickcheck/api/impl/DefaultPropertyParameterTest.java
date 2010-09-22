@@ -25,18 +25,16 @@ import org.junit.Test;
 
 import com.googlecode.gentyref.TypeToken;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class DefaultPropertyParameterTest {
 
-    @SuppressWarnings("rawtypes")
     GeneratorRepository<Generator> repo;
 
-    @SuppressWarnings("unchecked")
     @Before
     public void before() {
         repo = mock(GeneratorRepository.class);
     }
 
-    @SuppressWarnings({ "rawtypes" })
     @Test
     public void shouldGetTheNamedGeneratorFromTheRepository() {
         String name = "a";
@@ -53,7 +51,20 @@ public class DefaultPropertyParameterTest {
         assertThat(result, is(generator));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void shouldGetTheGeneratorForTheTypeFromTheRepositoryIfDefaultExists() {
+        Type type = Sample.class;
+        Generator generator = new SampleGenerator();
+        given(repo.get(anyString())).willThrow(new IllegalArgumentException());
+        given(repo.hasDefault(type)).willReturn(true);
+        given(repo.has(type)).willReturn(true);
+        given(repo.get(type)).willReturn(generator);
+
+        Generator<Sample> result = defaultParameter(type).getGeneratorFrom(repo);
+
+        assertThat(result, is(generator));
+    }
+
     @Test
     public void shouldGetTheGeneratorForTheTypeFromTheRepository() {
         Type type = Sample.class;
@@ -68,7 +79,6 @@ public class DefaultPropertyParameterTest {
         assertThat(result, is(generator));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldGetTheDefaultGeneratorIfNoGeneratorForNameOrTypeFound() {
         Class<Sample> type = Sample.class;
@@ -83,7 +93,6 @@ public class DefaultPropertyParameterTest {
         assertThat(result, is(generator));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldGetTheNamedGeneratorEvenIfTheTypedGeneratorExists() {
         Type type = Sample.class;
@@ -102,7 +111,6 @@ public class DefaultPropertyParameterTest {
         assertThat(result, is(generatorForName));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void shouldSynthesizeAGeneratorIfSettingsSaySoAndNoGeneratorFoundInNonDefaultsOrDefaults() {
         ParameterizedType type = (ParameterizedType) new TypeToken<List<Sample>>() {}.getType();
@@ -143,7 +151,6 @@ public class DefaultPropertyParameterTest {
         defaultParameter(type).getGeneratorFrom(repo);
     }
 
-    @SuppressWarnings({ "rawtypes" })
     private DefaultPropertyParameter<Generator> defaultParameter(Type t, G... ann) {
         // USE DEFAULTS = true, USE SYNTHETICS = true
         return new DefaultPropertyParameter<Generator>(t, ann, new DefaultInvocationSettings(1, true, true));
