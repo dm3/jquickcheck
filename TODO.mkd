@@ -89,6 +89,8 @@
     Core framework for synthetic generators
 
 ## Features TODO
+* Replace @Disabled with testing framework specific annotation (@Ignore in JUnit)
+
 * Synthetic/default generators for QC/FJ
 
 * Additional custom generator type resolution algorithms for javaNetQuickCheck and FJ (based on method return type?)

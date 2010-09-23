@@ -35,6 +35,23 @@ public class FunctionalJavaAndJUnit {
             return total > a.length() && total > b.length();
         }
 
+        static class Generated {
+            private final int value;
+
+            Generated(int value) {
+                this.value = value;
+            }
+        }
+
+        public Generated arbGenerated(int value) {
+            return new Generated(value);
+        }
+
+        @Property
+        public boolean generatedValueIsNotNull(Generated generated) {
+            return generated != null;
+        }
+
     }
 
     // ======= Rewrites of samples provided @ functionaljava project ========

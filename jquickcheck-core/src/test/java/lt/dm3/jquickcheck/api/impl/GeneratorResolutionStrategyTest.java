@@ -4,10 +4,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.List;
 
+import lt.dm3.jquickcheck.Disabled;
+import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.sample.Generator;
+import lt.dm3.jquickcheck.sample.IntegerGenerator;
 import lt.dm3.jquickcheck.sample.Sample;
 import lt.dm3.jquickcheck.sample.SampleGenerator;
 
@@ -22,6 +28,41 @@ public class GeneratorResolutionStrategyTest {
             return Generator.class.isAssignableFrom(field.getType());
         }
 
+        @Override
+        protected boolean returnsGenerator(Method method) {
+            return Generator.class.isAssignableFrom(method.getReturnType());
+        }
+
+        @Override
+        protected NamedAndTypedGenerator<Generator<?>> createImplicitGenerator(final Object context,
+            final Method method,
+            final List<Generator<?>> components) {
+            return new NamedAndTypedGenerator<Generator<?>>() {
+                @Override
+                public Type getType() {
+                    return method.getGenericReturnType();
+                }
+
+                @Override
+                public String getName() {
+                    return method.getName();
+                }
+
+                @Override
+                public Generator<?> getGenerator() {
+                    return new Generator<Object>() {
+                        @Override
+                        public Object generate() {
+                            try {
+                                return method.invoke(context, components.get(0));
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    };
+                }
+            };
+        }
     }
 
     private final GeneratorResolutionStrategy<Generator<?>> strategy = new TestResolver();
@@ -115,6 +156,59 @@ public class GeneratorResolutionStrategyTest {
         Generator<Sample> gen() {
             return gen;
         }
+    }
+
+    public static class WithGeneratorCreatedByMethod {
+        @G
+        public Generator<Integer> makeGen() {
+            return new IntegerGenerator();
+        }
+    }
+
+    @Test
+    public void shouldResolveGeneratorFromMethodWithNoArguments() {
+        WithGeneratorCreatedByMethod instance = new WithGeneratorCreatedByMethod();
+
+        GeneratorRepository<Generator<?>> repo = strategy.resolve(instance);
+
+        assertThat(repo.has("makeGen"), is(true));
+        assertThat(repo.has(Integer.class), is(true));
+    }
+
+    public static class WithDisabledGeneratorInField {
+        @Disabled
+        private final Generator<Sample> gen = new SampleGenerator();
+
+    }
+
+    @Test
+    public void shouldNotResolveADisabledGenerator() {
+        WithDisabledGeneratorInField instance = new WithDisabledGeneratorInField();
+
+        GeneratorRepository<Generator<?>> repo = strategy.resolve(instance);
+
+        assertThat(repo.has("gen"), is(false));
+        assertThat(repo.has(Integer.class), is(false));
+    }
+
+    public static class WithImplicitGeneratorCreatedByMethod {
+        private final Generator<Integer> intGen = new IntegerGenerator();
+
+        @G
+        public String makeGen(Integer x) {
+            return x.toString();
+        }
+    }
+
+    @Test
+    public void shouldResolveAnImplicitGeneratorIfComponentGeneratorExists() {
+        WithImplicitGeneratorCreatedByMethod instance = new WithImplicitGeneratorCreatedByMethod();
+
+        GeneratorRepository<Generator<?>> repo = strategy.resolve(instance);
+
+        assertThat(repo.has("makeGen"), is(true));
+        assertThat(repo.has(Integer.class), is(true));
+        assertThat(repo.has(String.class), is(true));
     }
 
     @Test

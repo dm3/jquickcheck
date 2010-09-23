@@ -1,6 +1,7 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -8,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import lt.dm3.jquickcheck.Disabled;
+import lt.dm3.jquickcheck.G;
+import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.api.Lookup;
@@ -68,7 +72,7 @@ public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolu
         final List<NamedGenerator<GEN>> namedGens = new ArrayList<NamedGenerator<GEN>>(fields.length);
         final List<TypedGenerator<GEN>> typedGens = new ArrayList<TypedGenerator<GEN>>(fields.length);
         for (final Field field : fields) {
-            if (holdsGeneratorInstance(field)) {
+            if (holdsGeneratorInstance(field) && field.getAnnotation(Disabled.class) == null) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
                     @Override
                     public Void run() {
@@ -81,11 +85,71 @@ public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolu
                 });
             }
         }
+        Method[] methods = context.getClass().getDeclaredMethods();
+        for (final Method method : methods) {
+            if (returnsGenerator(method) && method.getAnnotation(G.class) != null) {
+                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                    @Override
+                    public Void run() {
+                        method.setAccessible(true);
+                        NamedAndTypedGenerator<GEN> genFromMethod = new GeneratorFromMethod<GEN>(method, context);
+                        namedGens.add(genFromMethod);
+                        typedGens.add(genFromMethod);
+                        return null;
+                    }
+                });
+            }
+        }
+        LookupDefaultByType<GEN> lookupDefault = createLookupDefaultByType(context);
+        Synthesizer<GEN> synthesizer = createSynthesizer(context);
         DefaultGeneratorRepository<GEN> repo = new DefaultGeneratorRepository<GEN>(
                 createLookupByName(namedGens), createLookupByType(typedGens),
-                createLookupDefaultByType(context), createSynthesizer(context));
+                lookupDefault, synthesizer);
+        List<NamedAndTypedGenerator<GEN>> implicit = createImplicitGenerators(context, repo);
+        namedGens.addAll(implicit);
+        typedGens.addAll(implicit);
+        repo = new DefaultGeneratorRepository<GEN>(
+                createLookupByName(namedGens), createLookupByType(typedGens),
+                lookupDefault, synthesizer);
         return repo;
     }
+
+    protected List<NamedAndTypedGenerator<GEN>> createImplicitGenerators(Object context, GeneratorRepository<GEN> repo) {
+        Method[] methods = context.getClass().getDeclaredMethods();
+        List<NamedAndTypedGenerator<GEN>> result = new ArrayList<NamedAndTypedGenerator<GEN>>();
+        // TODO: reuse DefaultPropertyMethod
+        for (final Method method : methods) {
+            if (method.getReturnType() != null && !returnsGenerator(method)
+                    && method.getAnnotation(G.class) != null &&
+                    method.getAnnotation(Property.class) == null) {
+                Type[] params = method.getGenericParameterTypes();
+                List<GEN> components = new ArrayList<GEN>(params.length);
+                for (Type t : params) {
+                    if (repo.has(t)) {
+                        components.add(repo.get(t));
+                    } else if (repo.hasDefault(t)) {
+                        components.add(repo.getDefault(t));
+                    } else {
+                        components.add(new DefaultRequestToSynthesize<GEN>(t, new DefaultInvocationSettings())
+                                .synthesize(repo));
+                    }
+                }
+                result.add(createImplicitGenerator(context, method, components));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Cannot make it return just a GEN as I won't be able to determine its generic type parameter.
+     * 
+     * @param context
+     * @param method
+     * @param components
+     * @return
+     */
+    protected abstract NamedAndTypedGenerator<GEN> createImplicitGenerator(Object context, Method method,
+        List<GEN> components);
 
     private static class NoDefaultLookup<GEN> implements LookupDefaultByType<GEN> {
         @Override
@@ -116,5 +180,7 @@ public abstract class ResolutionFromFieldsOfType<GEN> implements GeneratorResolu
     }
 
     protected abstract boolean holdsGeneratorInstance(Field field);
+
+    protected abstract boolean returnsGenerator(Method method);
 
 }
