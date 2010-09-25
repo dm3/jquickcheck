@@ -84,6 +84,17 @@ public class DefaultSynthesizer<GEN> implements Synthesizer<GEN> {
         }
     }
 
+    public boolean canSynthesize(Type t, List<GEN> components) {
+        try {
+            validate(t, components);
+        } catch (IllegalArgumentException iae) {
+            return false;
+        }
+
+        Class<?> clazz = GenericTypeReflector.erase(t);
+        return synthesizedGenerators.containsKey(clazz);
+    }
+
     @Override
     public GEN synthesize(Type t, List<GEN> components) {
         validate(t, components);

@@ -14,6 +14,7 @@ import java.util.List;
 
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.Synthesizer;
+import lt.dm3.jquickcheck.api.impl.DefaultSynthesizer.AbstractSynthesized;
 import lt.dm3.jquickcheck.api.impl.DefaultSynthesizer.Synthesized;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
@@ -177,5 +178,30 @@ public class DefaultSynthesizerTest {
         Type type = new TypeToken<Iterable<Integer>>() {}.getType();
 
         synth.synthesize(type, (List) Arrays.asList(new SampleGenerator()));
+    }
+
+    @Test
+    public void shouldTellThatSynthesizationIsPossibleIfSynthesizerContainsARequiredType() {
+        final Generator arrayListGen = new SampleGenerator();
+        Synthesized<Generator> arrayListS = new AbstractSynthesized<Generator>(ArrayList.class) {
+            @Override
+            public Generator synthesize(List<Generator> components) {
+                return arrayListGen;
+            }
+        };
+        Synthesizer<Generator> synth = new DefaultSynthesizer<Generator>(Arrays.asList(arrayListS));
+        Type type = new TypeToken<ArrayList<Integer>>() {}.getType();
+
+        Generator intGen = new IntegerGenerator();
+        assertThat(synth.canSynthesize(type, Arrays.asList(intGen)), is(true));
+    }
+
+    @Test
+    public void shouldTellThatSynthesizationIsImpossibleIfSynthesizerDoesntContainRequiredType() {
+        Synthesizer<Generator> synth = new DefaultSynthesizer<Generator>(
+                Collections.<Synthesized<Generator>> emptyList());
+        Type type = new TypeToken<ArrayList<Integer>>() {}.getType();
+
+        assertThat(synth.canSynthesize(type, Collections.<Generator> emptyList()), is(false));
     }
 }
