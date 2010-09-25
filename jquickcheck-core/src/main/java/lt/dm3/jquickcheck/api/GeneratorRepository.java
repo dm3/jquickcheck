@@ -35,10 +35,11 @@ public interface GeneratorRepository<G> {
     boolean hasDefault(Type t);
 
     /**
-     * @param class of the generator
-     * @return true if this repository contains a generator which can be synthesized for the given clazz
+     * @param t
+     *            parameterized type of values produced by the synthetic generator
+     * @return true if this repository contains a generator which can be synthesized for the given type
      */
-    boolean hasSyntheticForClass(Class<?> clazz);
+    boolean hasSynthetic(Type t);
 
     /**
      * @param t

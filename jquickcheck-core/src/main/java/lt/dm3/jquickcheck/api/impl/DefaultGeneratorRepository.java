@@ -64,6 +64,11 @@ public class DefaultGeneratorRepository<GEN> implements GeneratorRepository<GEN>
     }
 
     @Override
+    public boolean hasSynthetic(Type t) {
+        return false;
+    }
+
+    @Override
     public GEN getSyntheticGeneratorFor(Type type, List<GEN> components) {
         return synthesizer.synthesize(type, components);
     }

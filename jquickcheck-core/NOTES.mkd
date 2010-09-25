@@ -79,3 +79,65 @@ or like this (on my todo list):
             return a + b > 0;
         }
     }
+
+## Implicit Generators
+Functionaljava supports the functional approach to combining generators. It's
+great, as this is exactly the feature of the library which allowed me to build
+upon it. However, it's not too readable in java, as higher-order functions are
+required to create any non-trivial `Arbitrary`. For example, take the following class:
+
+    public class NameFrequency {
+        private final String name;
+        private final int value;
+
+        public NameFrequency(String name, int value) {
+            this.name = name; this.value = value;
+        }
+    }
+
+To generate arbitrary values of this type in vanilla functionaljava we would
+need (assuming any `String` or `Integer` suit us):
+
+    Arbitrary.arbitrary(Arbitrary.arbString.gen.bind(Arbitrary.arbInt.gen,
+        Function.curry(new F2<String, Integer, NameFrequency>() {
+            public NameFrequency f(String a, Integer b) {
+                return new NameFrequency(a, b);
+            }
+    })));
+
+You can move the static qualifiers (`Arbitrary/Function`) to the static import
+part, but it doesn't help much as the creation of anonymous `F2` cannot be
+avoided.
+
+Instead suppose you were able to just write:
+
+    @G public NameFrequency makeNameFreq(String a, int b) {
+        return new NameFrequency(a, b);
+    }
+
+Doesn't it look better than the previous snippet? But wait, you'd say - "I can
+reuse the result of the previous snippet while constructing other generators!".
+
+    Arbitrary<NameFrequency> arbNameFreq = Arbitrary.arbitrary(...);
+
+Well, you can reuse the result of the implicit generator too! How? Implicitly:
+
+    public class NameFrequencies {
+        private final Iterable<NameFrequency> freqs;
+        public NameFrequencies(Iterable<NameFrequency> freqs) {
+            this.freqs = freqs;
+        }
+    }
+
+    @G public NameFrequencies makeNameFrequencies(Iterable<NameFrequency> freqs) {
+        return new NameFrequencies(freqs);
+    }
+
+This is analogous to
+
+    Arbitrary.arbitrary(Arbitrary.arbArrayList(arbNameFreq).gen.bind(
+        new F<NameFrequency, NameFrequencies>() {
+            public NameFrequencies f(ArrayList<NameFrequency> freqs) {
+                return new NameFrequencies(freqs);
+            }
+    })));

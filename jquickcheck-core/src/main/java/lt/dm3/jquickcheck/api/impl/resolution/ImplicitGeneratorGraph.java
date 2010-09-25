@@ -8,11 +8,104 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.internal.Primitives;
 import lt.dm3.jquickcheck.internal.Types;
 
 import com.googlecode.gentyref.GenericTypeReflector;
 
 class ImplicitGeneratorGraph {
+    private static class RepositoryView<GEN> implements GeneratorRepository<GEN> {
+        private final List<Node> satisfied;
+        private final GeneratorRepository<GEN> underlying;
+
+        public RepositoryView(List<Node> satisfied, GeneratorRepository<GEN> repo) {
+            this.satisfied = satisfied;
+            this.underlying = repo;
+        }
+
+        public boolean has(Type t) {
+            return underlying.has(t) || satisfiedByOtherNodes(t, satisfied);
+        }
+
+        public boolean has(String name) {
+            return underlying.has(name);
+        }
+
+        public boolean hasDefault(Type t) {
+            return underlying.hasDefault(t) || satisfiedByOtherDefaultNodes(t, satisfied);
+        }
+
+        private static <T> boolean canSynthesize(Type type, GeneratorRepository<T> repo) {
+            boolean result = true;
+            if (type instanceof ParameterizedType) {
+                Type[] params = ((ParameterizedType) type).getActualTypeArguments();
+                for (Type param : params) {
+                    if (shouldBeSynthesized(param, repo)) {
+                        result &= canSynthesize(param, repo);
+                    } else {
+                        result &= hasComponentFor(param, repo);
+                    }
+                }
+                return result;
+            } else if (lt.dm3.jquickcheck.internal.Arrays.isArray(type)) {
+                Type componentType = GenericTypeReflector.getArrayComponentType(type);
+                if (shouldBeSynthesized(componentType, repo)) {
+                    result &= canSynthesize(componentType, repo);
+                } else {
+                    result &= hasComponentFor(componentType, repo);
+                }
+                return result;
+            }
+            return false;
+        }
+
+        protected static <T> boolean hasComponentFor(Type type, GeneratorRepository<T> repo) {
+            return repo.has(type) || repo.hasDefault(type);
+        }
+
+        private static <T> boolean shouldBeSynthesized(Type type, GeneratorRepository<T> repo) {
+            return !repo.has(type) && (Types.hasTypeArguments(type) && type instanceof ParameterizedType)
+                    || lt.dm3.jquickcheck.internal.Arrays.isArray(type);
+        }
+
+        public boolean hasSynthetic(final Type type) {
+            return canSynthesize(type, this);
+        }
+
+        public GEN get(Type t) {
+            return underlying.get(t);
+        }
+
+        public GEN get(String name) {
+            return underlying.get(name);
+        }
+
+        public GEN getDefault(Type t) {
+            return underlying.getDefault(t);
+        }
+
+        public GEN getSyntheticGeneratorFor(Type type, List<GEN> components) {
+            return underlying.getSyntheticGeneratorFor(type, components);
+        }
+
+        private boolean satisfiedByOtherNodes(Type t, Iterable<Node> satisfied) {
+            for (Node n : satisfied) {
+                if (Primitives.equalIgnoreWrapping(n.produced, t) && !n.isDefault) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean satisfiedByOtherDefaultNodes(Type t, Iterable<Node> satisfied) {
+            for (Node n : satisfied) {
+                if (Primitives.equalIgnoreWrapping(n.produced, t) && n.isDefault) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 
     static final class Node {
         private final Type produced;
@@ -42,17 +135,8 @@ class ImplicitGeneratorGraph {
                 } else if (repo.hasDefault(t)) {
                     isDefault = true;
                     found = true;
-                } else if (repo.hasSyntheticForClass(GenericTypeReflector.erase(t))) {
-                    if (Types.hasTypeArguments(t)) {
-                        for (Type arg : ((ParameterizedType) t).getActualTypeArguments()) {
-                            if (!repo.has(arg)) {
-                                return false;
-                            }
-                        }
-                    }
+                } else if (repo.hasSynthetic(t)) {
                     // TODO: synthetics are currently treated as normals
-                    found = true;
-                } else if (satisfiedByOtherNodes(t, satisfied)) {
                     found = true;
                 }
                 if (!found) {
@@ -60,18 +144,6 @@ class ImplicitGeneratorGraph {
                 }
             }
             return true;
-        }
-
-        private boolean satisfiedByOtherNodes(Type t, Iterable<Node> satisfied) {
-            for (Node n : satisfied) {
-                if (n.produced.equals(t)) {
-                    if (n.isDefault) {
-                        isDefault = true;
-                    }
-                    return true;
-                }
-            }
-            return false;
         }
 
         Type getType() {
@@ -99,29 +171,17 @@ class ImplicitGeneratorGraph {
     }
 
     private final Node[] nodes;
-    private final List<Node>[] edges;
 
     /**
-     * @param size
-     *            number of nodes
+     * @param allNodes
+     *            nodes
      */
-    @SuppressWarnings("unchecked")
     public ImplicitGeneratorGraph(List<Node> allNodes) {
         int size = allNodes.size();
         nodes = new Node[size];
-        edges = new List[size];
         for (int i = 0; i < size; i++) {
             Node n = allNodes.get(i);
             nodes[i] = n;
-            edges[i] = new LinkedList<Node>();
-            for (int j = 0; j < i; j++) {
-                Node other = nodes[j];
-                if (n.dependsOn(other)) {
-                    edges[j].add(n);
-                } else if (other.dependsOn(n)) {
-                    edges[i].add(other);
-                }
-            }
         }
     }
 
@@ -132,9 +192,9 @@ class ImplicitGeneratorGraph {
      * @param repo
      * @return
      */
-    public List<Node> satisfy(GeneratorRepository<?> repo) {
+    public <T> List<Node> satisfy(GeneratorRepository<T> repo) {
         List<Node> satisfied = new LinkedList<Node>();
-        satisfy(this, satisfied, repo);
+        satisfy(this, satisfied, new RepositoryView<T>(satisfied, repo));
         return satisfied;
     }
 
@@ -152,11 +212,7 @@ class ImplicitGeneratorGraph {
     public String toString() {
         StringBuilder result = new StringBuilder("Nodes: " + Arrays.toString(nodes) + "\n");
         for (int i = 0; i < nodes.length; i++) {
-            result.append(nodes[i] + ": \n");
-            for (Node edge : edges[i]) {
-                result.append("\t->" + edge);
-            }
-            result.append("\n");
+            result.append(nodes[i] + "\n");
         }
         return result.toString();
     }

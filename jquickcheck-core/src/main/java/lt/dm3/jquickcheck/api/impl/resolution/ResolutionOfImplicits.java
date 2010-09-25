@@ -11,6 +11,7 @@ import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
 import lt.dm3.jquickcheck.api.impl.DefaultRequestToSynthesize;
 import lt.dm3.jquickcheck.api.impl.resolution.ImplicitGeneratorGraph.Node;
+import lt.dm3.jquickcheck.internal.Primitives;
 
 public abstract class ResolutionOfImplicits<GEN> {
 
@@ -65,7 +66,7 @@ public abstract class ResolutionOfImplicits<GEN> {
 
         public boolean has(Type t) {
             for (NamedAndTypedGenerator<GEN> gen : additional) {
-                if (gen.getType().equals(t)) {
+                if (Primitives.equalIgnoreWrapping(gen.getType(), t)) {
                     return true;
                 }
             }
@@ -87,7 +88,7 @@ public abstract class ResolutionOfImplicits<GEN> {
 
         public GEN get(Type t) {
             for (NamedAndTypedGenerator<GEN> gen : additional) {
-                if (gen.getType().equals(t)) {
+                if (Primitives.equalIgnoreWrapping(gen.getType(), t)) {
                     return gen.getGenerator();
                 }
             }
@@ -107,8 +108,8 @@ public abstract class ResolutionOfImplicits<GEN> {
             return underlying.getDefault(t);
         }
 
-        public boolean hasSyntheticForClass(Class<?> clazz) {
-            return underlying.hasSyntheticForClass(clazz);
+        public boolean hasSynthetic(Type t) {
+            return underlying.hasSynthetic(t);
         }
 
         public GEN getSyntheticGeneratorFor(Type type, List<GEN> components) {
