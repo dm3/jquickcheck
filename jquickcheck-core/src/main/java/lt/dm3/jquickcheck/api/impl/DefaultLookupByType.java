@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import lt.dm3.jquickcheck.api.Lookup;
+import lt.dm3.jquickcheck.api.impl.resolution.TypedGenerator;
 import lt.dm3.jquickcheck.internal.Primitives;
 
 public class DefaultLookupByType<GEN> extends AbstractLookup<TypedGenerator<GEN>, Type, GEN> {

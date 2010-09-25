@@ -22,6 +22,13 @@ public class DefaultInvocationSettings implements Settings {
         this(propertyAnnotation.minSuccessful(), propertyAnnotation.useDefaults(), propertyAnnotation.useSynthetics());
     }
 
+    /**
+     * @return settings with the default minSuccessful setting and useDefaults/useSynthetics set to true
+     */
+    public static DefaultInvocationSettings useAll() {
+        return new DefaultInvocationSettings(DEFAULT_MIN_SUCCESSFUL, true, true);
+    }
+
     DefaultInvocationSettings() {
         this(DEFAULT_MIN_SUCCESSFUL, DEFAULT_USE_DEFAULTS, DEFAULT_USE_SYNTHETICS);
     }

@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
 import lt.dm3.jquickcheck.api.GeneratorTypeResolver;
+import lt.dm3.jquickcheck.api.impl.resolution.GeneratorResolutionStrategyTest;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.Sample;
 import lt.dm3.jquickcheck.sample.SampleGenerator;

@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import lt.dm3.jquickcheck.api.Lookup;
+import lt.dm3.jquickcheck.api.impl.resolution.NamedGenerator;
+import lt.dm3.jquickcheck.api.impl.resolution.TypedGenerator;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.GeneratorHolder;
 import lt.dm3.jquickcheck.sample.SampleGenerator;

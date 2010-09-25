@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.resolution;
 
 public interface NamedGenerator<GEN> {
 

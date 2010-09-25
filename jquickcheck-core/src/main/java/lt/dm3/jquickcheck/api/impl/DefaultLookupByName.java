@@ -1,6 +1,7 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import lt.dm3.jquickcheck.api.Lookup;
+import lt.dm3.jquickcheck.api.impl.resolution.NamedGenerator;
 
 public class DefaultLookupByName<GEN> extends AbstractLookup<NamedGenerator<GEN>, String, GEN> {
 

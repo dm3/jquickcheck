@@ -8,8 +8,8 @@ import java.util.List;
 import lt.dm3.jquickcheck.api.LookupDefaultByType;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.Synthesizer;
-import lt.dm3.jquickcheck.api.impl.NamedAndTypedGenerator;
-import lt.dm3.jquickcheck.api.impl.ResolutionFromFieldsOfType;
+import lt.dm3.jquickcheck.api.impl.resolution.NamedAndTypedGenerator;
+import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFieldsOfType;
 
 import com.googlecode.gentyref.GenericTypeReflector;
 

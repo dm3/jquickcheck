@@ -1,17 +1,19 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.resolution;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import lt.dm3.jquickcheck.Disabled;
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
+import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFields;
+import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFieldsOfType;
+import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromMethods;
+import lt.dm3.jquickcheck.api.impl.resolution.ResolutionOfImplicits;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
 import lt.dm3.jquickcheck.sample.Sample;
@@ -19,53 +21,35 @@ import lt.dm3.jquickcheck.sample.SampleGenerator;
 
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class GeneratorResolutionStrategyTest {
 
-    static class TestResolver extends ResolutionFromFieldsOfType<Generator<?>> {
+    static class TestResolutionOfImplicits extends ResolutionOfImplicits<Generator<?>> {
 
-        @Override
-        protected boolean holdsGeneratorInstance(Field field) {
-            return Generator.class.isAssignableFrom(field.getType());
+        public TestResolutionOfImplicits() {
+            super(Generator.class);
         }
 
         @Override
-        protected boolean returnsGenerator(Method method) {
-            return Generator.class.isAssignableFrom(method.getReturnType());
-        }
-
-        @Override
-        protected NamedAndTypedGenerator<Generator<?>> createImplicitGenerator(final Object context,
-            final Method method,
+        protected Generator<?> createImplicitGenerator(final Object context, final Method method,
             final List<Generator<?>> components) {
-            return new NamedAndTypedGenerator<Generator<?>>() {
+            return new Generator<Object>() {
                 @Override
-                public Type getType() {
-                    return method.getGenericReturnType();
-                }
-
-                @Override
-                public String getName() {
-                    return method.getName();
-                }
-
-                @Override
-                public Generator<?> getGenerator() {
-                    return new Generator<Object>() {
-                        @Override
-                        public Object generate() {
-                            try {
-                                return method.invoke(context, components.get(0));
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    };
+                public Object generate() {
+                    try {
+                        return method.invoke(context, components.get(0));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             };
         }
     }
 
-    private final GeneratorResolutionStrategy<Generator<?>> strategy = new TestResolver();
+    private final GeneratorResolutionStrategy<Generator<?>> strategy = new ResolutionFromFieldsOfType<Generator<?>>(
+            new TestResolutionOfImplicits(),
+            new ResolutionFromFields<Generator<?>>(Generator.class),
+                    new ResolutionFromMethods<Generator<?>>(Generator.class));
 
     public abstract static class FieldTest {
         // getter only needed for test

@@ -1,6 +1,7 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
@@ -10,6 +11,14 @@ import lt.dm3.jquickcheck.internal.Annotations;
 import org.junit.Test;
 
 public class DefaultInvocationSettingsTest {
+
+    @Test
+    public void useAll_shouldReturnSettingsWithUseDefaultsAndUseSyntheticsSetToTrue() {
+        Settings result = DefaultInvocationSettings.useAll();
+
+        assertThat(result.useDefaults(), is(true));
+        assertThat(result.useSynthetics(), is(true));
+    }
 
     @Test
     public void shouldLeaveTheDefaultSettingsIfMergedWithDefault() throws SecurityException,
