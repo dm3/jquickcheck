@@ -8,17 +8,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.api.RepositoryContains;
 import lt.dm3.jquickcheck.internal.Primitives;
 import lt.dm3.jquickcheck.internal.Types;
 
 import com.googlecode.gentyref.GenericTypeReflector;
 
 class ImplicitGeneratorGraph {
-    private static class RepositoryView<GEN> implements GeneratorRepository<GEN> {
+    private static class RepositoryView<GEN> implements RepositoryContains {
         private final List<Node> satisfied;
-        private final GeneratorRepository<GEN> underlying;
+        private final RepositoryContains underlying;
 
-        public RepositoryView(List<Node> satisfied, GeneratorRepository<GEN> repo) {
+        public RepositoryView(List<Node> satisfied, RepositoryContains repo) {
             this.satisfied = satisfied;
             this.underlying = repo;
         }
@@ -35,7 +36,12 @@ class ImplicitGeneratorGraph {
             return underlying.hasDefault(t) || satisfiedByOtherDefaultNodes(t, satisfied);
         }
 
-        private static <T> boolean canSynthesize(Type type, GeneratorRepository<T> repo) {
+        @Override
+        public boolean hasSynthetic(Type t) {
+            return canSynthesize(t, this);
+        }
+
+        private static boolean canSynthesize(Type type, RepositoryContains repo) {
             boolean result = true;
             if (type instanceof ParameterizedType) {
                 Type[] params = ((ParameterizedType) type).getActualTypeArguments();
@@ -59,33 +65,13 @@ class ImplicitGeneratorGraph {
             return false;
         }
 
-        protected static <T> boolean hasComponentFor(Type type, GeneratorRepository<T> repo) {
+        protected static boolean hasComponentFor(Type type, RepositoryContains repo) {
             return repo.has(type) || repo.hasDefault(type);
         }
 
-        private static <T> boolean shouldBeSynthesized(Type type, GeneratorRepository<T> repo) {
+        private static boolean shouldBeSynthesized(Type type, RepositoryContains repo) {
             return !repo.has(type) && (Types.hasTypeArguments(type) && type instanceof ParameterizedType)
                     || lt.dm3.jquickcheck.internal.Arrays.isArray(type);
-        }
-
-        public boolean hasSynthetic(final Type type) {
-            return canSynthesize(type, this);
-        }
-
-        public GEN get(Type t) {
-            return underlying.get(t);
-        }
-
-        public GEN get(String name) {
-            return underlying.get(name);
-        }
-
-        public GEN getDefault(Type t) {
-            return underlying.getDefault(t);
-        }
-
-        public GEN getSynthetic(Type type, List<GEN> components) {
-            return underlying.getSynthetic(type, components);
         }
 
         private boolean satisfiedByOtherNodes(Type t, Iterable<Node> satisfied) {
@@ -105,6 +91,7 @@ class ImplicitGeneratorGraph {
             }
             return false;
         }
+
     }
 
     static final class Node {
@@ -127,7 +114,7 @@ class ImplicitGeneratorGraph {
             return false;
         }
 
-        public boolean satisfiedBy(GeneratorRepository<?> repo, Iterable<Node> satisfied) {
+        public boolean satisfiedBy(RepositoryContains repo, Iterable<Node> satisfied) {
             for (Type t : method.getGenericParameterTypes()) {
                 boolean found = false;
                 if (repo.has(t)) {
@@ -198,7 +185,7 @@ class ImplicitGeneratorGraph {
         return satisfied;
     }
 
-    private static <GEN> void satisfy(ImplicitGeneratorGraph graph, List<Node> satisfied, GeneratorRepository<GEN> repo) {
+    private static <GEN> void satisfy(ImplicitGeneratorGraph graph, List<Node> satisfied, RepositoryContains repo) {
         for (int i = 0; i < graph.nodes.length; i++) {
             Node n = graph.nodes[i];
             if (!satisfied.contains(n) && n.satisfiedBy(repo, satisfied)) {
