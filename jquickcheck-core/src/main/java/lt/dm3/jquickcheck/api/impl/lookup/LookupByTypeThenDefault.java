@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.lookup;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -24,8 +24,13 @@ public class LookupByTypeThenDefault<GEN> implements Lookup<Type, GEN> {
     }
 
     @Override
-    public boolean hasOne(Type by) {
-        return lookupByType.hasOne(by) || lookupDefault.hasDefault(by);
+    public Set<GEN> getAll(Type by) {
+        Set<GEN> result = lookupByType.getAll(by);
+        if (result.isEmpty()) {
+            result = new HashSet<GEN>();
+            result.add(lookupDefault.getDefault(by));
+        }
+        return Collections.unmodifiableSet(result);
     }
 
     @Override
@@ -35,16 +40,6 @@ public class LookupByTypeThenDefault<GEN> implements Lookup<Type, GEN> {
         } catch (Exception e) {
             return lookupDefault.getDefault(by);
         }
-    }
-
-    @Override
-    public Set<GEN> getAll(Type by) {
-        Set<GEN> result = lookupByType.getAll(by);
-        if (result.isEmpty()) {
-            result = new HashSet<GEN>();
-            result.add(lookupDefault.getDefault(by));
-        }
-        return Collections.unmodifiableSet(result);
     }
 
 }

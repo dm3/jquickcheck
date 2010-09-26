@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.lookup;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,8 +29,7 @@ public abstract class AbstractLookup<C, By, GEN> implements Lookup<By, GEN> {
 
     protected abstract By keyByContainer(C container);
 
-    @Override
-    public boolean hasOne(By by) {
+    private boolean hasOne(By by) {
         if (xToGenerator.containsKey(by)) {
             return xToGenerator.get(by).size() == 1;
         }

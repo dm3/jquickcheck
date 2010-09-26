@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.lookup;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import lt.dm3.jquickcheck.api.Lookup;
@@ -36,6 +37,13 @@ public class DefaultLookupSyntheticTest {
         repo = mock(Lookup.class);
         synth = mock(Synthesizer.class);
         lookup = new DefaultLookupSynthetic<Generator>(synth, repo);
+    }
+
+    @Test
+    public void shouldNotHaveSyntheticsForNonParameterizedNonArrayTypes() {
+        assertThat(lookup.hasSynthetic(int.class), is(false));
+        assertThat(lookup.hasSynthetic(Integer.class), is(false));
+        assertThat(lookup.hasSynthetic(List.class), is(false));
     }
 
     @Test

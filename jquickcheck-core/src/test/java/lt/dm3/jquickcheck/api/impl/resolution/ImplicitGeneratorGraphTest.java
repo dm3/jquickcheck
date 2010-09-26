@@ -11,20 +11,18 @@ import java.util.Collections;
 import java.util.List;
 
 import junit.framework.Assert;
-import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.api.RepositoryContains;
 import lt.dm3.jquickcheck.api.impl.resolution.ImplicitGeneratorGraph.Node;
-import lt.dm3.jquickcheck.sample.Generator;
 
 import org.junit.Test;
 
 import com.googlecode.gentyref.TypeToken;
 
-@SuppressWarnings("unchecked")
 public class ImplicitGeneratorGraphTest {
 
     @Test
     public void shouldNotFailOnEmptyGraph() {
-        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        RepositoryContains repo = mock(RepositoryContains.class);
 
         List<Node> satisfied = new ImplicitGeneratorGraph(Collections.<Node> emptyList()).satisfy(repo);
 
@@ -45,7 +43,7 @@ public class ImplicitGeneratorGraphTest {
         List<Node> nodes = new ArrayList<Node>();
         nodes.add(nodeFrom("b", int.class));
         nodes.add(nodeFrom("a", String.class));
-        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        RepositoryContains repo = mock(RepositoryContains.class);
         given(repo.has(String.class)).willReturn(true);
 
         List<Node> satisfied = new ImplicitGeneratorGraph(nodes).satisfy(repo);
@@ -61,7 +59,7 @@ public class ImplicitGeneratorGraphTest {
         List<Node> nodes = new ArrayList<Node>();
         nodes.add(nodeFrom("a", String.class));
         nodes.add(nodeFrom("b", int.class));
-        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        RepositoryContains repo = mock(RepositoryContains.class);
         given(repo.has(String.class)).willReturn(true);
 
         List<Node> satisfied = new ImplicitGeneratorGraph(nodes).satisfy(repo);
@@ -89,7 +87,7 @@ public class ImplicitGeneratorGraphTest {
         nodes.add(nodeFrom("b", int.class, double.class));
         nodes.add(nodeFrom("a", int.class, String.class));
         nodes.add(nodeFrom("c", String.class));
-        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        RepositoryContains repo = mock(RepositoryContains.class);
         given(repo.has(String.class)).willReturn(true);
 
         List<Node> satisfied = new ImplicitGeneratorGraph(nodes).satisfy(repo);
@@ -105,7 +103,7 @@ public class ImplicitGeneratorGraphTest {
         List<Node> nodes = new ArrayList<Node>();
         nodes.add(nodeFrom("a", String.class));
         nodes.add(nodeFrom("b", int.class));
-        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        RepositoryContains repo = mock(RepositoryContains.class);
 
         List<Node> satisfied = new ImplicitGeneratorGraph(nodes).satisfy(repo);
 
@@ -126,7 +124,7 @@ public class ImplicitGeneratorGraphTest {
         List<Node> nodes = new ArrayList<Node>();
         nodes.add(nodeFrom("makeString"));
         nodes.add(nodeFrom("makeIntFromListString", List.class));
-        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        RepositoryContains repo = mock(RepositoryContains.class);
         given(repo.hasSynthetic(new TypeToken<List<String>>() {}.getType())).willReturn(true);
 
         List<Node> satisfied = new ImplicitGeneratorGraph(nodes).satisfy(repo);
@@ -146,7 +144,8 @@ public class ImplicitGeneratorGraphTest {
         List<Node> nodes = new ArrayList<Node>();
         nodes.add(nodeFrom("makeString"));
         nodes.add(nodeFrom("makeIntFromListListString", List.class));
-        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        RepositoryContains repo = mock(RepositoryContains.class);
+        given(repo.hasSynthetic(new TypeToken<List<List<String>>>() {}.getType())).willReturn(true);
 
         List<Node> satisfied = new ImplicitGeneratorGraph(nodes).satisfy(repo);
 
@@ -164,7 +163,7 @@ public class ImplicitGeneratorGraphTest {
         List<Node> nodes = new ArrayList<Node>();
         nodes.add(nodeFrom("makeString"));
         nodes.add(nodeFrom("makeIntFromArrayArrayString", String[][].class));
-        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+        RepositoryContains repo = mock(RepositoryContains.class);
 
         List<Node> satisfied = new ImplicitGeneratorGraph(nodes).satisfy(repo);
 

@@ -12,25 +12,7 @@ import java.util.Set;
  * @param <To>
  *            type of values
  */
-public interface Lookup<By, To> {
-
-    /**
-     * Query to find out if this Lookup contains at least one item matching the given key.
-     * 
-     * @param by
-     *            key
-     * @return true if this Lookup contains at least one item matching the given key
-     */
-    boolean has(By by);
-
-    /**
-     * Query to find out if this Lookup contains exactly one item matching the given key.
-     * 
-     * @param by
-     *            key
-     * @return true if this Lookup contains exactly one item matching the given key
-     */
-    boolean hasOne(By by);
+public interface Lookup<By, To> extends LookupContains<By> {
 
     /**
      * Get a unique value associated with the given key.

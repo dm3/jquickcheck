@@ -30,17 +30,9 @@ public class DefaultGeneratorRepository<GEN> implements GeneratorRepository<GEN>
         return byName.has(name);
     }
 
-    public boolean hasOne(String name) {
-        return byName.hasOne(name);
-    }
-
     @Override
     public GEN get(String name) {
         return byName.get(name);
-    }
-
-    public Set<GEN> getAll(String name) {
-        return byName.getAll(name);
     }
 
     @Override

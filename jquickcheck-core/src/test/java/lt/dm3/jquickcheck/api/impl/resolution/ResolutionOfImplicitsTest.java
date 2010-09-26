@@ -20,6 +20,8 @@ import lt.dm3.jquickcheck.sample.SampleGenerator;
 
 import org.junit.Test;
 
+import com.googlecode.gentyref.TypeToken;
+
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ResolutionOfImplicitsTest {
 
@@ -102,7 +104,7 @@ public class ResolutionOfImplicitsTest {
     public void shouldResolveImplicitsWithSimpleSyntheticDependencies() {
         GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
         Generator<?> gen = new SampleGenerator();
-        given(repo.hasSynthetic(List.class)).willReturn(true);
+        given(repo.hasSynthetic(new TypeToken<List<Integer>>() {}.getType())).willReturn(true);
         given(repo.getSynthetic(eq(List.class), anyList())).willReturn((Generator) gen);
 
         List<NamedAndTypedGenerator<Generator<?>>> result = toList(resolution.resolveFrom(

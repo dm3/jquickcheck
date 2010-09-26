@@ -10,9 +10,7 @@ import java.lang.reflect.Type;
  * @param <GEN>
  *            type of a generator to look up
  */
-public interface LookupSynthetic<GEN> {
-
-    boolean hasSynthetic(Type t);
+public interface LookupSynthetic<GEN> extends ContainsSynthetic {
 
     GEN getSynthetic(Type t);
 

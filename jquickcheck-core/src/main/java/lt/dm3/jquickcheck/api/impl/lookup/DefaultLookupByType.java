@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.lookup;
 
 import java.lang.reflect.Type;
 import java.util.Map;

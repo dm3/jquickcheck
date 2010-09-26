@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.lookup;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,17 +45,6 @@ public class LookupByTypeThenDefaultTest {
 
         InOrder order = inOrder(lookupNormal, lookupDefault);
         order.verify(lookupNormal).has(type);
-        order.verify(lookupDefault).hasDefault(type);
-    }
-
-    @Test
-    public void hasOne_shouldLookupUsingTheNormalLookupFirst() {
-        Class<?> type = int.class;
-
-        lookup.hasOne(type);
-
-        InOrder order = inOrder(lookupNormal, lookupDefault);
-        order.verify(lookupNormal).hasOne(type);
         order.verify(lookupDefault).hasDefault(type);
     }
 
