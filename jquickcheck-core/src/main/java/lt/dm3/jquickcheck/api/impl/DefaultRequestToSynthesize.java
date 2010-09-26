@@ -9,6 +9,9 @@ import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.RequestToSynthesize;
+import lt.dm3.jquickcheck.api.Synthesizer;
+import lt.dm3.jquickcheck.api.impl.DefaultRequestToSynthesize.TypeTree.MakeData;
+import lt.dm3.jquickcheck.api.impl.DefaultRequestToSynthesize.TypeTree.Visitor;
 import lt.dm3.jquickcheck.internal.Arrays;
 import lt.dm3.jquickcheck.internal.Types;
 
@@ -26,6 +29,131 @@ public class DefaultRequestToSynthesize<G> implements RequestToSynthesize<G> {
         }
         this.type = type;
         this.settings = settings;
+    }
+
+    public static final class TypeTree<T> {
+        private final List<TypeTree<T>> children = new ArrayList<TypeTree<T>>();
+        private final Type type;
+        private T data;
+
+        public TypeTree(Type type) {
+            this.type = type;
+        }
+
+        public TypeTree(Type type, T data) {
+            this.type = type;
+            this.data = data;
+        }
+
+        public void addChild(TypeTree<T> child) {
+            this.children.add(child);
+        }
+
+        @Override
+        public String toString() {
+            return "Type: " + type + ", data: " + data + ", children: \n" + children;
+        }
+
+        public void accept(Visitor<T> v) {
+            for (TypeTree<T> child : children) {
+                child.accept(v);
+            }
+            this.data = v.visit(type, children);
+        }
+
+        public interface Visitor<T> {
+            T visit(Type t);
+
+            T visit(Type t, List<TypeTree<T>> children);
+        }
+
+        public interface MakeData<T> {
+            T make(Type t);
+        }
+    }
+
+    private static class CanConstructVisitor implements Visitor<Boolean> {
+        private final GeneratorRepository<?> repo;
+
+        public CanConstructVisitor(GeneratorRepository<?> repo) {
+            this.repo = repo;
+        }
+
+        @Override
+        public Boolean visit(Type t) {
+            return repo.has(t);
+        }
+
+        @Override
+        public Boolean visit(Type t, List<TypeTree<Boolean>> children) {
+            if (!repo.has(t)) {
+                for (TypeTree<Boolean> child : children) {
+                    if (!child.data) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    private static class CreateGeneratorsVisitor<GEN> implements Visitor<GEN> {
+        private final GeneratorRepository<GEN> repo;
+        private final Synthesizer<GEN> synth;
+
+        public CreateGeneratorsVisitor(GeneratorRepository<GEN> repo, Synthesizer<GEN> synth) {
+            this.repo = repo;
+            this.synth = synth;
+        }
+
+        @Override
+        public GEN visit(Type t) {
+            return repo.get(t);
+        }
+
+        @Override
+        public GEN visit(Type t, List<TypeTree<GEN>> children) {
+            if (!repo.has(t)) {
+                List<GEN> childGens = new ArrayList<GEN>();
+                for (TypeTree<GEN> child : children) {
+                    childGens.add(child.data);
+                }
+                return synth.synthesize(t, childGens);
+            }
+            return repo.get(t);
+        }
+    }
+
+    public static <T> TypeTree<T> makeTree(Type type, MakeData<T> make, GeneratorRepository<?> repo) {
+        return makeTree(new TypeTree<T>(type, make.make(type)), make, repo);
+    }
+
+    private static <T> TypeTree<T> makeTree(TypeTree<T> soFar, MakeData<T> make, GeneratorRepository<?> repo) {
+        Type type = soFar.type;
+        if (type instanceof ParameterizedType) {
+            Type[] params = ((ParameterizedType) type).getActualTypeArguments();
+            for (Type param : params) {
+                TypeTree<T> newNode = new TypeTree<T>(param, make.make(param));
+                if (shouldBeSynthesized1(param, repo)) {
+                    makeTree(newNode, make, repo);
+                }
+                soFar.addChild(newNode);
+            }
+        } else if (Arrays.isArray(type)) {
+            Type componentType = GenericTypeReflector.getArrayComponentType(type);
+            // TODO: duplication with the previous if block
+            TypeTree<T> newNode = new TypeTree<T>(componentType, make.make(componentType));
+            if (shouldBeSynthesized1(componentType, repo)) {
+                makeTree(newNode, make, repo);
+            }
+            soFar.addChild(newNode);
+        }
+        return soFar;
+    }
+
+    private static boolean shouldBeSynthesized1(Type type, GeneratorRepository<?> repo) {
+        return !repo.has(type) && (Types.hasTypeArguments(type) && type instanceof ParameterizedType)
+                || Arrays.isArray(type);
     }
 
     @Override

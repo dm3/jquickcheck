@@ -9,12 +9,15 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.RequestToSynthesize;
+import lt.dm3.jquickcheck.api.impl.DefaultRequestToSynthesize.TypeTree;
+import lt.dm3.jquickcheck.api.impl.DefaultRequestToSynthesize.TypeTree.MakeData;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
 import lt.dm3.jquickcheck.sample.SampleGenerator;
@@ -228,4 +231,23 @@ public class DefaultRequestToSynthesizeTest {
                 new DefaultInvocationSettings(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL, true, true));
         request.synthesize(repo);
     }
+
+    @Test
+    public void shouldCreateATypeTree() {
+        final GeneratorRepository<Generator> repo = mock(GeneratorRepository.class);
+        given(repo.has(String.class)).willReturn(true);
+        MakeData<Boolean> makeBoolean = new DefaultRequestToSynthesize.TypeTree.MakeData() {
+            @Override
+            public Boolean make(Type t) {
+                return repo.has(t);
+            }
+        };
+
+        TypeTree<Boolean> tree = DefaultRequestToSynthesize.makeTree(
+                new TypeToken<Map<List<String[]>, List<List<String>[][]>>>() {}.getType(),
+                makeBoolean, repo);
+
+        System.out.println(tree);
+    }
+
 }
