@@ -1,13 +1,11 @@
 package examples;
 
-import static fj.Function.curry;
-import static fj.test.Arbitrary.arbByte;
-import static fj.test.Arbitrary.arbString;
 import static fj.test.Arbitrary.arbitrary;
 import static fj.test.Gen.choose;
 
 import java.util.LinkedList;
 
+import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.fj.FJ;
@@ -15,7 +13,6 @@ import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 
 import org.junit.runner.RunWith;
 
-import fj.F2;
 import fj.test.Arbitrary;
 
 public class FunctionalJavaAndJUnit {
@@ -43,6 +40,7 @@ public class FunctionalJavaAndJUnit {
             }
         }
 
+        @G
         public Generated arbGenerated(int value) {
             return new Generated(value);
         }
@@ -107,13 +105,24 @@ public class FunctionalJavaAndJUnit {
             }
         }
 
-        final Arbitrary<MyClass> arbMyClass = arbitrary(arbByte.gen.bind(arbString.gen,
-                curry(new F2<Byte, String, MyClass>() {
-                    @Override
-                    public MyClass f(Byte a, String b) {
-                        return new MyClass(a, b);
-                    }
-                })));
+        @G
+        public Byte arbByteR(Byte b) {
+            return (byte) (b % 3);
+        }
+
+        @G
+        // Restrictive arbitrary for String, produces from twelve (2 * 3 * 2) possible values.
+        public String arbStringR(Character c1, Character c2, Character c3) {
+            return new String(new char[] { (char) (c1 % 2 + 'a'), (char) (c2 % 3 + 'a'),
+                    (char) (c3 % 2 + 'a') });
+        }
+
+        @G
+        // Currently generators defined in "arbByteR" automatically take precedence over the default generators (a bug)
+        // TODO: @G(useDefaults = false)
+        public MyClass arbMyClass(@G(gen = "arbByteR") Byte a, @G(gen = "arbStringR") String b) {
+            return new MyClass(a, b);
+        }
 
         @Property
         public boolean hashCodeMeansEqual(MyClass a, MyClass b) {

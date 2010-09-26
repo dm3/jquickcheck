@@ -23,7 +23,7 @@ import lt.dm3.jquickcheck.api.impl.GeneratorRepositoryBuilder;
  * 
  * @param <GEN>
  */
-public final class CompositeResolution<GEN> implements GeneratorResolutionStrategy<GEN> {
+public class CompositeResolution<GEN> implements GeneratorResolutionStrategy<GEN> {
 
     private final ResolutionOfImplicits<GEN> implicits;
     private final List<GeneratorResolutionStep<GEN>> steps;
@@ -40,7 +40,7 @@ public final class CompositeResolution<GEN> implements GeneratorResolutionStrate
 
     @Override
     public GeneratorRepository<GEN> resolve(final Object context) {
-        GeneratorRepositoryBuilder<GEN> builder = new GeneratorRepositoryBuilder<GEN>(context);
+        GeneratorRepositoryBuilder<GEN> builder = createRepositoryBuilder(context);
         for (GeneratorResolutionStep<GEN> step : steps) {
             builder.addAll(step.resolveFrom(context));
         }
@@ -49,6 +49,16 @@ public final class CompositeResolution<GEN> implements GeneratorResolutionStrate
             builder.addAll(implicits.resolveFrom(context, normalsAndDefaults));
         }
         return builder.build();
+    }
+
+    /**
+     * A builder which doesn't build defaults.
+     * 
+     * @param context
+     * @return
+     */
+    protected GeneratorRepositoryBuilder<GEN> createRepositoryBuilder(final Object context) {
+        return new GeneratorRepositoryBuilder<GEN>(context);
     }
 
 }
