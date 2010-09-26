@@ -56,7 +56,7 @@ public class DefaultGeneratorRepositoryTest {
 
         assertThat(repo.has(int.class), is(true));
         assertThat(repo.has(iterableInt), is(false));
-        assertThat(repo.getSyntheticGeneratorFor(iterableInt, null), sameInstance((Generator) gen));
+        assertThat(repo.getSynthetic(iterableInt, null), sameInstance((Generator) gen));
     }
 
 }

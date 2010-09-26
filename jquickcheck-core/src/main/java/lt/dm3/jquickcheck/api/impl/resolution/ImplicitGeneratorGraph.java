@@ -84,8 +84,8 @@ class ImplicitGeneratorGraph {
             return underlying.getDefault(t);
         }
 
-        public GEN getSyntheticGeneratorFor(Type type, List<GEN> components) {
-            return underlying.getSyntheticGeneratorFor(type, components);
+        public GEN getSynthetic(Type type, List<GEN> components) {
+            return underlying.getSynthetic(type, components);
         }
 
         private boolean satisfiedByOtherNodes(Type t, Iterable<Node> satisfied) {

@@ -120,7 +120,7 @@ public class DefaultPropertyParameterTest {
         given(repo.has(Sample.class)).willReturn(true);
         given(repo.get(Sample.class)).willReturn(sampleGen);
         given(repo.getDefault(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.getSyntheticGeneratorFor(type, Arrays.asList(sampleGen))).willReturn(gen);
+        given(repo.getSynthetic(type, Arrays.asList(sampleGen))).willReturn(gen);
 
         Generator result = defaultParameter(type).getGeneratorFrom(repo);
 

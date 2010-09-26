@@ -140,7 +140,7 @@ public class DefaultPropertyMethodTest {
             // fails because #getSyntheticGeneratorFor returns null
         }
 
-        verify(repo).getSyntheticGeneratorFor(eq(new TypeToken<List<Integer>>() {}.getType()), any(List.class));
+        verify(repo).getSynthetic(eq(new TypeToken<List<Integer>>() {}.getType()), any(List.class));
     }
 
     private PropertyMethod<Generator<?>> defaultMethod(String name, Class<?>... parameters) {

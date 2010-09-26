@@ -44,7 +44,7 @@ public class DefaultRequestToSynthesizeTest {
         Type toSynthesize = int[].class;
         given(repo.has(int.class)).willReturn(true);
         given(repo.get(int.class)).willReturn(intGen);
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(intGen))).willReturn(gen);
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(intGen))).willReturn(gen);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize, settings);
         Generator result = request.synthesize(repo);
@@ -58,7 +58,7 @@ public class DefaultRequestToSynthesizeTest {
         Type toSynthesize = Object[].class;
         given(repo.has(Object.class)).willReturn(true);
         given(repo.get(Object.class)).willReturn(compGen);
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(compGen))).willReturn(gen);
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(compGen))).willReturn(gen);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize, settings);
         Generator result = request.synthesize(repo);
@@ -73,9 +73,9 @@ public class DefaultRequestToSynthesizeTest {
         given(repo.has(Object.class)).willReturn(true);
         given(repo.get(Object.class)).willReturn(object);
         // first dimension
-        given(repo.getSyntheticGeneratorFor(Object[].class, Arrays.asList(object))).willReturn(firstComponent);
+        given(repo.getSynthetic(Object[].class, Arrays.asList(object))).willReturn(firstComponent);
         // second dimension
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(firstComponent))).willReturn(gen);
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(firstComponent))).willReturn(gen);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize, settings);
         Generator result = request.synthesize(repo);
@@ -93,9 +93,9 @@ public class DefaultRequestToSynthesizeTest {
         given(repo.get(Generator.class)).willReturn(generator);
         // step 1: Generator<Object>
         Type genOfObject = new TypeToken<Generator<Object>>() {}.getType();
-        given(repo.getSyntheticGeneratorFor(genOfObject, Arrays.asList(object))).willReturn(generator);
+        given(repo.getSynthetic(genOfObject, Arrays.asList(object))).willReturn(generator);
         // step 2: Generator<Object>[]
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(generator))).willReturn(gen);
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(generator))).willReturn(gen);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize, settings);
         Generator result = request.synthesize(repo);
@@ -111,7 +111,7 @@ public class DefaultRequestToSynthesizeTest {
         ParameterizedType toSynthesize = (ParameterizedType) new TypeToken<Iterable<Integer>>() {}.getType();
         given(repo.has(integer)).willReturn(true);
         given(repo.get(integer)).willReturn(gen);
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(gen))).willReturn(genIterable);
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(gen))).willReturn(genIterable);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize, settings);
         Generator result = request.synthesize(repo);
@@ -127,7 +127,7 @@ public class DefaultRequestToSynthesizeTest {
         ParameterizedType toSynthesize = (ParameterizedType) new TypeToken<Map<Integer, Integer>>() {}.getType();
         given(repo.has(integer)).willReturn(true);
         given(repo.get(integer)).willReturn(gen);
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(gen, gen))).willReturn(genMap);
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(gen, gen))).willReturn(genMap);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize, settings);
         Generator result = request.synthesize(repo);
@@ -146,9 +146,9 @@ public class DefaultRequestToSynthesizeTest {
         given(repo.has(integer)).willReturn(true);
         given(repo.get(integer)).willReturn(gen);
         // first step - return an Iterable<Integer>
-        given(repo.getSyntheticGeneratorFor(intermediate, Arrays.asList(gen))).willReturn(genIterableInt);
+        given(repo.getSynthetic(intermediate, Arrays.asList(gen))).willReturn(genIterableInt);
         // second step - return an Iterable<Iterable<Integer>>
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(genIterableInt)))
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(genIterableInt)))
                     .willReturn(genIterableIterable);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize, settings);
@@ -164,7 +164,7 @@ public class DefaultRequestToSynthesizeTest {
         ParameterizedType toSynthesize = (ParameterizedType) new TypeToken<Iterable<Integer>>() {}.getType();
         given(repo.hasDefault(Integer.class)).willReturn(true);
         given(repo.getDefault(Integer.class)).willReturn(gen);
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(gen))).willReturn(genIterable);
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(gen))).willReturn(genIterable);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize,
                 new DefaultInvocationSettings(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL, true, true));
@@ -183,7 +183,7 @@ public class DefaultRequestToSynthesizeTest {
         given(repo.has(intType)).willReturn(true);
         given(repo.get(intType)).willReturn(gen);
         given(repo.getDefault(intType)).willReturn(genDefault);
-        given(repo.getSyntheticGeneratorFor(toSynthesize, Arrays.asList(gen))).willReturn(genIterable);
+        given(repo.getSynthetic(toSynthesize, Arrays.asList(gen))).willReturn(genIterable);
 
         request = new DefaultRequestToSynthesize<Generator>(toSynthesize,
                 new DefaultInvocationSettings(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL, true, true));

@@ -78,5 +78,5 @@ public interface GeneratorRepository<G> {
      *            to be used when synthesizing the generator
      * @return a generator which was synthesized using the given parameters
      */
-    G getSyntheticGeneratorFor(Type type, List<G> components);
+    G getSynthetic(Type type, List<G> components);
 }

@@ -69,7 +69,7 @@ public class DefaultGeneratorRepository<GEN> implements GeneratorRepository<GEN>
     }
 
     @Override
-    public GEN getSyntheticGeneratorFor(Type type, List<GEN> components) {
+    public GEN getSynthetic(Type type, List<GEN> components) {
         return synthetic.getSynthetic(type);
     }
 

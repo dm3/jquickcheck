@@ -103,7 +103,7 @@ public class ResolutionOfImplicitsTest {
         GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
         Generator<?> gen = new SampleGenerator();
         given(repo.hasSynthetic(List.class)).willReturn(true);
-        given(repo.getSyntheticGeneratorFor(eq(List.class), anyList())).willReturn((Generator) gen);
+        given(repo.getSynthetic(eq(List.class), anyList())).willReturn((Generator) gen);
 
         List<NamedAndTypedGenerator<Generator<?>>> result = toList(resolution.resolveFrom(
                 new SimpleSyntheticDependencies(), repo));

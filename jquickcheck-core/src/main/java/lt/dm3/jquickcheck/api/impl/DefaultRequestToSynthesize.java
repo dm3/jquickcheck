@@ -40,7 +40,7 @@ public class DefaultRequestToSynthesize<G> implements RequestToSynthesize<G> {
                     components.add(getComponentFor(param, repo));
                 }
             }
-            return repo.getSyntheticGeneratorFor(type, components);
+            return repo.getSynthetic(type, components);
         } else if (Arrays.isArray(type)) {
             Type componentType = GenericTypeReflector.getArrayComponentType(type);
             List<G> components = new ArrayList<G>(1);
@@ -50,7 +50,7 @@ public class DefaultRequestToSynthesize<G> implements RequestToSynthesize<G> {
             } else {
                 components.add(getComponentFor(componentType, repo));
             }
-            return repo.getSyntheticGeneratorFor(type, components);
+            return repo.getSynthetic(type, components);
         }
         throw new IllegalStateException("Impossible by preconditions in constructor!");
     }

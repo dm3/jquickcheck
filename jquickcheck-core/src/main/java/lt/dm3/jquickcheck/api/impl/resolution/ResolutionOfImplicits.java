@@ -112,8 +112,8 @@ public abstract class ResolutionOfImplicits<GEN> {
             return underlying.hasSynthetic(t);
         }
 
-        public GEN getSyntheticGeneratorFor(Type type, List<GEN> components) {
-            return underlying.getSyntheticGeneratorFor(type, components);
+        public GEN getSynthetic(Type type, List<GEN> components) {
+            return underlying.getSynthetic(type, components);
         }
 
     }
