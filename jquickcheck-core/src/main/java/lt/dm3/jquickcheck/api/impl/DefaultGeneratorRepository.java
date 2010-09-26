@@ -7,22 +7,22 @@ import java.util.Set;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.Lookup;
 import lt.dm3.jquickcheck.api.LookupDefaultByType;
-import lt.dm3.jquickcheck.api.Synthesizer;
+import lt.dm3.jquickcheck.api.LookupSynthetic;
 
 public class DefaultGeneratorRepository<GEN> implements GeneratorRepository<GEN> {
 
     private final Lookup<String, GEN> byName;
     private final Lookup<Type, GEN> byType;
     private final LookupDefaultByType<GEN> defaultByType;
-    private final Synthesizer<GEN> synthesizer;
+    private final LookupSynthetic<GEN> synthetic;
 
     public DefaultGeneratorRepository(Lookup<String, GEN> byName, Lookup<Type, GEN> byType,
                                         LookupDefaultByType<GEN> defaultByType,
-                                        Synthesizer<GEN> synthesizer) {
+                                        LookupSynthetic<GEN> lookupSynthetic) {
         this.byName = byName;
         this.byType = byType;
         this.defaultByType = defaultByType;
-        this.synthesizer = synthesizer;
+        this.synthetic = lookupSynthetic;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class DefaultGeneratorRepository<GEN> implements GeneratorRepository<GEN>
 
     @Override
     public GEN getSyntheticGeneratorFor(Type type, List<GEN> components) {
-        return synthesizer.synthesize(type, components);
+        return synthetic.getSynthetic(type);
     }
 
     public GEN get(String name, Type type) {

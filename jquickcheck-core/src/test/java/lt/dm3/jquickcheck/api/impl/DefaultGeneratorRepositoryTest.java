@@ -5,15 +5,13 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.List;
 
-import lt.dm3.jquickcheck.api.Synthesizer;
+import lt.dm3.jquickcheck.api.LookupSynthetic;
 import lt.dm3.jquickcheck.api.impl.resolution.NamedGenerator;
 import lt.dm3.jquickcheck.api.impl.resolution.TypedGenerator;
 import lt.dm3.jquickcheck.sample.Generator;
@@ -48,8 +46,8 @@ public class DefaultGeneratorRepositoryTest {
         Generator<?> gen = new SampleGenerator();
         GeneratorHolder holder = new GeneratorHolder(int.class, "a", gen);
         ParameterizedType iterableInt = (ParameterizedType) new TypeToken<Iterable<Integer>>() {}.getType();
-        Synthesizer<Generator<?>> synth = mock(Synthesizer.class);
-        given(synth.synthesize(any(Type.class), (List<Generator<?>>) eq(null))).willReturn((Generator) gen);
+        LookupSynthetic<Generator<?>> synth = mock(LookupSynthetic.class);
+        given(synth.getSynthetic(any(Type.class))).willReturn((Generator) gen);
 
         DefaultGeneratorRepository<Generator<?>> repo = new DefaultGeneratorRepository<Generator<?>>(
                 DefaultLookupByName.from(Arrays.asList((NamedGenerator<Generator<?>>) holder)),

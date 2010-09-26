@@ -8,6 +8,7 @@ import java.util.List;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.Lookup;
 import lt.dm3.jquickcheck.api.LookupDefaultByType;
+import lt.dm3.jquickcheck.api.LookupSynthetic;
 import lt.dm3.jquickcheck.api.Synthesizer;
 import lt.dm3.jquickcheck.api.impl.DefaultSynthesizer.Synthesized;
 import lt.dm3.jquickcheck.api.impl.resolution.NamedAndTypedGenerator;
@@ -40,9 +41,13 @@ public class GeneratorRepositoryBuilder<GEN> {
     }
 
     public GeneratorRepository<GEN> build() {
-        return new DefaultGeneratorRepository<GEN>(createLookupByName(namedGenerators),
-                createLookupByType(typedGenerators), createLookupDefaultByType(lookupContext),
-                createSynthesizer(lookupContext));
+        Lookup<Type, GEN> byType = createLookupByType(typedGenerators);
+        Lookup<String, GEN> byName = createLookupByName(namedGenerators);
+        LookupDefaultByType<GEN> byDefault = createLookupDefaultByType(lookupContext);
+        Lookup<Type, GEN> byTypeAndDefault = new LookupByTypeThenDefault<GEN>(byType, byDefault);
+        Synthesizer<GEN> synth = createSynthesizer(lookupContext);
+        LookupSynthetic<GEN> bySynthetic = new DefaultLookupSynthetic<GEN>(synth, byTypeAndDefault);
+        return new DefaultGeneratorRepository<GEN>(byName, byType, byDefault, bySynthetic);
     }
 
     private static class NoDefaultLookup<GEN> implements LookupDefaultByType<GEN> {
