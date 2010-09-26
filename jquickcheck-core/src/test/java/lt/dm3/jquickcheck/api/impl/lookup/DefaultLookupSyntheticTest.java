@@ -47,6 +47,12 @@ public class DefaultLookupSyntheticTest {
     }
 
     @Test
+    public void shouldNotHaveSyntheticIfTheComponentsArentAvailable() {
+        assertThat(lookup.hasSynthetic(int[].class), is(false));
+        assertThat(lookup.hasSynthetic(new TypeToken<Map<String, Integer>>() {}.getType()), is(false));
+    }
+
+    @Test
     public void shouldCreateASyntheticGeneratorOfPrimitiveArrayType() {
         Generator gen = new SampleGenerator(), intGen = new IntegerGenerator();
         Type toSynthesize = int[].class;

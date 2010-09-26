@@ -1,7 +1,6 @@
 package lt.dm3.jquickcheck.api.impl;
 
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Set;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
@@ -61,7 +60,7 @@ public class DefaultGeneratorRepository<GEN> implements GeneratorRepository<GEN>
     }
 
     @Override
-    public GEN getSynthetic(Type type, List<GEN> components) {
+    public GEN getSynthetic(Type type) {
         return synthetic.getSynthetic(type);
     }
 

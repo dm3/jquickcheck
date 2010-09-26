@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lt.dm3.jquickcheck.G;
+import lt.dm3.jquickcheck.api.GeneratorResolutionStep;
 import lt.dm3.jquickcheck.api.impl.GeneratorFromMethod;
 
 public class ResolutionFromMethods<GEN> implements GeneratorResolutionStep<GEN> {

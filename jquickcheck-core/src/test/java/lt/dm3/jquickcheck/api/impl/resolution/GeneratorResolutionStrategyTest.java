@@ -11,7 +11,7 @@ import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFields;
-import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFieldsOfType;
+import lt.dm3.jquickcheck.api.impl.resolution.CompositeResolution;
 import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromMethods;
 import lt.dm3.jquickcheck.api.impl.resolution.ResolutionOfImplicits;
 import lt.dm3.jquickcheck.sample.Generator;
@@ -46,7 +46,7 @@ public class GeneratorResolutionStrategyTest {
         }
     }
 
-    private final GeneratorResolutionStrategy<Generator<?>> strategy = new ResolutionFromFieldsOfType<Generator<?>>(
+    private final GeneratorResolutionStrategy<Generator<?>> strategy = new CompositeResolution<Generator<?>>(
             new TestResolutionOfImplicits(),
             new ResolutionFromFields<Generator<?>>(Generator.class),
                     new ResolutionFromMethods<Generator<?>>(Generator.class));

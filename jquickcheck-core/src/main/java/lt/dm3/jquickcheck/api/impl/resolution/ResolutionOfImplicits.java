@@ -8,8 +8,6 @@ import java.util.List;
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
-import lt.dm3.jquickcheck.api.impl.DefaultInvocationSettings;
-import lt.dm3.jquickcheck.api.impl.DefaultRequestToSynthesize;
 import lt.dm3.jquickcheck.api.impl.resolution.ImplicitGeneratorGraph.Node;
 import lt.dm3.jquickcheck.internal.Primitives;
 
@@ -52,7 +50,7 @@ public abstract class ResolutionOfImplicits<GEN> {
         this.generatorClass = generatorClass;
     }
 
-    private class ModifiableRepository<GEN> implements GeneratorRepository<GEN> {
+    private static class ModifiableRepository<GEN> implements GeneratorRepository<GEN> {
         private final List<NamedAndTypedGenerator<GEN>> additional = new ArrayList<NamedAndTypedGenerator<GEN>>();
         private final GeneratorRepository<GEN> underlying;
 
@@ -112,8 +110,8 @@ public abstract class ResolutionOfImplicits<GEN> {
             return underlying.hasSynthetic(t);
         }
 
-        public GEN getSynthetic(Type type, List<GEN> components) {
-            return underlying.getSynthetic(type, components);
+        public GEN getSynthetic(Type type) {
+            return underlying.getSynthetic(type);
         }
 
     }
@@ -145,8 +143,7 @@ public abstract class ResolutionOfImplicits<GEN> {
             } else if (n.isDefault() && repo.hasDefault(t)) {
                 components.add(repo.getDefault(t));
             } else {
-                components.add(new DefaultRequestToSynthesize<GEN>(t, DefaultInvocationSettings.useAll())
-                        .synthesize(repo));
+                components.add(repo.getSynthetic(t));
             }
         }
         return createImplicitGenerator(context, n.getMethod(), components);

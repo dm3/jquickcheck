@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import lt.dm3.jquickcheck.api.GeneratorRepository;
+import lt.dm3.jquickcheck.api.GeneratorResolutionStep;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
 import lt.dm3.jquickcheck.api.impl.GeneratorRepositoryBuilder;
 
@@ -22,17 +23,17 @@ import lt.dm3.jquickcheck.api.impl.GeneratorRepositoryBuilder;
  * 
  * @param <GEN>
  */
-public final class ResolutionFromFieldsOfType<GEN> implements GeneratorResolutionStrategy<GEN> {
+public final class CompositeResolution<GEN> implements GeneratorResolutionStrategy<GEN> {
 
     private final ResolutionOfImplicits<GEN> implicits;
     private final List<GeneratorResolutionStep<GEN>> steps;
 
-    public ResolutionFromFieldsOfType(ResolutionOfImplicits<GEN> implicits, GeneratorResolutionStep<GEN>... steps) {
+    public CompositeResolution(ResolutionOfImplicits<GEN> implicits, GeneratorResolutionStep<GEN>... steps) {
         this.implicits = implicits;
         this.steps = Arrays.asList(steps);
     }
 
-    public ResolutionFromFieldsOfType(GeneratorResolutionStep<GEN>... steps) {
+    public CompositeResolution(GeneratorResolutionStep<GEN>... steps) {
         this.implicits = null;
         this.steps = Arrays.asList(steps);
     }

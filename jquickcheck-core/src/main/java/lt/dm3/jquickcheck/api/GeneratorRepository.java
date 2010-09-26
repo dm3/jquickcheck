@@ -1,7 +1,6 @@
 package lt.dm3.jquickcheck.api;
 
 import java.lang.reflect.Type;
-import java.util.List;
 
 /**
  * Repository for generators.
@@ -46,9 +45,7 @@ public interface GeneratorRepository<G> extends RepositoryContains {
     /**
      * @param type
      *            of the generator
-     * @param components
-     *            to be used when synthesizing the generator
      * @return a generator which was synthesized using the given parameters
      */
-    G getSynthetic(Type type, List<G> components);
+    G getSynthetic(Type type);
 }

@@ -78,7 +78,7 @@ class DefaultPropertyParameter<GEN> implements PropertyParameter<GEN> {
             gen = repo.getDefault(type);
         }
         if (gen == null && settings.useSynthetics()) {
-            gen = new DefaultRequestToSynthesize<GEN>(type, settings).synthesize(repo);
+            gen = repo.getSynthetic(type);
         }
         if (gen == null) {
             throw new QuickCheckException("Could not find a generator for parameter: " + this);

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lt.dm3.jquickcheck.Disabled;
+import lt.dm3.jquickcheck.api.GeneratorResolutionStep;
 import lt.dm3.jquickcheck.api.impl.TypeResolverRegistry;
 
 public class ResolutionFromFields<GEN> implements GeneratorResolutionStep<GEN> {

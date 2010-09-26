@@ -9,14 +9,14 @@ import lt.dm3.jquickcheck.api.LookupDefaultByType;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.Synthesizer;
 import lt.dm3.jquickcheck.api.impl.resolution.NamedAndTypedGenerator;
-import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFieldsOfType;
+import lt.dm3.jquickcheck.api.impl.resolution.CompositeResolution;
 
 import com.googlecode.gentyref.GenericTypeReflector;
 
 import fj.F;
 import fj.test.Arbitrary;
 
-public class FJGeneratorResolutionStrategy extends ResolutionFromFieldsOfType<Arbitrary<?>> {
+public class FJGeneratorResolutionStrategy extends CompositeResolution<Arbitrary<?>> {
 
     @Override
     protected boolean holdsGeneratorInstance(Field field) {

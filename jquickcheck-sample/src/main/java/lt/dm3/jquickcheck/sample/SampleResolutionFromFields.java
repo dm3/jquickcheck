@@ -6,9 +6,9 @@ import java.util.List;
 
 import lt.dm3.jquickcheck.api.LookupDefaultByType;
 import lt.dm3.jquickcheck.api.impl.resolution.NamedAndTypedGenerator;
-import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFieldsOfType;
+import lt.dm3.jquickcheck.api.impl.resolution.CompositeResolution;
 
-public class SampleResolutionFromFields extends ResolutionFromFieldsOfType<Generator<?>> {
+public class SampleResolutionFromFields extends CompositeResolution<Generator<?>> {
 
     @Override
     protected boolean holdsGeneratorInstance(Field field) {

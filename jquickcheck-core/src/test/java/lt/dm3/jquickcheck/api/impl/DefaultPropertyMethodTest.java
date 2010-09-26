@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -140,7 +139,7 @@ public class DefaultPropertyMethodTest {
             // fails because #getSyntheticGeneratorFor returns null
         }
 
-        verify(repo).getSynthetic(eq(new TypeToken<List<Integer>>() {}.getType()), any(List.class));
+        verify(repo).getSynthetic(eq(new TypeToken<List<Integer>>() {}.getType()));
     }
 
     private PropertyMethod<Generator<?>> defaultMethod(String name, Class<?>... parameters) {

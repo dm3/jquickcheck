@@ -10,7 +10,6 @@ import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 
 import lt.dm3.jquickcheck.G;
@@ -120,7 +119,7 @@ public class DefaultPropertyParameterTest {
         given(repo.has(Sample.class)).willReturn(true);
         given(repo.get(Sample.class)).willReturn(sampleGen);
         given(repo.getDefault(any(Type.class))).willThrow(new IllegalArgumentException());
-        given(repo.getSynthetic(type, Arrays.asList(sampleGen))).willReturn(gen);
+        given(repo.getSynthetic(type)).willReturn(gen);
 
         Generator result = defaultParameter(type).getGeneratorFrom(repo);
 
@@ -143,11 +142,10 @@ public class DefaultPropertyParameterTest {
         defaultParameter(type, ann).getGeneratorFrom(repo);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = QuickCheckException.class)
     public void shouldThrowExceptionIfGeneratorNotFoundNeitherInDefaultsOrSyntheticsOrNormalGenerators() {
         Class<Sample> type = Sample.class;
 
-        // synthetics are not applicable as type is non-parameterized
         defaultParameter(type).getGeneratorFrom(repo);
     }
 

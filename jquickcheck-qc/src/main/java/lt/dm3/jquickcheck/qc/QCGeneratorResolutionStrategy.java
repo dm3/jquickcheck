@@ -5,10 +5,10 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import lt.dm3.jquickcheck.api.impl.resolution.NamedAndTypedGenerator;
-import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFieldsOfType;
+import lt.dm3.jquickcheck.api.impl.resolution.CompositeResolution;
 import net.java.quickcheck.Generator;
 
-public class QCGeneratorResolutionStrategy extends ResolutionFromFieldsOfType<Generator<?>> {
+public class QCGeneratorResolutionStrategy extends CompositeResolution<Generator<?>> {
 
     @Override
     protected boolean holdsGeneratorInstance(Field field) {

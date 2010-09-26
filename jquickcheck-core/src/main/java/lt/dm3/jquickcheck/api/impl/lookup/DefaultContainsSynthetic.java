@@ -14,6 +14,10 @@ public class DefaultContainsSynthetic implements ContainsSynthetic {
 
         @Override
         public Boolean visit(Type t, List<TypeTree<Boolean>> children) {
+            if (children.isEmpty()) {
+                // leaf node
+                return containsByType.has(t);
+            }
             if (!containsByType.has(t)) {
                 for (TypeTree<Boolean> child : children) {
                     if (!child.getContents()) {

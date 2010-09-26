@@ -3,8 +3,6 @@ package lt.dm3.jquickcheck.api.impl.resolution;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Type;
@@ -16,11 +14,8 @@ import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.impl.resolution.GeneratorResolutionStrategyTest.TestResolutionOfImplicits;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
-import lt.dm3.jquickcheck.sample.SampleGenerator;
 
 import org.junit.Test;
-
-import com.googlecode.gentyref.TypeToken;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ResolutionOfImplicitsTest {
@@ -103,9 +98,6 @@ public class ResolutionOfImplicitsTest {
     @Test
     public void shouldResolveImplicitsWithSimpleSyntheticDependencies() {
         GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
-        Generator<?> gen = new SampleGenerator();
-        given(repo.hasSynthetic(new TypeToken<List<Integer>>() {}.getType())).willReturn(true);
-        given(repo.getSynthetic(eq(List.class), anyList())).willReturn((Generator) gen);
 
         List<NamedAndTypedGenerator<Generator<?>>> result = toList(resolution.resolveFrom(
                 new SimpleSyntheticDependencies(), repo));
