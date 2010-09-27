@@ -14,6 +14,7 @@ import java.util.Map;
 
 import lt.dm3.jquickcheck.api.Lookup;
 import lt.dm3.jquickcheck.api.LookupSynthetic;
+import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.Synthesizer;
 import lt.dm3.jquickcheck.sample.Generator;
 import lt.dm3.jquickcheck.sample.IntegerGenerator;
@@ -50,6 +51,11 @@ public class DefaultLookupSyntheticTest {
     public void shouldNotHaveSyntheticIfTheComponentsArentAvailable() {
         assertThat(lookup.hasSynthetic(int[].class), is(false));
         assertThat(lookup.hasSynthetic(new TypeToken<Map<String, Integer>>() {}.getType()), is(false));
+    }
+
+    @Test(expected = QuickCheckException.class)
+    public void shouldNotGetSyntheticIfTheComponentsArentAvailable() {
+        lookup.getSynthetic(int.class);
     }
 
     @Test

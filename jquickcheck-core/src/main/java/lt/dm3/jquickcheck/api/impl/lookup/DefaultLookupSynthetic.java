@@ -6,6 +6,7 @@ import java.util.List;
 
 import lt.dm3.jquickcheck.api.Lookup;
 import lt.dm3.jquickcheck.api.LookupSynthetic;
+import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.api.Synthesizer;
 
 public class DefaultLookupSynthetic<GEN> extends DefaultContainsSynthetic implements LookupSynthetic<GEN> {
@@ -43,7 +44,9 @@ public class DefaultLookupSynthetic<GEN> extends DefaultContainsSynthetic implem
             }
         });
         tree.accept(new CreateGeneratorsVisitor());
-        // TODO: throw exception if null?
+        if (tree.getContents() == null) {
+            throw new QuickCheckException("Could not synthesize a generator of type: " + t);
+        }
         return tree.getContents();
     }
 
