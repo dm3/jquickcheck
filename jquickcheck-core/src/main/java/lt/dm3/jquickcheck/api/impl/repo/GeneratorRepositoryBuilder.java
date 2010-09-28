@@ -27,14 +27,19 @@ public class GeneratorRepositoryBuilder<GEN> {
     // method(List<NamedGenerator<GEN>>)
     private final List<NamedGenerator<GEN>> namedGenerators = new ArrayList<NamedGenerator<GEN>>();
     private final List<TypedGenerator<GEN>> typedGenerators = new ArrayList<TypedGenerator<GEN>>();
+    private final List<TypedGenerator<GEN>> defaultGenerators = new ArrayList<TypedGenerator<GEN>>();
 
     public GeneratorRepositoryBuilder(Object lookupContext) {
         this.lookupContext = lookupContext;
     }
 
     public GeneratorRepositoryBuilder<GEN> add(NamedAndTypedGenerator<GEN> generator) {
-        namedGenerators.add(generator);
-        typedGenerators.add(generator);
+        if (generator.isDefault()) {
+            defaultGenerators.add(generator);
+        } else {
+            namedGenerators.add(generator);
+            typedGenerators.add(generator);
+        }
         return this;
     }
 
@@ -48,22 +53,28 @@ public class GeneratorRepositoryBuilder<GEN> {
     public GeneratorRepository<GEN> build() {
         Lookup<Type, GEN> byType = createLookupByType(typedGenerators);
         Lookup<String, GEN> byName = createLookupByName(namedGenerators);
-        LookupDefaultByType<GEN> byDefault = createLookupDefaultByType(lookupContext);
+        LookupDefaultByType<GEN> byDefault = createLookupDefaultByType(defaultGenerators, lookupContext);
         Lookup<Type, GEN> byTypeAndDefault = new LookupByTypeThenDefault<GEN>(byType, byDefault);
         Synthesizer<GEN> synth = createSynthesizer(lookupContext);
         LookupSynthetic<GEN> bySynthetic = new DefaultLookupSynthetic<GEN>(synth, byTypeAndDefault);
         return new DefaultGeneratorRepository<GEN>(byName, byType, byDefault, bySynthetic);
     }
 
-    private static class NoDefaultLookup<GEN> implements LookupDefaultByType<GEN> {
+    private static class SomeDefaultLookup<GEN> implements LookupDefaultByType<GEN> {
+        private final Lookup<Type, GEN> byType;
+
+        public SomeDefaultLookup(Lookup<Type, GEN> byType) {
+            this.byType = byType;
+        }
+
         @Override
         public boolean hasDefault(Type t) {
-            return false;
+            return byType.has(t);
         }
 
         @Override
         public GEN getDefault(Type t) {
-            throw new IllegalArgumentException("No default generator for type: " + t);
+            return byType.get(t);
         }
     }
 
@@ -75,8 +86,8 @@ public class GeneratorRepositoryBuilder<GEN> {
         return DefaultLookupByType.from(typedGenerators);
     }
 
-    protected LookupDefaultByType<GEN> createLookupDefaultByType(Object context) {
-        return new NoDefaultLookup<GEN>();
+    protected LookupDefaultByType<GEN> createLookupDefaultByType(Iterable<TypedGenerator<GEN>> defaults, Object context) {
+        return new SomeDefaultLookup<GEN>(DefaultLookupByType.from(defaults));
     }
 
     protected Synthesizer<GEN> createSynthesizer(Object context) {

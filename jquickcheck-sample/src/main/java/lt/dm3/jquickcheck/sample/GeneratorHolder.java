@@ -31,4 +31,9 @@ public class GeneratorHolder implements NamedAndTypedGenerator<Generator<?>> {
         return generator;
     }
 
+    @Override
+    public boolean isDefault() {
+        return false;
+    }
+
 }

@@ -60,6 +60,11 @@ public class ResolutionFromFields<GEN> implements GeneratorResolutionStep<GEN> {
         public String getName() {
             return name;
         }
+
+        @Override
+        public boolean isDefault() {
+            return false;
+        }
     }
 
     @Override

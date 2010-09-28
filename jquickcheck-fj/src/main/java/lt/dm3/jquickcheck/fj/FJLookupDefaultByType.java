@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import lt.dm3.jquickcheck.api.Lookup;
 import lt.dm3.jquickcheck.api.LookupDefaultByType;
 import lt.dm3.jquickcheck.api.impl.TypeResolverRegistry;
 import lt.dm3.jquickcheck.internal.Primitives;
@@ -40,15 +41,24 @@ public class FJLookupDefaultByType implements LookupDefaultByType<Arbitrary<?>> 
         DEFAULTS = Collections.unmodifiableMap(defaults);
     }
 
+    private final Lookup<Type, Arbitrary<?>> moreDefaults;
+
+    public FJLookupDefaultByType(Lookup<Type, Arbitrary<?>> defaults) {
+        this.moreDefaults = defaults;
+    }
+
     @Override
     public boolean hasDefault(Type t) {
-        return DEFAULTS.containsKey(t);
+        return DEFAULTS.containsKey(t) || moreDefaults.has(t);
     }
 
     @Override
     public Arbitrary<?> getDefault(Type t) {
         if (!DEFAULTS.containsKey(t)) {
-            throw new IllegalArgumentException("Could not find a default generator for type: " + t);
+            if (!moreDefaults.has(t)) {
+                throw new IllegalArgumentException("Could not find a default generator for type: " + t);
+            }
+            return moreDefaults.get(t);
         }
         return DEFAULTS.get(t);
     }

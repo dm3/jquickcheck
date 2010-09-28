@@ -36,4 +36,9 @@ public class GeneratorFromMethod<GEN> implements NamedAndTypedGenerator<GEN> {
         return type;
     }
 
+    @Override
+    public boolean isDefault() {
+        return false;
+    }
+
 }
