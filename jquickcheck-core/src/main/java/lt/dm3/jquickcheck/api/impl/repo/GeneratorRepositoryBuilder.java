@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.repo;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import lt.dm3.jquickcheck.api.Lookup;
 import lt.dm3.jquickcheck.api.LookupDefaultByType;
 import lt.dm3.jquickcheck.api.LookupSynthetic;
 import lt.dm3.jquickcheck.api.Synthesizer;
+import lt.dm3.jquickcheck.api.impl.DefaultSynthesizer;
 import lt.dm3.jquickcheck.api.impl.DefaultSynthesizer.Synthesized;
 import lt.dm3.jquickcheck.api.impl.lookup.DefaultLookupByName;
 import lt.dm3.jquickcheck.api.impl.lookup.DefaultLookupByType;

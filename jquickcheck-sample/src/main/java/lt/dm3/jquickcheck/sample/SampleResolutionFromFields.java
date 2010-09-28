@@ -1,7 +1,7 @@
 package lt.dm3.jquickcheck.sample;
 
 import lt.dm3.jquickcheck.api.LookupDefaultByType;
-import lt.dm3.jquickcheck.api.impl.GeneratorRepositoryBuilder;
+import lt.dm3.jquickcheck.api.impl.repo.GeneratorRepositoryBuilder;
 import lt.dm3.jquickcheck.api.impl.resolution.CompositeResolution;
 import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromFields;
 import lt.dm3.jquickcheck.api.impl.resolution.ResolutionFromMethods;

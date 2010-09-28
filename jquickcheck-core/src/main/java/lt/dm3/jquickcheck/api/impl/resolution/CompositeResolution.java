@@ -6,7 +6,7 @@ import java.util.List;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStep;
 import lt.dm3.jquickcheck.api.GeneratorResolutionStrategy;
-import lt.dm3.jquickcheck.api.impl.GeneratorRepositoryBuilder;
+import lt.dm3.jquickcheck.api.impl.repo.GeneratorRepositoryBuilder;
 
 /**
  * The generators are resolved from

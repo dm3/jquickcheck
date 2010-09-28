@@ -1,9 +1,9 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.resolution;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import lt.dm3.jquickcheck.api.impl.resolution.NamedAndTypedGenerator;
+import lt.dm3.jquickcheck.api.impl.TypeResolverRegistry;
 
 public class GeneratorFromMethod<GEN> implements NamedAndTypedGenerator<GEN> {
     private final String name;

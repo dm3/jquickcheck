@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.repo;
 
 import java.lang.reflect.Type;
 import java.util.Set;

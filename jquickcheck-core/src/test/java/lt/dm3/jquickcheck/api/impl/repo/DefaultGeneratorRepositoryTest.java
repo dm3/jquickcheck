@@ -1,4 +1,4 @@
-package lt.dm3.jquickcheck.api.impl;
+package lt.dm3.jquickcheck.api.impl.repo;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -14,6 +14,7 @@ import java.util.Arrays;
 import lt.dm3.jquickcheck.api.LookupSynthetic;
 import lt.dm3.jquickcheck.api.impl.lookup.DefaultLookupByName;
 import lt.dm3.jquickcheck.api.impl.lookup.DefaultLookupByType;
+import lt.dm3.jquickcheck.api.impl.repo.DefaultGeneratorRepository;
 import lt.dm3.jquickcheck.api.impl.resolution.NamedGenerator;
 import lt.dm3.jquickcheck.api.impl.resolution.TypedGenerator;
 import lt.dm3.jquickcheck.sample.Generator;
