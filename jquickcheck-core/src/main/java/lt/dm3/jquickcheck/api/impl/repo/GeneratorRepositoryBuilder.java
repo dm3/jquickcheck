@@ -54,7 +54,8 @@ public class GeneratorRepositoryBuilder<GEN> {
         Lookup<Type, GEN> byType = createLookupByType(typedGenerators);
         Lookup<String, GEN> byName = createLookupByName(namedGenerators);
         LookupDefaultByType<GEN> byDefault = createLookupDefaultByType(defaultGenerators, lookupContext);
-        Lookup<Type, GEN> byTypeAndDefault = new LookupByTypeThenDefault<GEN>(byType, byDefault);
+        Lookup<Type, GEN> byTypeAndDefault = new LookupByTypeThenDefault<GEN>(byType, RepositoryView.<GEN> constrain(
+                byDefault, lookupContext));
         Synthesizer<GEN> synth = createSynthesizer(lookupContext);
         LookupSynthetic<GEN> bySynthetic = new DefaultLookupSynthetic<GEN>(synth, byTypeAndDefault);
         return new DefaultGeneratorRepository<GEN>(byName, byType, byDefault, bySynthetic);

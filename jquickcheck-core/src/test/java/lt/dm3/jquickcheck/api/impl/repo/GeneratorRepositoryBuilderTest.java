@@ -43,7 +43,7 @@ public class GeneratorRepositoryBuilderTest {
 
     @Before
     public void before() {
-        builder = new GeneratorRepositoryBuilder<Generator<?>>(null);
+        builder = new GeneratorRepositoryBuilder<Generator<?>>(this);
     }
 
     @Test
