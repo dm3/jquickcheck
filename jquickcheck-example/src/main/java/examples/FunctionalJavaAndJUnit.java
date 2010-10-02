@@ -118,7 +118,7 @@ public class FunctionalJavaAndJUnit {
         }
 
         @G
-        // Currently generators defined in "arbByteR" automatically take precedence over the default generators (a bug)
+        // Currently generators defined in "arbByteR" automatically take precedence over the default generators (a bug?)
         // TODO: @G(useDefaults = false)
         public MyClass arbMyClass(@G(gen = "arbByteR") Byte a, @G(gen = "arbStringR") String b) {
             return new MyClass(a, b);
