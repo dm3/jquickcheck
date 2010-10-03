@@ -88,6 +88,52 @@ public class DefaultPropertyMethodTest {
         assertThat(result, is(Result.FALSIFIED));
     }
 
+    public boolean methodReturnsTrue() {
+        return true;
+    }
+
+    @Test
+    public void shouldReturnAnInvocationWhichReturnsProvenIfPropertyMethodReturnsTrue() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsTrue");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        PropertyInvocation.Result result = invocation.invoke();
+
+        assertThat(result, is(Result.PROVEN));
+    }
+
+    public boolean methodReturnsFalse() {
+        return false;
+    }
+
+    @Test
+    public void shouldReturnAnInvocationWhichReturnsProvenIfPropertyMethodReturnsFalse() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsFalse");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        PropertyInvocation.Result result = invocation.invoke();
+
+        assertThat(result, is(Result.FALSIFIED));
+    }
+
+    public int methodReturnsInt() {
+        return 1;
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionIfMethodReturnsNotABooleanOrVoid() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsInt");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        invocation.invoke();
+    }
+
     public void methodReturnsVoidAndThrowsAssertionError() {
         throw new AssertionError();
     }
