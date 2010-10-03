@@ -4,20 +4,19 @@ public class QuickCheckException extends RuntimeException {
 
     private static final long serialVersionUID = 7856404897568627298L;
 
-    private final Throwable cause;
-    private final String message;
-
     public QuickCheckException(String message) {
-        this(message, null);
+        super(message);
     }
 
     public QuickCheckException(String message, Throwable t) {
-        this.message = message;
-        this.cause = t;
+        super(message, t);
     }
 
     public QuickCheckException(QuickCheckResult result) {
-        this.cause = null;
+        super(buildMessage(result));
+    }
+
+    private final static String buildMessage(QuickCheckResult result) {
         StringBuilder message = new StringBuilder();
         if (result.isExhausted()) {
             message.append("Exhausted");
@@ -35,15 +34,9 @@ public class QuickCheckException extends RuntimeException {
             message.append("\n").append("Arguments: " + result.arguments());
         }
         if (message.length() == 0) {
-            this.message = "Unknown result!";
-        } else {
-            this.message = message.toString();
+            return "Unknown result!";
         }
-    }
-
-    @Override
-    public String getMessage() {
-        return cause == null ? message : message + ", cause: " + cause.getMessage();
+        return message.toString();
     }
 
 }

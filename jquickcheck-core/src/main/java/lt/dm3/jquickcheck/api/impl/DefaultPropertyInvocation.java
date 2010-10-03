@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import lt.dm3.jquickcheck.api.DiscardedValue;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
 import lt.dm3.jquickcheck.internal.Primitives;
 
@@ -22,8 +23,8 @@ public class DefaultPropertyInvocation<GEN> implements PropertyInvocation<GEN> {
     }
 
     @Override
-    public boolean invoke(Object... param) {
-        boolean result = false;
+    public Result invoke(Object... param) {
+        Result result = Result.FALSIFIED;
         try {
             Object invocationResult = method.invoke(target, param);
             if (invocationResult != null) {
@@ -31,16 +32,18 @@ public class DefaultPropertyInvocation<GEN> implements PropertyInvocation<GEN> {
                     throw new IllegalArgumentException("Property method " + method + " on " + target
                             + " returns non-boolean!");
                 }
-                result = (Boolean) invocationResult;
+                result = Result.from((Boolean) invocationResult);
             } else if (invocationResult == null) {
                 // completed normally, property returns void
-                result = true;
+                result = Result.PROVEN;
             }
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof AssertionError) {
-                return false;
+                return Result.FALSIFIED;
+            } else if (e.getCause() instanceof DiscardedValue) {
+                return Result.DISCARDED;
             }
             throw new RuntimeException(e);
         }

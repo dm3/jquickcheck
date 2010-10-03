@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import lt.dm3.jquickcheck.G;
 import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
+import lt.dm3.jquickcheck.api.Properties;
 import lt.dm3.jquickcheck.fj.FJ;
 import lt.dm3.jquickcheck.junit4.QuickCheckRunner;
 
@@ -63,10 +64,6 @@ public class FunctionalJavaAndJUnit {
         }
     }
 
-    /*
-     * This needs non-boolean return type for properties. 
-     * A Result enum is needed (as in FJ).
-     */
     @RunWith(QuickCheckRunner.class)
     @QuickCheck(provider = FJ.class, useDefaults = true)
     public static class EqualsHashCode {
@@ -107,14 +104,12 @@ public class FunctionalJavaAndJUnit {
 
         @G
         public Byte arbByteR(Byte b) {
-            return (byte) (b % 3);
+            return (byte) (b % 2);
         }
 
         @G
-        // Restrictive arbitrary for String, produces from twelve (2 * 3 * 2) possible values.
-        public String arbStringR(Character c1, Character c2, Character c3) {
-            return new String(new char[] { (char) (c1 % 2 + 'a'), (char) (c2 % 3 + 'a'),
-                    (char) (c3 % 2 + 'a') });
+        public String arbStringR(Character c1, Character c2) {
+            return new String(new char[] { (char) (c1 % 2 + 'a'), (char) (c2 % 2 + 'b') });
         }
 
         @G
@@ -126,7 +121,9 @@ public class FunctionalJavaAndJUnit {
 
         @Property
         public boolean hashCodeMeansEqual(MyClass a, MyClass b) {
-            return a.equals(b) ? a.hashCode() == b.hashCode() : true;
+            Properties.continueIf(a.equals(b));
+
+            return a.hashCode() == b.hashCode();
         }
     }
 

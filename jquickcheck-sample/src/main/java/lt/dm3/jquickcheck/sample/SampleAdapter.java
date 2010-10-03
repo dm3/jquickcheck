@@ -3,6 +3,7 @@ package lt.dm3.jquickcheck.sample;
 import java.util.List;
 
 import lt.dm3.jquickcheck.api.PropertyInvocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation.Result;
 import lt.dm3.jquickcheck.api.PropertyInvocation.Settings;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
@@ -20,7 +21,7 @@ public class SampleAdapter implements QuickCheckAdapter<Generator<?>> {
             for (int j = 0; j < generators.size(); j++) {
                 params[j] = generators.get(j).generate();
             }
-            result &= invocation.invoke(params);
+            result &= (invocation.invoke(params) == Result.PROVEN);
         }
         return result ? DefaultQuickCheckResult.proven() : DefaultQuickCheckResult.falsified();
     }

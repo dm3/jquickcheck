@@ -9,6 +9,7 @@ import lt.dm3.jquickcheck.Property;
 import lt.dm3.jquickcheck.QuickCheck;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation.Result;
 import lt.dm3.jquickcheck.api.PropertyMethod;
 import lt.dm3.jquickcheck.api.PropertyMethodFactory;
 import lt.dm3.jquickcheck.internal.Annotations;
@@ -34,7 +35,7 @@ public class DefaultPropertyMethodFactoryTest {
 
         PropertyInvocation<Generator<?>> i = m.createInvocationWith(mock(GeneratorRepository.class));
 
-        assertThat(i.invoke(), is(true));
+        assertThat(i.invoke(), is(Result.PROVEN));
         assertThat(i.generators().isEmpty(), is(true));
         assertThat(i.settings().minSuccessful(), equalTo(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL));
     }
@@ -51,7 +52,7 @@ public class DefaultPropertyMethodFactoryTest {
 
         PropertyInvocation<Generator<?>> i = m.createInvocationWith(mock(GeneratorRepository.class));
 
-        assertThat(i.invoke(), is(true));
+        assertThat(i.invoke(), is(Result.PROVEN));
         assertThat(i.generators().isEmpty(), is(true));
         assertThat(i.settings().minSuccessful(), equalTo(50));
     }
@@ -70,7 +71,7 @@ public class DefaultPropertyMethodFactoryTest {
 
         PropertyInvocation<Generator<?>> i = m.createInvocationWith(repo);
 
-        assertThat(i.invoke(1), is(true));
+        assertThat(i.invoke(1), is(Result.PROVEN));
         assertThat(i.generators().size(), equalTo(1));
         assertThat(i.settings().minSuccessful(), equalTo(DefaultInvocationSettings.DEFAULT_MIN_SUCCESSFUL));
     }
@@ -84,7 +85,7 @@ public class DefaultPropertyMethodFactoryTest {
 
         PropertyInvocation<Generator<?>> i = m.createInvocationWith(mock(GeneratorRepository.class));
 
-        assertThat(i.invoke(), is(true));
+        assertThat(i.invoke(), is(Result.PROVEN));
         assertThat(i.generators().size(), equalTo(0));
     }
 

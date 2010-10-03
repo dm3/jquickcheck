@@ -1,5 +1,7 @@
 package lt.dm3.jquickcheck.fj;
 
+import static fj.Function.curry;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,10 +12,18 @@ import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
 import lt.dm3.jquickcheck.api.impl.DefaultQuickCheckResult;
 import fj.F;
+import fj.F2;
+import fj.F3;
+import fj.F4;
+import fj.F5;
+import fj.F6;
+import fj.F7;
+import fj.F8;
 import fj.test.Arbitrary;
 import fj.test.Arg;
 import fj.test.CheckResult;
 import fj.test.Property;
+import fj.test.Result;
 
 public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
 
@@ -118,231 +128,105 @@ public class FJQuickCheckAdapter implements QuickCheckAdapter<Arbitrary<?>> {
         }
     }
 
+    private static Property dispatchResult(final PropertyInvocation<Arbitrary<?>> invocation, Object[] a) {
+        switch (invocation.invoke(a)) {
+            case DISCARDED:
+                return Property.prop(Result.noResult());
+            case PROVEN:
+                return Property.prop(true);
+            case FALSIFIED:
+                return Property.prop(false);
+            default:
+                throw new IllegalStateException("Unsupported property result");
+        }
+    }
+
     private F<Object, Property> oneArg(final PropertyInvocation<Arbitrary<?>> invocation) {
         return new F<Object, Property>() {
             @Override
             public Property f(Object a) {
-                return Property.prop(invocation.invoke(a));
+                return dispatchResult(invocation, new Object[] { a });
             }
         };
     }
 
     private F<Object, F<Object, Property>> twoArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
-        return new F<Object, F<Object, Property>>() {
+        return curry(new F2<Object, Object, Property>() {
             @Override
-            public F<Object, Property> f(final Object a) {
-                return new F<Object, Property>() {
-                    @Override
-                    public Property f(Object b) {
-                        return Property.prop(invocation.invoke(a, b));
-                    }
-                };
+            public Property f(Object a, Object b) {
+                return dispatchResult(invocation, new Object[] { a, b });
             }
-        };
+        });
     }
 
     private F<Object, F<Object, F<Object, Property>>> threeArgs(final PropertyInvocation<Arbitrary<?>> invocation) {
-        return new F<Object, F<Object, F<Object, Property>>>() {
+        return curry(new F3<Object, Object, Object, Property>() {
             @Override
-            public F<Object, F<Object, Property>> f(final Object a) {
-                return new F<Object, F<Object, Property>>() {
-                    @Override
-                    public F<Object, Property> f(final Object b) {
-                        return new F<Object, Property>() {
-                            @Override
-                            public Property f(final Object c) {
-                                return Property.prop(invocation.invoke(a, b, c));
-                            }
-                        };
-                    }
-                };
+            public Property f(Object a, Object b, Object c) {
+                return dispatchResult(invocation, new Object[] { a, b, c });
             }
-        };
+        });
     }
 
     private F<Object, F<Object, F<Object, F<Object, Property>>>> fourArgs(
         final PropertyInvocation<Arbitrary<?>> invocation) {
-        return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
+        return curry(new F4<Object, Object, Object, Object, Property>() {
             @Override
-            public F<Object, F<Object, F<Object, Property>>> f(final Object a) {
-                return new F<Object, F<Object, F<Object, Property>>>() {
-                    @Override
-                    public F<Object, F<Object, Property>> f(final Object b) {
-                        return new F<Object, F<Object, Property>>() {
-                            @Override
-                            public F<Object, Property> f(final Object c) {
-                                return new F<Object, Property>() {
-                                    @Override
-                                    public Property f(final Object d) {
-                                        return Property.prop(invocation.invoke(a, b, c, d));
-                                    }
-                                };
-                            }
-                        };
-                    }
-                };
+            public Property f(Object a, Object b, Object c, Object d) {
+                return dispatchResult(invocation, new Object[] { a, b, c, d });
             }
-        };
+        });
     }
 
     private F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> fiveArgs(
         final PropertyInvocation<Arbitrary<?>> invocation) {
-        return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
+        return curry(new F5<Object, Object, Object, Object, Object, Property>() {
             @Override
-            public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object a) {
-                return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
-                    @Override
-                    public F<Object, F<Object, F<Object, Property>>> f(final Object b) {
-                        return new F<Object, F<Object, F<Object, Property>>>() {
-                            @Override
-                            public F<Object, F<Object, Property>> f(final Object c) {
-                                return new F<Object, F<Object, Property>>() {
-                                    @Override
-                                    public F<Object, Property> f(final Object d) {
-                                        return new F<Object, Property>() {
-                                            @Override
-                                            public Property f(final Object e) {
-                                                return Property.prop(invocation.invoke(a, b, c, d, e));
-                                            }
-                                        };
-                                    }
-                                };
-                            }
-                        };
-                    }
-                };
+            public Property f(Object a, Object b, Object c, Object d, Object e) {
+                return dispatchResult(invocation, new Object[] { a, b, c, d, e });
             }
-        };
+        });
     }
 
     private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> sixArgs(
         final PropertyInvocation<Arbitrary<?>> invocation) {
-        return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>() {
+        return curry(new F6<Object, Object, Object, Object, Object, Object, Property>() {
             @Override
-            public F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> f(final Object a) {
-                return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
-                    @Override
-                    public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object b) {
-                        return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
-                            @Override
-                            public F<Object, F<Object, F<Object, Property>>> f(final Object c) {
-                                return new F<Object, F<Object, F<Object, Property>>>() {
-                                    @Override
-                                    public F<Object, F<Object, Property>> f(final Object d) {
-                                        return new F<Object, F<Object, Property>>() {
-                                            @Override
-                                            public F<Object, Property> f(final Object e) {
-                                                return new F<Object, Property>() {
-                                                    @Override
-                                                    public Property f(final Object f) {
-                                                        return Property.prop(invocation.invoke(a, b, c, d, e, f));
-                                                    }
-                                                };
-                                            }
-                                        };
-                                    }
-                                };
-                            }
-                        };
-                    }
-                };
+            public Property f(Object a, Object b, Object c, Object d, Object e, Object f) {
+                return dispatchResult(invocation, new Object[] { a, b, c, d, e, f });
             }
-        };
+        });
     }
 
     private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>> sevenArgs(
         final PropertyInvocation<Arbitrary<?>> invocation) {
-        return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>() {
+        return curry(new F7<Object, Object, Object, Object, Object, Object, Object, Property>() {
             @Override
-            public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> f(final Object a) {
-                return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>() {
-                    @Override
-                    public F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> f(final Object b) {
-                        return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
-                            @Override
-                            public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object c) {
-                                return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
-                                    @Override
-                                    public F<Object, F<Object, F<Object, Property>>> f(final Object d) {
-                                        return new F<Object, F<Object, F<Object, Property>>>() {
-                                            @Override
-                                            public F<Object, F<Object, Property>> f(final Object e) {
-                                                return new F<Object, F<Object, Property>>() {
-                                                    @Override
-                                                    public F<Object, Property> f(final Object f) {
-                                                        return new F<Object, Property>() {
-                                                            @Override
-                                                            public Property f(final Object g) {
-                                                                return Property.prop(invocation.invoke(a, b, c, d, e,
-                                                                                                       f, g));
-                                                            }
-                                                        };
-                                                    }
-                                                };
-                                            }
-                                        };
-                                    }
-                                };
-                            }
-                        };
-                    }
-                };
+            public Property f(Object a, Object b, Object c, Object d, Object e, Object f, Object g) {
+                return dispatchResult(invocation, new Object[] { a, b, c, d, e, f, g });
             }
-        };
+        });
     }
 
     private F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>> eightArgs(
         final PropertyInvocation<Arbitrary<?>> invocation) {
-        return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>>() {
+        return curry(new F8<Object, Object, Object, Object, Object, Object, Object, Object, Property>() {
             @Override
-            public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>> f(
-                final Object a) {
-                return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>>() {
-                    @Override
-                    public F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>> f(final Object b) {
-                        return new F<Object, F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>>() {
-                            @Override
-                            public F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>> f(final Object c) {
-                                return new F<Object, F<Object, F<Object, F<Object, F<Object, Property>>>>>() {
-                                    @Override
-                                    public F<Object, F<Object, F<Object, F<Object, Property>>>> f(final Object d) {
-                                        return new F<Object, F<Object, F<Object, F<Object, Property>>>>() {
-                                            @Override
-                                            public F<Object, F<Object, F<Object, Property>>> f(final Object e) {
-                                                return new F<Object, F<Object, F<Object, Property>>>() {
-                                                    @Override
-                                                    public F<Object, F<Object, Property>> f(final Object f) {
-                                                        return new F<Object, F<Object, Property>>() {
-                                                            @Override
-                                                            public F<Object, Property> f(final Object g) {
-                                                                return new F<Object, Property>() {
-                                                                    @Override
-                                                                    public Property f(final Object h) {
-                                                                        return Property.prop(invocation.invoke(a, b, c,
-                                                                                                               d, e, f,
-                                                                                                               g, h));
-                                                                    };
-                                                                };
-                                                            }
-                                                        };
-                                                    }
-                                                };
-                                            }
-                                        };
-                                    }
-                                };
-                            }
-                        };
-                    }
-                };
+            public Property f(Object a, Object b, Object c, Object d, Object e, Object f, Object g, Object h) {
+                return dispatchResult(invocation, new Object[] { a, b, c, d, e, f, g, h });
             }
-        };
+        });
     }
 
     private QuickCheckResult invokeOnce(final PropertyInvocation<Arbitrary<?>> invocation) {
         try {
-            if (invocation.invoke()) {
-                return DefaultQuickCheckResult.proven();
+            switch (invocation.invoke()) {
+                case PROVEN:
+                    return DefaultQuickCheckResult.proven();
+                case FALSIFIED:
+                    return DefaultQuickCheckResult.falsified();
+                case DISCARDED:
+                    return DefaultQuickCheckResult.exhausted();
             }
         } catch (RuntimeException e) {
             return DefaultQuickCheckResult.falsified(e);

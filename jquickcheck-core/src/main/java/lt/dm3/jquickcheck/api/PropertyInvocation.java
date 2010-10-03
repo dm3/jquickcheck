@@ -49,11 +49,23 @@ public interface PropertyInvocation<GEN> {
     }
 
     /**
+     * Result of one property invocation
+     */
+    enum Result {
+        DISCARDED, PROVEN, FALSIFIED;
+
+        public static Result from(boolean x) {
+            return x ? PROVEN : FALSIFIED;
+        }
+    }
+
+    /**
      * @param param
      *            arguments to the property encapsulated in this invocation
-     * @return true if property is true for the given arguments
+     * @return Proven if property is true for the given arguments, Falsified if not and Exhausted if not enough
+     *         arguments (according to the settings) were accepted by the property
      */
-    boolean invoke(Object... param);
+    Result invoke(Object... param);
 
     /**
      * @return all of the generators used with this property in the order they must appear in the invocation (in the
