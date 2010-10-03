@@ -8,14 +8,6 @@ public class DiscardedValue extends QuickCheckException {
         super(message);
     }
 
-    public DiscardedValue(String message, Object value) {
-        super(message + ", Discarded: " + value);
-    }
-
-    public DiscardedValue(Object value) {
-        super("Discarded: " + value);
-    }
-
     public DiscardedValue() {
         super("");
     }

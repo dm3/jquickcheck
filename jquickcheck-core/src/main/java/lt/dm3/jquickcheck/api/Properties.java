@@ -12,15 +12,13 @@ public abstract class Properties {
         // static
     }
 
-    public static void continueIf(boolean shouldBeTrue, Object value) {
-        if (!shouldBeTrue) {
-            throw new DiscardedValue(value);
-        }
-    }
-
     public static void continueIf(boolean shouldBeTrue) {
         if (!shouldBeTrue) {
             throw new DiscardedValue();
         }
+    }
+
+    public static void discardIf(boolean shouldBeFalse) {
+        continueIf(!shouldBeFalse);
     }
 }
