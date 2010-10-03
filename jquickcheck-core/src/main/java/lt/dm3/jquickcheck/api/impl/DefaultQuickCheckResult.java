@@ -79,4 +79,8 @@ public final class DefaultQuickCheckResult implements QuickCheckResult {
         return new DefaultQuickCheckResult(Status.Proven);
     }
 
+    public static QuickCheckResult exhausted() {
+        return new DefaultQuickCheckResult(Status.Exhausted);
+    }
+
 }

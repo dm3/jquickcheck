@@ -94,6 +94,8 @@
 
 ## Features TODO
 
+* `continueIf` statement which will discard the generated value (by throwing an exception out of the property)
+
 * "Role" based accessibility to generators with different roles (defaults, synthetics, custom groups)
 
 * Synthetic/default generators for QC

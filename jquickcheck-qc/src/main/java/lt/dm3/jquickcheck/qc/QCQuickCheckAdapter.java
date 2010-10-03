@@ -3,6 +3,7 @@ package lt.dm3.jquickcheck.qc;
 import java.util.List;
 
 import lt.dm3.jquickcheck.api.PropertyInvocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation.Result;
 import lt.dm3.jquickcheck.api.QuickCheckAdapter;
 import lt.dm3.jquickcheck.api.QuickCheckResult;
 import lt.dm3.jquickcheck.api.impl.DefaultQuickCheckResult;
@@ -40,9 +41,9 @@ public class QCQuickCheckAdapter implements QuickCheckAdapter<Generator<?>> {
                     new AbstractCharacteristic<Object[]>() {
                         @Override
                         protected void doSpecify(Object[] params) throws Throwable {
-                            boolean result = invocation.invoke(params);
-                            if (!result) {
-                                throw new AssertionError("Falsified");
+                            PropertyInvocation.Result result = invocation.invoke(params);
+                            if (!(result == Result.PROVEN)) {
+                                throw new AssertionError("Falsified: " + result.name());
                             }
                         }
                     });

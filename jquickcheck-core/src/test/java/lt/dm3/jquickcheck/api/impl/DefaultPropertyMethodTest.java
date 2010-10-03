@@ -11,8 +11,10 @@ import static org.mockito.Mockito.verify;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import lt.dm3.jquickcheck.api.DiscardedValue;
 import lt.dm3.jquickcheck.api.GeneratorRepository;
 import lt.dm3.jquickcheck.api.PropertyInvocation;
+import lt.dm3.jquickcheck.api.PropertyInvocation.Result;
 import lt.dm3.jquickcheck.api.PropertyMethod;
 import lt.dm3.jquickcheck.api.QuickCheckException;
 import lt.dm3.jquickcheck.sample.Generator;
@@ -81,9 +83,55 @@ public class DefaultPropertyMethodTest {
         PropertyMethod<Generator<?>> method = defaultMethod("methodThrowsAssertionError");
         PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
 
-        boolean result = invocation.invoke();
+        PropertyInvocation.Result result = invocation.invoke();
 
-        assertThat(result, is(false));
+        assertThat(result, is(Result.FALSIFIED));
+    }
+
+    public boolean methodReturnsTrue() {
+        return true;
+    }
+
+    @Test
+    public void shouldReturnAnInvocationWhichReturnsProvenIfPropertyMethodReturnsTrue() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsTrue");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        PropertyInvocation.Result result = invocation.invoke();
+
+        assertThat(result, is(Result.PROVEN));
+    }
+
+    public boolean methodReturnsFalse() {
+        return false;
+    }
+
+    @Test
+    public void shouldReturnAnInvocationWhichReturnsProvenIfPropertyMethodReturnsFalse() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsFalse");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        PropertyInvocation.Result result = invocation.invoke();
+
+        assertThat(result, is(Result.FALSIFIED));
+    }
+
+    public int methodReturnsInt() {
+        return 1;
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionIfMethodReturnsNotABooleanOrVoid() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsInt");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        invocation.invoke();
     }
 
     public void methodReturnsVoidAndThrowsAssertionError() {
@@ -97,9 +145,9 @@ public class DefaultPropertyMethodTest {
         PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsVoidAndThrowsAssertionError");
         PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
 
-        boolean result = invocation.invoke();
+        PropertyInvocation.Result result = invocation.invoke();
 
-        assertThat(result, is(false));
+        assertThat(result, is(Result.FALSIFIED));
     }
 
     public void methodReturnsVoid() {}
@@ -111,9 +159,25 @@ public class DefaultPropertyMethodTest {
         PropertyMethod<Generator<?>> method = defaultMethod("methodReturnsVoid");
         PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
 
-        boolean result = invocation.invoke();
+        Result result = invocation.invoke();
 
-        assertThat(result, is(true));
+        assertThat(result, is(Result.PROVEN));
+    }
+
+    public void methodThrowsDiscarded() {
+        throw new DiscardedValue();
+    }
+
+    @Test
+    public void shouldReturnAnInvocationWhichIsExhaustedIfPropertyMethodThrowsDiscardedException() {
+        GeneratorRepository<Generator<?>> repo = mock(GeneratorRepository.class);
+
+        PropertyMethod<Generator<?>> method = defaultMethod("methodThrowsDiscarded");
+        PropertyInvocation<Generator<?>> invocation = method.createInvocationWith(repo);
+
+        Result result = invocation.invoke();
+
+        assertThat(result, is(Result.DISCARDED));
     }
 
     public void methodWithSyntheticType(List<Integer> param) {}
